@@ -88,11 +88,11 @@ export default async function PlanPage() {
           centra opticamente o texto em vez de encostá-lo à esquerda.
         */}
         <div className="mx-auto grid w-full max-w-[110rem] gap-x-12 xl:grid-cols-[1fr_minmax(0,var(--medida))_1fr]">
-          <header className="xl:col-start-2">
+          <header className="min-w-0 xl:col-start-2">
             <p className="plan-label text-[var(--gol)]">
               Rascunho · não é especificação final
             </p>
-            <h1 className="plan-display mt-5 text-[clamp(2.5rem,7vw,4.75rem)]">
+            <h1 className="plan-display mt-5 text-[clamp(1.75rem,8vw,4.75rem)]">
               Pre-PRD
               <br />
               <span className="text-[var(--tinta-40)]">Reconhecimento da base</span>

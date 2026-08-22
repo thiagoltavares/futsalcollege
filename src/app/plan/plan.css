@@ -87,10 +87,21 @@
 /* ---------- corpo do documento ---------- */
 
 .plan-doc {
-  font-size: 1.125rem;
-  line-height: 1.72;
+  /* Sem isto, o filho de grid assume min-width:auto e a coluna cresce até
+     caber a tabela mais larga, empurrando a página inteira em vez de deixar
+     a tabela rolar dentro do próprio container. */
+  min-width: 0;
+  font-size: 1.0625rem;
+  line-height: 1.7;
   color: var(--tinta-80);
   counter-reset: secao;
+}
+
+@media (min-width: 48rem) {
+  .plan-doc {
+    font-size: 1.125rem;
+    line-height: 1.72;
+  }
 }
 
 .plan-doc > * + * {
@@ -131,7 +142,20 @@
   .plan-doc h2::before {
     position: static;
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+}
+
+/* O respiro entre seções que funciona no desktop vira buraco no celular:
+   eram cerca de 150px, quase um quinto da tela. */
+@media (max-width: 47.99rem) {
+  .plan-doc h2 {
+    margin-top: 3rem;
+    padding-top: 1.75rem;
+  }
+
+  .plan-doc h3 {
+    margin-top: 2.25rem;
   }
 }
 
@@ -245,6 +269,7 @@
 }
 
 .plan-doc pre {
+  min-width: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   background: var(--papel-2);
   border: 1px solid var(--regua);
@@ -279,17 +304,37 @@
 
 .plan-tabela {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   border: 1px solid var(--regua);
   background: var(--papel-2);
   max-width: 100%;
+  /* Sombra à direita enquanto houver conteúdo fora da vista — sem ela, numa
+     tela estreita não há nada indicando que a tabela rola. */
+  background-image: linear-gradient(
+    to left,
+    rgb(22 25 27 / 0.11),
+    transparent 2.5rem
+  );
+  background-attachment: local, scroll;
 }
 
 .plan-doc table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 48rem) {
+  .plan-doc table {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .plan-doc td {
+    padding: 0.8rem 1rem;
+  }
 }
 
 .plan-doc th {
@@ -299,13 +344,19 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--tinta-60);
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 0.75rem;
   border-bottom: 1px solid var(--regua-forte);
-  white-space: nowrap;
+}
+
+@media (min-width: 48rem) {
+  .plan-doc th {
+    padding: 0.8rem 1rem;
+    white-space: nowrap;
+  }
 }
 
 .plan-doc td {
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 0.75rem;
   border-top: 1px solid var(--regua);
   vertical-align: top;
   color: var(--tinta-80);
