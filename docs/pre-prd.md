@@ -104,6 +104,9 @@ Estes cinco não são preferência de design. Se algum cair, o produto vira outr
 | Relatório da família | Perfil com gráficos de evolução, baixável em PDF | Compara a criança com ela mesma, nunca com as outras |
 | Pagamentos | Todos dentro da plataforma, com retenção até a entrega | Sem transação registrada não existe laudo, reputação nem reembolso |
 | Custo do avaliador | Não paga para trabalhar; só a certificação de entrada | Cobrar do lado da oferta trava o recrutamento |
+| Comparar crianças entre si | Não será feito | Vira ranking de criança e monetiza ansiedade. Substituído por referência a critério |
+| Trilha de treino | Derivada da rubrica pelo sistema, não escolhida pelo avaliador | Impede que o diagnóstico vire venda |
+| Aula e avaliação | O avaliador não ganha nada sobre a aula que decorre do laudo dele | Sem isso, nota baixa vira instrumento de venda |
 
 ---
 
@@ -179,6 +182,28 @@ Consentimento revogado derruba para `suspenso` na hora: a página pública passa
 ---
 
 ## O motor de avaliação
+
+### O loop que sustenta o negócio
+
+```
+avaliação → identifica a lacuna → prescreve a trilha → vende a aula
+→ reavaliação prova a evolução → renova
+```
+
+Este é o motor. É o que faz a família pagar sem promessa de olheiro, o que dá sentido ao pacote de temporada, e o que transforma o laudo de boletim em plano de ação.
+
+**Consequência para a rubrica:** ela deixa de ser uma grade de notas e passa a ser uma **taxonomia de habilidades com treino associado**. Cada item precisa carregar o que fazer quando a nota é baixa — *"passe sob pressão, nota 2 → trilha X, estes exercícios, este período"*. Assim o laudo gera o plano automaticamente, e a aula decorre do diagnóstico em vez de ser empurrada.
+
+É consideravelmente mais trabalho do que uma rubrica de pontuação, e é o ativo real da empresa.
+
+**Risco novo, espelho da inflação de nota:** com a aula amarrada ao laudo, o avaliador ganha motivo para dar nota **baixa**, porque nota baixa gera venda. É o mecânico que diagnostica e conserta.
+
+Duas travas:
+
+* **O avaliador não recebe nada sobre a aula que decorre do laudo dele.** Se receber, o diagnóstico virou venda.
+* **A trilha é derivada da rubrica pelo sistema, não escolhida pelo avaliador.** Ele atribui a nota; o plano sai automático. Não há espaço para receitar mais aula do que a nota justifica.
+
+A máquina de reputação já descrita cobre os dois sentidos — a distribuição de notas denuncia quem infla e quem desinfla igualmente.
 
 ### A rubrica é o produto
 
@@ -270,7 +295,7 @@ Isto não é escrúpulo isolado: no dia em que a plataforma virar ranking de cri
 
 ### Sobre comparar com outras crianças
 
-A ideia surgiu como possível funcionalidade futura, no modelo do LinkedIn, que mostra ao candidato como ele se compara aos outros de uma vaga. **A recomendação é não fazer**, e a razão não é escrúpulo genérico.
+A ideia surgiu como possível funcionalidade futura, no modelo do LinkedIn, que mostra ao candidato como ele se compara aos outros de uma vaga. **Decidido: não será feita.** A razão não é escrúpulo genérico.
 
 O LinkedIn funciona porque são adultos, que escolheram se candidatar, comparados no contexto de uma vaga específica. Nenhuma das três condições existe aqui: a criança não escolheu, não há vaga, e quem lê é o responsável dela.
 
@@ -298,12 +323,30 @@ Comparar atletas entre si é legítimo **do lado do olheiro**: é o trabalho del
 Presencial em Fortaleza, online para o Brasil. Três trilhas:
 
 * Técnica individual
-* Fundamentos
+* Fundamentos — passe, domínio, finalização, posicionamento
 * **Liderança e comportamento esportivo** — a trilha que ninguém mais vende
+
+As aulas não são catálogo solto: **cada trilha é a prescrição de um item da rubrica**. O responsável não escolhe aula num menu, ele contrata o que o laudo apontou. Isso muda a conversa de venda de "quer aula?" para "o João precisa de passe sob pressão; são estas quatro sessões".
 
 Instrutor e avaliador são papéis distintos sobre o mesmo cadastro verificado. O mesmo profissional pode ter os dois, com credenciamentos separados: dar aula não habilita a assinar laudo.
 
 **Aula online 1:1 entre adulto e criança** não pode ser tratada como videochamada comum. Sala dentro da plataforma, responsável presente ou sessão gravada e retida por prazo definido, e nenhum canal privado fora dali. Protege a criança e protege o instrutor de acusação.
+
+---
+
+## Escolinha própria
+
+Desfecho natural para quem é dono do método: um lugar onde ele é aplicado inteiro. Mas há uma tensão que precisa estar escrita **antes** de acontecer.
+
+**No dia em que a operação abrir uma escolinha em Fortaleza, as escolinhas de Fortaleza deixam de ser canal.** Passa-se a competir com quem alimenta a plataforma de perfis. Não é impeditivo — é escolha de estratégia, e tem hora certa.
+
+Duas coisas diferentes, que não devem ser confundidas:
+
+**Escolinha-laboratório.** Uma só, pequena. Onde o método é testado, os avaliadores são formados e certificados, e as trilhas de treino são validadas antes de virarem produto. Não ameaça parceiro nenhum — ao contrário, dá autoridade ao selo. Faz sentido cedo.
+
+**Escolinha como negócio.** Rede, escala, receita de mensalidade. Aí sim compete com o canal, e só compensa quando a rede de parceiros não for mais o motor de aquisição. Decisão para quando houver números.
+
+As aulas de reforço — passe, posicionamento, liderança — são as mesmas trilhas derivadas da rubrica. A escolinha própria não inventa currículo: ela executa o que o loop de avaliação já prescreve.
 
 ---
 
@@ -394,6 +437,8 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 | **Custo de reavaliação** | Exposição aberta no descredenciamento. Fundo de garantia mitiga |
 | **Segurança de menor** | Risco de maior consequência. Um incidente encerra o negócio |
 | **Dependência de fonte de estatística** | Sem fonte oficial, o perfil fica sem número. Em aberto |
+| **Deflação de nota** | Espelho da inflação: com aula amarrada ao laudo, nota baixa gera venda. Tratado com as duas travas do loop |
+| **Conflito com o canal** | Escolinha própria compete com as escolinhas parceiras. Laboratório não; rede sim |
 | **Regulatório** | Vitrine e avaliação credenciada são um negócio. **Representar** atleta é outro, regulado por CBF e FIFA, com restrição maior para menores. O produto não deve prometer intermediação nem cobrar comissão por colocação |
 
 ---
