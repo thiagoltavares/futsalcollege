@@ -71,6 +71,9 @@ Estes quatro não são preferência de design. Se algum cair, o produto vira out
 | Escolinha | Recebe comissão, não paga | Vira canal de vendas em vez de cliente |
 | Free / pago | Free por padrão; pago desbloqueia capacidade | Volume sem venda; conversão por valor entregue |
 | Estatística | Só número oficial e conferível. Nada auto-declarado | Dado declarado é publicidade, e o olheiro desconta |
+| Comissão da escolinha | Só sobre o plano do perfil. Nada sobre avaliação | Decisão do Thiago |
+| Pagamentos | Todos dentro da plataforma, com retenção até a entrega | Sem transação registrada não existe laudo, reputação nem reembolso |
+| Custo do avaliador | Não paga para trabalhar; só a certificação de entrada | Cobrar do lado da oferta trava o recrutamento |
 
 ---
 
@@ -248,12 +251,44 @@ Cada visualização entra na trilha de auditoria, e o responsável vê: *"Fortal
 | Fonte | Quem paga | Observação |
 |---|---|---|
 | Plano do atleta | Responsável, ~R$10/mês | Free por padrão; pago desbloqueia capacidade |
-| Comissão da escolinha | Plataforma repassa | ~R$3 por perfil pago ativo — a escolinha é canal, não cliente |
-| Avaliação técnica | Responsável, avulso | Plataforma retém percentual do laudo |
+| Comissão da escolinha | Plataforma repassa | ~R$3 por perfil pago ativo. **Só sobre o plano** |
+| Avaliação técnica | Responsável | Plataforma retém percentual do laudo |
+| Certificação de avaliador | Avaliador, uma vez | Cobre formação no método e checagem de antecedentes |
 | Aulas | Responsável | Presencial e online, avulso ou pacote |
 | Assinatura de clube | Clube ou olheiro | Acesso a busca, filtros e vídeo |
 
-O motor de aquisição é a escolinha: ela cadastra a turma inteira de graça, colhe os consentimentos e ganha comissão sobre quem converte. Não precisa vender nada para entrar.
+O motor de aquisição é a escolinha: ela cadastra a turma inteira de graça, colhe os consentimentos e ganha comissão sobre quem converte para o plano pago. Não precisa vender nada para entrar.
+
+**A escolinha não participa da receita de avaliação.** Decisão tomada. Consequência a monitorar: sem participação, ela não tem incentivo para organizar um dia de avaliação de turma, que seria o formato mais eficiente de gerar laudos. Se isso for destravar mais tarde sem dar percentual, o caminho é **cachê fixo por dia de turma** — ela cede a quadra e organiza, recebe valor fechado.
+
+O avaliador não paga nada para trabalhar. Cobra-se apenas a certificação de entrada, e mesmo essa provavelmente deve ser gratuita nos primeiros meses, para recrutar os primeiros avaliadores.
+
+---
+
+## Pagamentos
+
+**Todo pagamento acontece dentro da plataforma.** Não é preferência, é estrutural:
+
+* **O laudo nasce da transação.** Pagamento por fora significa nenhum registro — e sem registro não existe reputação de avaliador, rodízio, calibração preditiva nem histórico. Perde-se o produto, não apenas a comissão.
+* **As promessas dependem de controlar o dinheiro.** A reavaliação gratuita no descredenciamento e o fundo de garantia só existem se o valor passa pela plataforma.
+* **Pagamento por fora é contato direto**, e contato direto fura o princípio de mediação que protege a criança.
+
+### O que isso obriga a construir
+
+Aceitar pagamento é simples. Repassar a terceiros é o trabalho — a operação vira um marketplace com split.
+
+* **Split de pagamento** — exige PSP com suporte a repasse. No Brasil: Asaas, Iugu ou Pagar.me. PIX como trilho principal (custo baixo, sem chargeback); cartão para a recorrência do plano.
+* **Três fluxos distintos** — assinatura recorrente (plano), transação avulsa (avaliação, aula) e repasse periódico (avaliador, escolinha). São três máquinas, não uma.
+* **Retenção até a entrega** — o avaliador não recebe no ato da compra. O valor fica retido até o laudo ser publicado e vencer uma janela de contestação (sugestão: 7 dias). É isso que dá poder de reembolso, e é de onde sai o fundo de garantia.
+* **O pagador é sempre o responsável.** Menor de idade não é titular de nada.
+
+### Vazamento para fora da plataforma
+
+Risco clássico de marketplace de serviço presencial: responsável e avaliador se conhecem no primeiro encontro e combinam o segundo por fora.
+
+**Na avaliação, o desenho já resolve.** O produto não é a hora do avaliador, é o laudo. Pagou por fora, não há laudo assinado: não entra no perfil, não conta para a reputação do avaliador, não aparece para o olheiro. O bypass compra uma conversa; a plataforma vende o registro.
+
+**Na aula, o risco é real** — o responsável quer o treino, e o treino acontece igual por fora. A defesa é conveniência (agenda, pagamento, remarcação, histórico) somada ao vínculo do instrutor com o próprio credenciamento.
 
 ---
 
@@ -298,7 +333,26 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 
 **5. Preço.** R$10/mês no plano do atleta e R$3 de comissão são chute para dar forma à conta. Quanto custa hoje uma avaliação técnica presencial no mercado de vocês?
 
-**6. Nome do produto.** Não temos.
+**6. Quem define o preço da avaliação.** Três modelos:
+
+* **Preço de tabela** — a plataforma vende por um valor único e repassa ao avaliador. O laudo vale o mesmo independente de quem assinou, o rodízio de avaliadores funciona, e a marca do selo é da plataforma. Exige acertar o preço sem dados.
+* **Preço do avaliador** — cada um define o seu, a plataforma cobra taxa. Escala sozinho e atrai nome grande, mas o mercado aprende rápido que preço é sinal de qualidade: família com dinheiro compra o laudo caro, e o olheiro passa a ler o valor pago como proxy de talento. Recria, do lado da avaliação, exatamente o que foi proibido do lado do plano — vender posição. **Não recomendado.**
+* **Faixas por credenciamento** — a plataforma define 2 ou 3 faixas e o avaliador sobe por critério auditável (volume, concordância, calibração). Preço previsível, rodízio preservado, e dá ao avaliador um jeito de ganhar mais **sem inflacionar nota** — o incentivo mais saudável do modelo.
+
+> Recomendação: preço de tabela agora, faixas quando a rede amadurecer. Hoje não há dado para calibrar faixa.
+
+**7. Como a avaliação é empacotada.** Avulsa, pacote de temporada ou avaliação de turma — e possivelmente mais de um formato. Depende do Flávio.
+
+* **Avulsa** — menor atrito de entrada, receita imprevisível, e sozinha não gera série temporal.
+* **Pacote de temporada** — 3 avaliações no ano com relatório de evolução. Receita previsível, e é a série temporal que alimenta a calibração preditiva. Se cada avaliação do pacote sair com um **avaliador diferente**, ganha-se concordância entre pares de graça e combate-se a inflação de nota sem custo de auditoria.
+* **Avaliação de turma** — o avaliador se desloca uma vez e avalia a turma inteira no mesmo dia. Custo logístico por laudo despenca e gera muitos perfis verificados de uma vez. Depende de resolver o incentivo da escolinha (ver Receita).
+
+**8. Modelo fiscal do repasse.** Decisão de contador, não de produto, mas muda a arquitetura de pagamento:
+
+* **Intermediação** — o avaliador presta o serviço ao responsável; a plataforma emite nota apenas sobre a comissão. Menos imposto, exige contrato claro e que o avaliador emita a própria nota.
+* **Revenda** — a plataforma vende o serviço e contrata o avaliador. Nota cheia, imposto sobre o bruto, mais simples para o cliente.
+
+**9. Nome do produto.** Não temos.
 
 ---
 
