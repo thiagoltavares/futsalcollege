@@ -1,0 +1,246 @@
+/* ------------------------------------------------------------------
+   /plan — folha de estilo local da rota.
+   Escopada sob .plan. Mesma paleta da página do Flávio, mas tratada
+   como documento de leitura longa, não como landing.
+------------------------------------------------------------------- */
+
+.plan {
+  --ink: #0b0d0e;
+  --ink-2: #131719;
+  --bone: #f4f0e8;
+  --bone-70: rgb(244 240 232 / 0.72);
+  --bone-45: rgb(244 240 232 / 0.45);
+  --bone-25: rgb(244 240 232 / 0.25);
+  --gol: #ff3b14;
+  --court: rgb(244 240 232 / 0.14);
+  --court-strong: rgb(244 240 232 / 0.3);
+
+  --shell: clamp(1.25rem, 5vw, 4rem);
+  --medida: 74ch;
+
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+.plan ::selection {
+  background: var(--gol);
+  color: var(--bone);
+}
+
+.plan-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 0.85;
+  text-transform: uppercase;
+}
+
+.plan-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* ---------- corpo do documento ---------- */
+
+.plan-doc {
+  max-width: var(--medida);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--bone-70);
+}
+
+.plan-doc > * + * {
+  margin-top: 1.5rem;
+}
+
+.plan-doc h2 {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  color: var(--bone);
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--court-strong);
+  scroll-margin-top: 2rem;
+}
+
+.plan-doc h3 {
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--bone);
+  margin-top: 3rem;
+  scroll-margin-top: 2rem;
+}
+
+.plan-doc h4 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--bone);
+  margin-top: 2rem;
+}
+
+.plan-doc strong {
+  color: var(--bone);
+  font-weight: 600;
+}
+
+.plan-doc em {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+  font-size: 1.05em;
+}
+
+.plan-doc a {
+  color: var(--gol);
+  text-underline-offset: 3px;
+}
+
+.plan-doc hr {
+  border: 0;
+  border-top: 1px solid var(--court);
+  margin-block: 3rem;
+}
+
+.plan-doc ul,
+.plan-doc ol {
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.plan-doc ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.plan-doc ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.plan-doc ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--gol);
+}
+
+.plan-doc ol {
+  list-style: decimal;
+}
+
+.plan-doc ol > li::marker {
+  color: var(--gol);
+  font-weight: 600;
+}
+
+.plan-doc code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: rgb(244 240 232 / 0.07);
+  padding: 0.15em 0.4em;
+  border-radius: 2px;
+  color: var(--bone);
+}
+
+.plan-doc pre {
+  background: var(--ink-2);
+  border: 1px solid var(--court);
+  border-left: 2px solid var(--gol);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.plan-doc pre code {
+  background: none;
+  padding: 0;
+  color: var(--bone-70);
+}
+
+/* Citação: usada no doc para sugestões e perguntas ao Flávio. */
+.plan-doc blockquote {
+  border-left: 2px solid var(--gol);
+  background: rgb(255 59 20 / 0.06);
+  padding: 1.1rem 1.5rem;
+  color: var(--bone);
+}
+
+.plan-doc blockquote > * + * {
+  margin-top: 0.75rem;
+}
+
+/* ---------- tabelas ---------- */
+
+.plan-tabela {
+  overflow-x: auto;
+  border: 1px solid var(--court);
+  max-width: 100%;
+}
+
+.plan-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.plan-doc thead {
+  background: var(--ink-2);
+}
+
+.plan-doc th {
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-45);
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+}
+
+.plan-doc td {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--court);
+  vertical-align: top;
+}
+
+.plan-doc tbody tr:hover {
+  background: rgb(244 240 232 / 0.03);
+}
+
+/* ---------- sumário lateral ---------- */
+
+.plan-toc {
+  display: grid;
+  gap: 0.55rem;
+  border-left: 1px solid var(--court);
+  padding-left: 1.25rem;
+}
+
+.plan-toc a {
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--bone-45);
+  transition: color 0.25s ease;
+}
+
+.plan-toc a:hover {
+  color: var(--gol);
+}
+
+.plan a:focus-visible {
+  outline: 2px solid var(--gol);
+  outline-offset: 3px;
+}
