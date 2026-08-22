@@ -312,42 +312,63 @@ export default function FlavioPage() {
 
           <ol className="relative lg:col-span-8 lg:col-start-5">
             <span className="flv-rail" aria-hidden="true" />
-            {linhaDoTempo.map((e, i) => (
-              <li
-                key={e.ano}
-                data-reveal
-                data-destaque={"destaque" in e && e.destaque ? "true" : "false"}
-                style={{ "--d": `${i * 70}ms` } as React.CSSProperties}
-                className="flv-item group relative pb-14 pl-8 last:pb-0 sm:pl-12"
-              >
-                <span className="flv-node" aria-hidden="true" />
+            {linhaDoTempo.map((e, i) => {
+              const abreAtoTecnico =
+                e.fase === "tecnico" && linhaDoTempo[i - 1]?.fase === "quadra";
 
-                <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                  <span className="flv-year flv-display flv-outline text-[clamp(3rem,6.5vw,5rem)]">
-                    {e.ano}
-                  </span>
-                  <span className="flv-mono-label text-[var(--bone-45)]">
-                    {e.clube}
-                  </span>
-                  <span
-                    className={`flv-mono-label border px-2.5 py-1 ${
-                      "destaque" in e && e.destaque
-                        ? "border-[var(--gol)] text-[var(--gol)]"
-                        : "border-[var(--court)] text-[var(--bone-25)]"
-                    }`}
-                  >
-                    {e.tag}
-                  </span>
-                </div>
+              return (
+                <li
+                  key={e.ano}
+                  data-reveal
+                  data-destaque={e.destaque ? "true" : "false"}
+                  style={{ "--d": `${Math.min(i, 6) * 55}ms` } as React.CSSProperties}
+                  className="flv-item group relative pb-14 pl-8 last:pb-0 sm:pl-12"
+                >
+                  {abreAtoTecnico && (
+                    <p className="flv-ato flv-mono-label">Na beira da quadra</p>
+                  )}
 
-                <h3 className="mt-4 text-[clamp(1.35rem,2.4vw,1.85rem)] leading-tight font-semibold">
-                  {e.titulo}
-                </h3>
-                <p className="mt-3 max-w-2xl text-[1.0625rem] leading-[1.7] text-[var(--bone-70)]">
-                  {e.texto}
-                </p>
-              </li>
-            ))}
+                  <span className="flv-node" aria-hidden="true" />
+
+                  <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+                    <span className="flv-year flv-display flv-outline text-[clamp(3rem,6.5vw,5rem)]">
+                      {e.ano}
+                    </span>
+                    <span className="flv-mono-label text-[var(--bone-45)]">
+                      {e.clube}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {e.titulos.map((t) => (
+                      <span
+                        key={t}
+                        className={`flv-mono-label border px-2.5 py-1 ${
+                          e.destaque
+                            ? "flv-chip-forte"
+                            : "border-[var(--court)] text-[var(--bone-45)]"
+                        }`}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <h3 className="mt-5 text-[clamp(1.35rem,2.4vw,1.85rem)] leading-tight font-semibold">
+                    {e.titulo}
+                  </h3>
+                  <p className="mt-3 max-w-2xl text-[1.0625rem] leading-[1.7] text-[var(--bone-70)]">
+                    {e.texto}
+                  </p>
+
+                  {!e.datado && (
+                    <p className="mt-3 text-sm text-[var(--bone-25)]">
+                      Ano a confirmar.
+                    </p>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </div>
       </section>
@@ -384,11 +405,21 @@ export default function FlavioPage() {
             <p className="flv-mono-label mt-3 text-[var(--gol)]">
               {emQuadra.posicao}
             </p>
-            <ul className="flv-list mt-9 grid gap-4 text-[1.0625rem] leading-snug text-[var(--bone-70)]">
-              {emQuadra.itens.map((item) => (
-                <li key={item}>{item}</li>
+            <p className="mt-9 max-w-md text-[1.0625rem] leading-[1.72] text-[var(--bone-70)]">
+              {emQuadra.resumo}
+            </p>
+            <dl className="mt-10 flex flex-wrap gap-x-12 gap-y-6">
+              {emQuadra.destaques.map((d) => (
+                <div key={d.label}>
+                  <dt className="flv-display text-[clamp(2.5rem,4.5vw,3.5rem)]">
+                    {d.valor}
+                  </dt>
+                  <dd className="flv-mono-label mt-1 text-[var(--bone-45)]">
+                    {d.label}
+                  </dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           </div>
         </div>
 
@@ -407,11 +438,21 @@ export default function FlavioPage() {
             <p className="flv-mono-label mt-3 text-[var(--gol)]">
               {naBeira.posicao}
             </p>
-            <ul className="flv-list mt-9 grid gap-4 text-[1.0625rem] leading-snug text-[var(--ink)]/72">
-              {naBeira.itens.map((item) => (
-                <li key={item}>{item}</li>
+            <p className="mt-9 max-w-md text-[1.0625rem] leading-[1.72] text-[var(--ink)]/72">
+              {naBeira.resumo}
+            </p>
+            <dl className="mt-10 flex flex-wrap gap-x-12 gap-y-6">
+              {naBeira.destaques.map((d) => (
+                <div key={d.label}>
+                  <dt className="flv-display text-[clamp(2.5rem,4.5vw,3.5rem)]">
+                    {d.valor}
+                  </dt>
+                  <dd className="flv-mono-label mt-1 text-[var(--ink)]/45">
+                    {d.label}
+                  </dd>
+                </div>
               ))}
-            </ul>
+            </dl>
 
             <blockquote className="flv-serif mt-12 border-l-2 border-[var(--gol)] pl-6 text-[clamp(1.15rem,1.9vw,1.5rem)] leading-snug italic">
               {citacoes.grupo2021.texto}

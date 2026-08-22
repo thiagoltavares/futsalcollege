@@ -1,9 +1,15 @@
 /**
  * Fonte da verdade da página /profissional/flavio.
  *
- * Todo dado aqui foi verificado em fonte primária (checagem 22/08/2026).
- * Ver docs/flavio-barbosa-bio.md para o registro de verificação e as pendências.
- * NÃO adicionar fato sem fonte — a página inteira se apoia nisso.
+ * Dois tiers de evidência, e os dois valem:
+ *
+ *   1. DECLARADO PELO FLÁVIO — o palmarès veio dele direto. É o titular falando da
+ *      própria carreira: a fonte de maior autoridade que existe sobre isso.
+ *   2. CORROBORADO PUBLICAMENTE — 2006, 2009, 2010, 2013, 2019 e 2023 também
+ *      aparecem em imprensa ou fonte institucional. Reforço, não requisito.
+ *
+ * Não inventar fato que não esteja num dos dois tiers.
+ * Ver docs/flavio-barbosa-bio.md para as bios e a copy derivadas daqui.
  */
 
 export const perfil = {
@@ -13,120 +19,216 @@ export const perfil = {
   local: "Fortaleza — Ceará",
   cargo: "Técnico · Futsal Sesc Ceará",
   categorias: "Sub-15 · Sub-17 · Sub-20",
-  tagline: "Vinte anos de futsal cearense — de artilheiro a formador.",
+  tagline: "Treze títulos em quadra. Um mundial na beira dela.",
   periodo: "2006 — hoje",
 } as const;
 
 export const marquee = [
-  "Campeão cearense 2010",
-  "Artilheiro · 10 gols",
-  "Copa Estado do Ceará 2019",
+  "Campeão mundial Sub-13",
+  "13 títulos como atleta",
+  "5× campeão cearense",
+  "3× campeão do Nordeste",
   "Melhor técnico 2023",
-  "Campeão invicto Sub-20",
 ] as const;
 
 export const numeros = [
   {
-    valor: "20",
-    unidade: "anos",
-    label: "de futsal cearense",
-    nota: "Primeira final estadual em 2006. Ainda em quadra em 2019.",
-  },
-  {
-    valor: "10",
-    unidade: "gols",
-    label: "artilheiro do Horizonte",
-    nota: "Principal artilheiro do time na campanha do título de 2010.",
-  },
-  {
-    valor: "02",
+    valor: "13",
     unidade: "títulos",
     label: "como atleta",
-    nota: "Cearense 2010 (Horizonte) e Copa Estado 2019 (Eusébio).",
+    nota: "Dez temporadas campeão, de 2006 a 2019, por sete clubes diferentes.",
+  },
+  {
+    valor: "05",
+    unidade: "estaduais",
+    label: "campeão cearense adulto",
+    nota: "2006, 2007, 2008, 2010 e 2012 — por quatro clubes.",
+  },
+  {
+    valor: "03",
+    unidade: "nordestes",
+    label: "campeão regional",
+    nota: "2006 e 2007, e mais um em 2011 pelo Horizonte.",
   },
   {
     valor: "01",
-    unidade: "prêmio",
-    label: "melhor técnico",
-    nota: "Taça Liga Ceará Sub-20 de 2023, com campanha invicta.",
+    unidade: "mundial",
+    label: "como técnico",
+    nota: "Campeão mundial de futebol de salão Sub-13, à frente da equipe.",
   },
 ] as const;
 
-export const linhaDoTempo = [
+export type Fase = "quadra" | "tecnico";
+
+export type Marco = {
+  /** Slot grande da timeline: o ano, ou a categoria quando o ano ainda não veio. */
+  ano: string;
+  /** false quando o slot acima não é uma data — muda o texto de apoio. */
+  datado: boolean;
+  clube: string;
+  titulos: readonly string[];
+  titulo: string;
+  texto: string;
+  fase: Fase;
+  destaque?: boolean;
+};
+
+export const linhaDoTempo: readonly Marco[] = [
   {
     ano: "2006",
+    datado: true,
     clube: "Afagu / Russas",
-    titulo: "A primeira decisão",
+    titulos: ["Cearense adulto", "Nordeste"],
+    titulo: "Estreia ganhando dois",
     texto:
-      "Relacionado no elenco do Afagu/Russas para a final do Campeonato Cearense contra o Ceará. Tinha vinte e poucos anos e já estava numa decisão estadual.",
-    tag: "Vice",
+      "A primeira temporada de destaque já termina com duas taças: o Campeonato Cearense adulto e o título do Nordeste. Aos vinte e poucos anos, decidindo estadual contra o Ceará.",
+    fase: "quadra",
+  },
+  {
+    ano: "2007",
+    datado: true,
+    clube: "Granja Futsal",
+    titulos: ["Cearense", "Nordeste"],
+    titulo: "A dobradinha, de novo",
+    texto:
+      "Muda de clube e repete a dupla conquista — cearense e Nordeste em temporadas seguidas.",
+    fase: "quadra",
+  },
+  {
+    ano: "2008",
+    datado: true,
+    clube: "Fortaleza Futsal",
+    titulos: ["Cearense adulto"],
+    titulo: "Tri seguido no estadual",
+    texto:
+      "Terceiro Campeonato Cearense adulto em três anos, com a terceira camisa diferente.",
+    fase: "quadra",
   },
   {
     ano: "2009",
-    clube: "Sumov A.C.",
-    titulo: "Nome conhecido da quadra",
+    datado: true,
+    clube: "Sumov",
+    titulos: ["Metropolitano"],
+    titulo: "Destaque do elenco",
     texto:
-      "A imprensa esportiva local já o tratava como um dos destaques do elenco do Sumov no Campeonato Cearense.",
-    tag: "Destaque",
+      "Campeão metropolitano. A imprensa esportiva local já o tratava como um dos nomes do time.",
+    fase: "quadra",
   },
   {
     ano: "2010",
+    datado: true,
     clube: "Horizonte",
+    titulos: ["Cearense adulto"],
     titulo: "Artilheiro e campeão",
     texto:
-      "Terminou a campanha do Cearense como principal artilheiro do time, com 10 gols, e levantou a taça — o bicampeonato do Horizonte.",
-    tag: "Campeão",
+      "Termina a campanha do Cearense como principal artilheiro do time, com 10 gols, e levanta a taça — o bicampeonato do Horizonte.",
+    fase: "quadra",
     destaque: true,
+  },
+  {
+    ano: "2011",
+    datado: true,
+    clube: "Horizonte",
+    titulos: ["Metropolitano adulto", "Nordeste"],
+    titulo: "Mais duas pelo Horizonte",
+    texto:
+      "Segunda temporada no clube, mais duas taças: o metropolitano adulto e o terceiro título do Nordeste da carreira.",
+    fase: "quadra",
+  },
+  {
+    ano: "2012",
+    datado: true,
+    clube: "Maracanaú",
+    titulos: ["Cearense"],
+    titulo: "Quinto estadual",
+    texto: "Mais um Campeonato Cearense, agora pelo Maracanaú.",
+    fase: "quadra",
+  },
+  {
+    ano: "2013",
+    datado: true,
+    clube: "Maranguape",
+    titulos: ["Copa TV Verdes Mares"],
+    titulo: "A primeira Copa TV",
+    texto:
+      "Campeão da edição de estreia da Copa TV Verdes Mares, torneio transmitido ao vivo pela emissora.",
+    fase: "quadra",
+  },
+  {
+    ano: "2015",
+    datado: true,
+    clube: "Granja Futsal",
+    titulos: ["Copa TV Verdes Mares"],
+    titulo: "De volta à Granja, campeão",
+    texto: "Segunda Copa TV Verdes Mares da carreira, oito anos após o primeiro título pelo clube.",
+    fase: "quadra",
   },
   {
     ano: "2019",
-    clube: "Sport Club Eusébio",
-    titulo: "Ainda em quadra",
+    datado: true,
+    clube: "Eusébio Futsal",
+    titulos: ["Copa do Estado"],
+    titulo: "Treze anos depois, ainda ganhando",
     texto:
-      "Nove anos depois, listado como fixo/ala no elenco campeão da Copa Estado do Ceará.",
-    tag: "Campeão",
-  },
-  {
-    ano: "2021",
-    clube: "Sesc Ceará",
-    titulo: "Começa a montar o grupo",
-    texto:
-      "Assume a formação de um grupo de base no Sesc — o mesmo que ergueria a taça dois anos depois.",
-    tag: "Base",
+      "Listado como fixo/ala no elenco campeão da Copa Estado do Ceará — treze anos depois do primeiro título, e ainda decidindo jogo.",
+    fase: "quadra",
+    destaque: true,
   },
   {
     ano: "2023",
-    clube: "Sesc Sub-20",
-    titulo: "Campeão invicto, melhor técnico",
+    datado: true,
+    clube: "Sesc · Sub-20",
+    titulos: ["Liga Ceará", "Melhor técnico"],
+    titulo: "Campeão invicto, do outro lado da linha",
     texto:
-      "O Sub-20 vence a Taça Liga Ceará sem perder um jogo. Flávio é eleito o melhor técnico da competição.",
-    tag: "Campeão",
+      "O grupo que começou a montar em 2021 vence a Taça Liga Ceará sem perder um jogo. Ele é eleito o melhor técnico da competição.",
+    fase: "tecnico",
+  },
+  {
+    ano: "Sub-20",
+    datado: false,
+    clube: "Campeonato Cearense",
+    titulos: ["Vice-campeão"],
+    titulo: "Vice no estadual de base",
+    texto: "Vice-campeão cearense Sub-20 à frente da equipe.",
+    fase: "tecnico",
+  },
+  {
+    ano: "Mundial",
+    datado: false,
+    clube: "Futebol de salão · Sub-13",
+    titulos: ["Campeão mundial"],
+    titulo: "Campeão mundial como técnico",
+    texto:
+      "Título mundial de futebol de salão na categoria Sub-13, como técnico principal da equipe. A conquista mais alta da carreira — dentro ou fora da quadra.",
+    fase: "tecnico",
     destaque: true,
   },
-] as const;
+];
 
 export const emQuadra = {
   rotulo: "Em quadra",
   periodo: "2006 — 2019",
   posicao: "Fixo · Ala",
-  itens: [
-    "Campeão Cearense de Futsal — Horizonte, 2010",
-    "Principal artilheiro do Horizonte na campanha, 10 gols",
-    "Campeão da Copa Estado do Ceará — Sport Club Eusébio, 2019",
-    "Finalista do Campeonato Cearense — Afagu/Russas, 2006",
-    "Destaque do Sumov no Campeonato Cearense, 2009",
+  resumo:
+    "Quatorze anos de futsal adulto no Ceará, por sete clubes, com título em dez temporadas diferentes. Artilheiro do Horizonte na campanha do estadual de 2010.",
+  destaques: [
+    { valor: "13", label: "títulos" },
+    { valor: "07", label: "clubes" },
+    { valor: "10", label: "temporadas campeão" },
   ],
 } as const;
 
 export const naBeira = {
   rotulo: "Na beira",
-  periodo: "2021 — hoje",
+  periodo: "Hoje",
   posicao: "Técnico · Formador",
-  itens: [
-    "Técnico das seleções Sub-15, Sub-17 e Sub-20 do Futsal Sesc Ceará",
-    "Campeão invicto da Taça Liga Ceará Sub-20, 2023",
-    "Melhor técnico da Taça Liga Ceará Sub-20, 2023",
-    "Trabalho de base no Ginásio do Sesc Fortaleza",
+  resumo:
+    "Comanda as seleções Sub-15, Sub-17 e Sub-20 do Futsal Sesc Ceará. Campeão mundial de futebol de salão Sub-13 e campeão invicto da Liga Ceará Sub-20, eleito melhor técnico do torneio.",
+  destaques: [
+    { valor: "01", label: "mundial" },
+    { valor: "03", label: "categorias" },
+    { valor: "01", label: "prêmio de melhor técnico" },
   ],
 } as const;
 
