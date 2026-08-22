@@ -92,7 +92,7 @@ Estes cinco não são preferência de design. Se algum cair, o produto vira outr
 | Visibilidade | Ficha pública; vídeo e identificação atrás de olheiro verificado | Mantém o SEO e o alcance sem expor a criança |
 | Faixa etária | Sub-7 a Sub-20 | Volume desde a iniciação; acima de 18 pode abrir mais |
 | Alcance | Híbrido — presencial em Fortaleza, online no Brasil | Usa a rede real de vocês sem travar a escala |
-| Quem avalia | Qualquer profissional verificado, credenciado por vocês | Vira marketplace de avaliação; tira o Flávio do operacional |
+| Quem avalia | ~~Qualquer profissional verificado~~ — **EM REVISÃO**, ver *Duas empresas, um método* | A direção mudou para avaliação exclusiva da casa. As duas versões estão no documento de propósito |
 | Papel do Flávio | CPO — dono do método, não executor do volume | O ativo passa a ser a rubrica, não a agenda dele |
 | Criação de perfil | Só responsável ou treinador. Nunca aberta | Controle de entrada e cadeia de consentimento |
 | Consentimento | Sempre do responsável, com documento, mesmo quando o treinador cadastra | Treinador não pode consentir pelo pai |
@@ -331,6 +331,92 @@ As aulas não são catálogo solto: **cada trilha é a prescrição de um item d
 Instrutor e avaliador são papéis distintos sobre o mesmo cadastro verificado. O mesmo profissional pode ter os dois, com credenciamentos separados: dar aula não habilita a assinar laudo.
 
 **Aula online 1:1 entre adulto e criança** não pode ser tratada como videochamada comum. Sala dentro da plataforma, responsável presente ou sessão gravada e retida por prazo definido, e nenhum canal privado fora dali. Protege a criança e protege o instrutor de acusação.
+
+---
+
+## Avaliação como funil, ou como produto
+
+Ideia levantada depois do desenho original: **a avaliação sai de graça na compra de um pacote de X aulas**. Faz-se o diagnóstico e, a partir dele, indica-se quais aulas o atleta deve fazer. Cadastro gratuito.
+
+### Por que é forte
+
+Vender pacote de aulas é muito mais fácil que vender avaliação. "Aula de futsal" é categoria que a família já compra e já tem preço na cabeça; "avaliação técnica" é categoria que ela nunca comprou, e metade da conversa vai embora explicando o que é.
+
+Diagnóstico gratuito puxando tratamento pago é o funil mais confiável que existe — dentista, academia, mecânico. O ticket sobe: em vez de uma avaliação avulsa, vendem-se oito aulas. E o banco de perfis se constrói como subproduto, sem custo de aquisição.
+
+### O que ela custa
+
+A avaliação deixa de ser independente. Se ela existe para vender aula, ela estruturalmente existe para vender aula — e o olheiro percebe isso em algum momento.
+
+Repare que isso colide com as duas travas do loop, escritas para impedir que o avaliador receite aula em proveito próprio. Com a plataforma vendendo a aula, **o conflito não desaparece: sobe um andar**, do avaliador para a empresa. E com a direção de *Duas empresas, um método* — em que a avaliação e a aula passam a ser da mesma casa — ele fica ainda mais estrutural.
+
+### A saída: são duas avaliações, não uma
+
+E elas são, naturalmente, produtos diferentes:
+
+| | Diagnóstica | Certificada |
+|---|---|---|
+| Preço | Gratuita, inclusa no pacote de aulas | Paga, comprada à parte |
+| Para quê | Montar o plano de treino | Registro que existe para o mundo de fora |
+| Vai ao perfil público | Não | Sim |
+| É laudo assinado | Não | Sim |
+| Alimenta reputação e histórico | Não | Sim |
+| Quem lê | A família e o instrutor | Olheiro, clube, a própria família |
+
+A família entende a diferença sem esforço: *"essa é para a gente saber o que treinar; a outra é a ficha oficial dele."*
+
+Preserva as duas coisas — o funil de aula fica com o diagnóstico gratuito, e o selo continua limpo, porque quem compra o laudo certificado não está comprando aula nenhuma.
+
+**Trava adicional sugerida:** o mesmo profissional não faz as duas para a mesma criança. Quem diagnostica para o plano de aula não é quem assina o registro público.
+
+---
+
+## Duas empresas, um método
+
+Direção nova, posterior ao restante do documento, e a mais estrutural de todas. Ela **revê** a decisão de abrir a avaliação para qualquer profissional verificado.
+
+**O app é horizontal.** Serve todas as escolinhas: perfis, consentimento, registro, relatório, descoberta. Neutro por construção.
+
+**A escola é vertical e separada.** Negócio próprio, onde a metodologia nasce, os avaliadores são formados e as trilhas de treino são testadas antes de virarem produto.
+
+**A avaliação é sempre da casa.** Método próprio, avaliador próprio, selo próprio. Ninguém de fora assina.
+
+### O que essa direção resolve
+
+Some de uma vez: o marketplace a policiar, a certificação de terceiros a manter, o risco de inflação de nota por avaliador externo, a escada disciplinar, a conta aberta do descredenciamento e o fundo de garantia. É uma redução enorme de operação — e o controle sobre a qualidade do método passa a ser total, que é o ponto.
+
+### As duas tensões que ela cria
+
+**1. Teto geográfico.** O app é nacional; a avaliação, se só acontece na escola própria, é de Fortaleza. O selo — que é o ativo — não sai do Ceará, e a plataforma fica sem diferencial em qualquer outra praça.
+
+**2. O canal passa a alimentar um concorrente.** Uma escolinha parceira cadastra 200 alunos e descobre que a avaliação certificada só existe na escola de vocês. O dono dela faz essa conta rápido: *"por que eu mandaria meu aluno ser avaliado na escola do concorrente?"* O canal trava.
+
+### A saída: separar o método do lugar
+
+O que precisa ser da casa é **o avaliador e a metodologia**, não a quadra.
+
+O avaliador de vocês se desloca até a escolinha parceira, aplica o método de vocês e assina como avaliador de vocês. A escola própria segue sendo onde o método nasce e onde os avaliadores são formados — o laboratório — sem ser o único lugar onde a avaliação acontece.
+
+Mantém o controle total sobre a qualidade, mantém o canal funcionando, e o teto passa a ser **quantos avaliadores vocês formam**, não quantas quadras vocês têm.
+
+### O que muda no resto do documento
+
+| Peça | Como fica |
+|---|---|
+| Marketplace de avaliadores | Deixa de existir. Avaliador é da casa, contratado ou formado por vocês |
+| Certificação paga de avaliador | Vira formação interna, não produto |
+| Escada disciplinar e descredenciamento | Vira gestão de equipe, não regulação de mercado |
+| Fundo de garantia | Perde a razão de ser |
+| Cartel público do avaliador | Continua fazendo sentido — dá rosto e autoridade a quem assina |
+| Rubrica versionada | Ainda mais central: é o único ativo que sustenta o selo |
+| Rodízio de avaliadores no pacote | Continua, dentro da equipe própria |
+
+### Em aberto nesta direção
+
+* Avaliador da casa é CLT, contratado por avaliação, ou franqueado do método?
+* Quantos avaliadores dá para formar por ano, e qual o teto de laudos por avaliador?
+* A escola própria e o app são a mesma empresa ou duas? Muda contrato, imposto e a percepção de neutralidade pelas escolinhas parceiras.
+* Se o app é neutro e a avaliação é exclusiva de vocês, o que a escolinha parceira ganha para continuar no canal?
 
 ---
 
