@@ -30,7 +30,7 @@ const body = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Pre-PRD — Banco de talentos",
+  title: "Pre-PRD — Plataforma de reconhecimento",
   description:
     "A ideia destrinchada até o ponto em que dá pra discordar dela com precisão. Rascunho para leitura e anotação.",
   robots: { index: false, follow: false },
@@ -75,7 +75,7 @@ export default async function PlanPage() {
           <h1 className="plan-display mt-6 text-[clamp(2.75rem,9vw,7rem)]">
             Pre-PRD
             <br />
-            <span className="text-[var(--bone-25)]">Banco de talentos</span>
+            <span className="text-[var(--bone-25)]">Reconhecimento da base</span>
           </h1>
           <dl className="mt-10 flex flex-wrap gap-x-12 gap-y-4">
             {[

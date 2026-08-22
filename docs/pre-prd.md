@@ -1,4 +1,4 @@
-# Pre-PRD — Banco de talentos da base
+# Pre-PRD — Plataforma de reconhecimento da base
 
 **Status:** rascunho para leitura e anotação. Não é especificação final.
 **Escrito em:** 22 de agosto de 2026
@@ -23,9 +23,35 @@ Nada aqui está construído. Nenhuma linha de código foi escrita para esta idei
 
 ## A ideia em uma frase
 
-Um perfil verificável de cada jovem atleta — ficha, vídeos e avaliação técnica assinada — que clubes e olheiros conseguem encontrar e confiar, sustentado por uma rede de avaliadores que seguem um método único.
+Uma **plataforma de reconhecimento**: cada jovem atleta ganha um registro verificável do próprio trabalho — ficha, vídeos e avaliação técnica assinada — que mostra onde ele está e onde pode chegar. O olheiro é consequência, não promessa.
 
 A referência é o Sherdog: lá, o valor não está no vídeo da luta, está no cartel que ninguém contesta. Aqui é a mesma aposta — **o ativo é o registro confiável, não o conteúdo**.
+
+### Reconhecimento, não descoberta
+
+Esta é a definição mais importante do documento, e ela reordena tudo.
+
+"Seja descoberto por um clube" é um produto frágil e uma promessa que não se pode cumprir: dos 200 alunos de uma escolinha, talvez 3 sejam vistos por um olheiro. Os outros 197 pagam, esperam, nada acontece e cancelam. Vender vitrine para pai de menino que sonha com o profissional é vender esperança para um público que não tem defesa contra isso.
+
+Reconhecimento entrega para 100%. O responsável que descobre que o menino tem nota alta em técnica e baixa em decisão sob pressão tem o que fazer com isso na segunda-feira. E o menino tem um registro do que ele construiu — assinado por alguém que entende, guardado, visível para a família. Isso tem valor mesmo que olheiro nenhum apareça, que é o desfecho mais provável para quase todos.
+
+Então: **a vitrine não é o motor, é a consequência.** É mais honesto, retém melhor, e resolve o problema de ovo e galinha por outro caminho — os perfis existem porque as famílias querem o reconhecimento, não porque estão esperando um olheiro que talvez nunca venha.
+
+Isso dá sentido ao resto: o pacote de temporada só existe se houver evolução para mostrar, e o rodízio de avaliadores vira "três olhares independentes sobre o desenvolvimento do seu filho".
+
+### Como se fala do produto
+
+A distinção acima não é filosofia — ela define a comunicação. Vale para landing page, anúncio, conversa de venda e discurso de escolinha.
+
+| Pode dizer | Nunca dizer |
+|---|---|
+| "Reconhecimento do trabalho do seu filho" | "Seu filho vai ser visto por clubes" |
+| "Avaliação técnica assinada por quem entende" | "Caminho para o profissional" |
+| "Entenda onde ele está e onde pode evoluir" | "Aumente as chances dele" |
+| "Clubes e olheiros usam a plataforma para buscar atletas" | "Vamos levar seu filho para um clube" |
+| "Registro que acompanha a evolução dele" | Qualquer promessa de resultado, contato ou peneira |
+
+A regra: descreve-se o que a plataforma **faz**, nunca o que o clube **vai fazer**. Prometer contato de clube, além de não se sustentar, aproxima o produto de intermediação de atleta — que é atividade regulada (ver Riscos).
 
 ---
 
@@ -33,8 +59,8 @@ A referência é o Sherdog: lá, o valor não está no vídeo da luta, está no 
 
 | Ator | O que faz | O que ganha |
 |---|---|---|
-| **Responsável** | Consente, mantém o perfil, contrata aula e avaliação | Filho visto por quem decide, com dado que sustenta |
-| **Atleta (7–20)** | Sujeito dos dados. De 16 anos em diante, ganha voz própria no perfil | Porta de entrada que hoje depende de conhecer alguém |
+| **Responsável** | Consente, mantém o perfil, contrata aula e avaliação | Registro do trabalho do filho e leitura de onde ele pode evoluir |
+| **Atleta (7–20)** | Sujeito dos dados. De 16 anos em diante, ganha voz própria no perfil | Ter o próprio esforço registrado e reconhecido por quem entende |
 | **Treinador de escolinha** | Cadastra a turma em lote, acompanha os alunos | Comissão por perfil pago, e argumento de matrícula |
 | **Avaliador credenciado** | Aplica a rubrica e assina laudos | Renda, e um cartel público próprio |
 | **Olheiro / clube** | Busca, filtra, assiste vídeo, manifesta interesse | Encontra talento fora da rede pessoal dele |
@@ -44,7 +70,7 @@ A referência é o Sherdog: lá, o valor não está no vídeo da luta, está no 
 
 ## Princípios inegociáveis
 
-Estes quatro não são preferência de design. Se algum cair, o produto vira outra coisa — e provavelmente uma coisa pior.
+Estes cinco não são preferência de design. Se algum cair, o produto vira outra coisa — e provavelmente uma coisa pior.
 
 **1. Criança não é vitrine.** A ficha esportiva é pública e indexável; o que identifica e localiza a pessoa não é. Vídeo, nome completo, contato e cidade ficam atrás de olheiro verificado. Local e horário de treino não aparecem para ninguém, nunca.
 
@@ -53,6 +79,8 @@ Estes quatro não são preferência de design. Se algum cair, o produto vira out
 **3. Laudo publicado não se edita.** Correção gera nova versão com a anterior visível. Registro que se reescreve não é registro.
 
 **4. Contato é sempre mediado.** Nenhum adulto de fora recebe canal direto com uma criança. Interesse passa pelo responsável, e a conversa acontece dentro da plataforma.
+
+**5. Ranking de criança nunca é público.** Não existe lista dos melhores, nota comparativa entre atletas nem percentil exposto. A avaliação de cada um aparece no perfil dele; a comparação, quando existir, é ferramenta interna do olheiro — nunca página, nunca notificação, nunca conteúdo.
 
 ---
 
@@ -71,7 +99,9 @@ Estes quatro não são preferência de design. Se algum cair, o produto vira out
 | Escolinha | Recebe comissão, não paga | Vira canal de vendas em vez de cliente |
 | Free / pago | Free por padrão; pago desbloqueia capacidade | Volume sem venda; conversão por valor entregue |
 | Estatística | Só número oficial e conferível. Nada auto-declarado | Dado declarado é publicidade, e o olheiro desconta |
-| Comissão da escolinha | Só sobre o plano do perfil. Nada sobre avaliação | Decisão do Thiago |
+| Comissão da escolinha | Só sobre o plano do perfil. Nada sobre avaliação | Decisão do Thiago. Em troca, recebe selo de escola credenciada e página própria |
+| Posicionamento | **Plataforma de reconhecimento.** O olheiro é consequência, nunca promessa | A vitrine entrega a poucos; o reconhecimento entrega a todos |
+| Relatório da família | Perfil com gráficos de evolução, baixável em PDF | Compara a criança com ela mesma, nunca com as outras |
 | Pagamentos | Todos dentro da plataforma, com retenção até a entrega | Sem transação registrada não existe laudo, reputação nem reembolso |
 | Custo do avaliador | Não paga para trabalhar; só a certificação de entrada | Cobrar do lado da oferta trava o recrutamento |
 
@@ -220,6 +250,49 @@ O avaliador também tem página pública: número de laudos, tempo de credenciam
 
 ---
 
+## O relatório para a família
+
+É o produto que a maioria das famílias de fato consome — a vitrine serve a poucos, o relatório serve a todos.
+
+O responsável acessa e baixa o perfil do filho: avaliações, gráficos de evolução por eixo, e — o mais importante — **onde ele pode evoluir**. Linguagem de desenvolvimento, não de julgamento. O que treinar, não o quanto ele vale.
+
+Entregar como PDF com a identidade visual da plataforma e o selo de quem avaliou, não como export técnico. O documento circula no grupo da família e leva a marca junto.
+
+O download não é apenas uma boa funcionalidade: o art. 18 da LGPD garante ao titular o direito de portabilidade. Melhor transformar a obrigação em produto.
+
+### O gráfico compara a criança com ela mesma
+
+Nunca com as outras.
+
+Percentil de criança — *"seu filho está abaixo de 78% da categoria"* — destrói a autoestima de um menino de 11 anos e produz pai insuportável na beira da quadra. Se houver referência de categoria, ela aparece de forma qualitativa, no relatório do responsável, e nunca como ranking público nem na linguagem dirigida à criança.
+
+Isto não é escrúpulo isolado: no dia em que a plataforma virar ranking de crianças, ela deixa de ser um produto que o Flávio possa assinar.
+
+### Sobre comparar com outras crianças
+
+A ideia surgiu como possível funcionalidade futura, no modelo do LinkedIn, que mostra ao candidato como ele se compara aos outros de uma vaga. **A recomendação é não fazer**, e a razão não é escrúpulo genérico.
+
+O LinkedIn funciona porque são adultos, que escolheram se candidatar, comparados no contexto de uma vaga específica. Nenhuma das três condições existe aqui: a criança não escolheu, não há vaga, e quem lê é o responsável dela.
+
+O que acontece na prática:
+
+* **Vira ranking de crianças.** Não importa que esteja privado no aplicativo do responsável — existir já basta, e contradiz a linha acima.
+* **Monetiza ansiedade.** "Assine para ver como seu filho se compara" vende insegurança a um público sem defesa contra isso. Funciona comercialmente, e é por isso mesmo que é perigoso.
+* **Piora o comportamento do adulto.** O menino que ouve em casa que está abaixo de 70% da categoria não treina melhor; passa a jogar com medo.
+* **LGPD.** Produzir comparação a partir do dado das outras crianças é finalidade que as famílias delas não consentiram, mesmo em forma agregada.
+
+**A pergunta por trás da ideia é legítima e deve ser respondida:** *"meu filho está no caminho?"*
+
+A resposta certa compara contra o **critério da categoria**, não contra as outras crianças:
+
+> "Para o Sub-13, espera-se que o atleta execute o passe sob pressão de marcação. O João está consolidando isso — hoje executa em situação livre, ainda não sob pressão."
+
+Responde a pergunta, é acionável, e não ranqueia ninguém. Em avaliação educacional isso se chama **referenciado a critério**, em oposição a **referenciado a norma** — e a pedagogia abandonou o segundo para crianças pequenas exatamente pelos motivos acima. A rubrica com âncoras descritivas já é, por construção, referenciada a critério.
+
+Comparar atletas entre si é legítimo **do lado do olheiro**: é o trabalho dele, é esperado, e ali existe consentimento para vitrine. Outra tela, outro público, outra finalidade.
+
+---
+
 ## Aulas e serviços
 
 Presencial em Fortaleza, online para o Brasil. Três trilhas:
@@ -259,7 +332,13 @@ Cada visualização entra na trilha de auditoria, e o responsável vê: *"Fortal
 
 O motor de aquisição é a escolinha: ela cadastra a turma inteira de graça, colhe os consentimentos e ganha comissão sobre quem converte para o plano pago. Não precisa vender nada para entrar.
 
-**A escolinha não participa da receita de avaliação.** Decisão tomada. Consequência a monitorar: sem participação, ela não tem incentivo para organizar um dia de avaliação de turma, que seria o formato mais eficiente de gerar laudos. Se isso for destravar mais tarde sem dar percentual, o caminho é **cachê fixo por dia de turma** — ela cede a quadra e organiza, recebe valor fechado.
+**A escolinha não participa da receita de avaliação.** Decisão tomada. O que ela ganha em troca não é dinheiro:
+
+* **Selo de escola credenciada**, com página própria no site. Só funciona se tiver critério — número de alunos com perfil ativo, alunos avaliados, professor certificado no método. Selo que todos ganham vira ruído. Com critério, vira algo que ela exibe na porta e usa na matrícula.
+* **SEO de graça.** A página dela ranqueia pelo domínio da plataforma — "escolinha de futsal em Messejana" é busca que ela nunca ganharia sozinha.
+* **Uma ferramenta para entregar aos pais.** O relatório de evolução é argumento de retenção e de matrícula dela, produzido por vocês.
+
+Consequência a monitorar: reconhecimento é moeda real para escolinha pequena, mas provavelmente não é suficiente para que ela ceda a quadra, organize um dia inteiro e mobilize 30 famílias. Para destravar a avaliação de turma sem dar percentual, o caminho é **cachê fixo por dia** — ela organiza, recebe valor fechado.
 
 O avaliador não paga nada para trabalhar. Cobra-se apenas a certificação de entrada, e mesmo essa provavelmente deve ser gratuita nos primeiros meses, para recrutar os primeiros avaliadores.
 
@@ -352,7 +431,11 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 * **Intermediação** — o avaliador presta o serviço ao responsável; a plataforma emite nota apenas sobre a comissão. Menos imposto, exige contrato claro e que o avaliador emita a própria nota.
 * **Revenda** — a plataforma vende o serviço e contrata o avaliador. Nota cheia, imposto sobre o bruto, mais simples para o cliente.
 
-**9. Nome do produto.** Não temos.
+**9. Aplicativo móvel.** Apareceu na conversa como "app confiável onde o pai baixa o perfil do filho". Não foi desenhado. A decidir: web responsiva resolve o relatório e o download, ou o app é requisito de confiança para o público de pais?
+
+**10. Critério do selo de escola credenciada.** O que uma escolinha precisa cumprir para receber o selo e a página própria? Quantos alunos ativos, quantos avaliados, professor certificado?
+
+**11. Nome do produto.** Não temos.
 
 ---
 
@@ -361,7 +444,6 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 Deixado de fora de propósito, para não inventar requisito:
 
 * Modalidades além de futsal e futebol
-* Aplicativo móvel
 * Integração com federações
 * Internacionalização
 * Ferramenta de gestão para escolinha (chamada, mensalidade, comunicação) — apareceu como possibilidade de receita futura, não foi desenhada
