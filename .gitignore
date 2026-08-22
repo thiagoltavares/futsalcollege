@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Áudios e mídia solta na raiz — não vão para o repo público
+*.opus
+*.ogg
+*.m4a
+*.mp3
+*.wav

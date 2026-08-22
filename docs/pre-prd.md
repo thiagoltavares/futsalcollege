@@ -19,6 +19,16 @@ O que eu preciso de você:
 
 Nada aqui está construído. Nenhuma linha de código foi escrita para esta ideia.
 
+### Quem decide o quê
+
+**Flávio é a fonte de verdade sobre o esporte.** Método, rubrica, protocolo de avaliação, o que se mede, como se treina, o que o mercado esportivo faz e não faz — nesses temas, o que ele disser entra no documento como fato, e substitui o que estiver escrito aqui. Ele é o especialista; o resto do documento apenas organiza o que ele sabe.
+
+**Thiago decide técnica e produto.** Arquitetura, o que é viável construir, ordem de implementação, e os limites de privacidade e regulação que a plataforma precisa respeitar.
+
+Onde os dois se cruzam — por exemplo, o Flávio quer medir algo que a lei trata como dado sensível — a decisão é conjunta: ele define **o que** é necessário medir, e a plataforma define **como** isso pode existir com segurança.
+
+> **Todos os valores em reais neste documento são hipotéticos.** Servem só para dar forma às contas. Nenhum preço foi pesquisado ou validado com o mercado.
+
 ---
 
 ## A ideia em uma frase
@@ -145,9 +155,16 @@ A visibilidade é **política por campo, escrita no código** — não é config
 | Bairro ou endereço | | | 🚫 |
 | Escola | | | 🚫 |
 | Local e horário de treino | | | 🚫 |
-| Laudo físico, lesão, saúde | | | 🚫 |
+| Avaliação física, postural, lesão, saúde | | Só a família e o profissional | Nunca público |
 
 Vídeo não é arquivo solto: URL assinada com expiração curta, amarrada à sessão do olheiro verificado, sem download, com cada reprodução registrada. Consentimento revogado mata as URLs.
+
+**Sobre o dado físico.** Uma versão anterior desta tabela dizia que avaliação física, postural e de saúde simplesmente não existiriam. Isso proibia demais. A regra correta é mais fina:
+
+* **Existe no app** — é a base do plano de treino, e o Flávio a considera essencial.
+* **Nunca é público**, nem para olheiro verificado. Composição corporal e postura de criança são dado de saúde: sensível pela LGPD, art. 5º II.
+* **Consentimento próprio e destacado**, separado do consentimento do perfil.
+* **Coletado por profissional habilitado** — ver a seção da avaliação física.
 
 **Por que essa régua não custa alcance:** o que o Google indexa e o olheiro pesquisa é nome esportivo, categoria, posição, estatística e avaliação assinada. Tudo isso é público. O que fica atrás do login não gera busca de qualquer forma.
 
@@ -204,6 +221,20 @@ Duas travas:
 * **A trilha é derivada da rubrica pelo sistema, não escolhida pelo avaliador.** Ele atribui a nota; o plano sai automático. Não há espaço para receitar mais aula do que a nota justifica.
 
 A máquina de reputação já descrita cobre os dois sentidos — a distribuição de notas denuncia quem infla e quem desinfla igualmente.
+
+### A avaliação física — direção do Flávio
+
+Vinda dele, e portanto fato: a avaliação não é só técnica. Ele quer medir **postura, peso, altura, força, massa magra, velocidade** — as valências — e a partir daí montar o plano: se falta força, musculação; se falta velocidade, condicionamento.
+
+Isso muda o eixo *Físico* da rubrica de um item observado a olho para **medição real, com protocolo e instrumento**. E aumenta o valor do diagnóstico: mostra à família algo que ela não tinha como saber sozinha.
+
+Três consequências que a plataforma precisa absorver:
+
+**1. É dado de saúde.** Composição corporal e avaliação postural de criança são dado sensível pela LGPD. Nunca públicos, consentimento próprio e destacado, e acesso restrito à família e ao profissional.
+
+**2. Provavelmente exige outro profissional.** Avaliação postural e massa magra não são escopo de técnico de futsal — são de educação física, com CREF, e a postural encosta em fisioterapia. Prescrever musculação para criança tem literatura própria e responsabilidade profissional associada. **Em aberto para o Flávio:** quem faz essa parte, e com qual credencial?
+
+**3. Custa equipamento.** Balança de bioimpedância, espaço marcado, cronometragem. Define o padrão mínimo do centro certificado.
 
 ### A rubrica é o produto
 
@@ -354,7 +385,9 @@ Repare que isso colide com as duas travas do loop, escritas para impedir que o a
 
 E elas são, naturalmente, produtos diferentes:
 
-| | Diagnóstica | Certificada |
+O Flávio chegou à mesma separação por conta própria, e deu ao segundo produto um nome melhor: **o currículo da criança**. *"Jogou o campeonato cearense, ala, joga de ponta direita, qualidade técnica, velocidade, chute forte, bom passador, driblador."* É a palavra a adotar — a família entende de imediato e ela não promete olheiro nenhum.
+
+| | Diagnóstica | Certificada — "o currículo da criança" |
 |---|---|---|
 | Preço | Gratuita, inclusa no pacote de aulas | Paga, comprada à parte |
 | Para quê | Montar o plano de treino | Registro que existe para o mundo de fora |
@@ -648,7 +681,11 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 
 **10. Critério do selo de escola credenciada.** O que uma escolinha precisa cumprir para receber o selo e a página própria? Quantos alunos ativos, quantos avaliados, professor certificado?
 
-**11. Nome do produto.** Não temos.
+**11. Quem faz a avaliação física.** A parte postural e de composição corporal provavelmente exige profissional com CREF, e a postural encosta em fisioterapia. Quem faz, com qual credencial, e isso muda o desenho do centro certificado?
+
+**12. Modalidades.** O documento restringe a futsal e futebol; o Flávio falou em "qualquer modalidade". Abrir desde o começo ou depois de validar numa só?
+
+**13. Nome do produto.** Não temos. *"Currículo da criança"* é candidato a nome do artefato, não da empresa.
 
 ---
 
@@ -667,6 +704,7 @@ A ideia se moveu bastante durante a conversa, e o registro dessas viradas vale t
 | 7 | Marketplace aberto de avaliadores verificados | Avaliação sempre da casa, avaliador CLT | Controle total do método, e some a operação de policiar terceiros |
 | 8 | Avaliação como produto pago avulso | Diagnóstica grátis no pacote **+** certificada paga à parte | O funil de aula precisa de porta de entrada; o selo precisa de independência |
 | 9 | Escola própria como destino único da avaliação | Escola como **primeiro centro certificado**, modelo Microsoft | Resolve o teto geográfico e o conflito com o canal de uma vez |
+| 10 | Dado físico e de saúde não existiria na plataforma | Existe, nunca é público, exige consentimento próprio e profissional habilitado | Direção do Flávio: a avaliação física é parte central do diagnóstico. A regra anterior proibia demais |
 
 ---
 
