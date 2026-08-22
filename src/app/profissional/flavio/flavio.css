@@ -1,0 +1,345 @@
+/* ------------------------------------------------------------------
+   /profissional/flavio — folha de estilo local da rota.
+   Tudo fica sob .flv para a página poder ser levantada inteira
+   pra dentro de um monorepo sem vazar estilo pro resto do app.
+------------------------------------------------------------------- */
+
+.flv {
+  --ink: #0b0d0e;
+  --ink-2: #131719;
+  --ink-3: #1b2023;
+  --bone: #f4f0e8;
+  --bone-70: rgb(244 240 232 / 0.7);
+  --bone-45: rgb(244 240 232 / 0.45);
+  --bone-25: rgb(244 240 232 / 0.25);
+  --gol: #ff3b14;
+  --gol-soft: #ff6a45;
+  --court: rgb(244 240 232 / 0.14);
+  --court-strong: rgb(244 240 232 / 0.3);
+
+  --shell: clamp(1.25rem, 5vw, 6rem);
+
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv01";
+  overflow-x: clip;
+  position: relative;
+}
+
+.flv ::selection {
+  background: var(--gol);
+  color: var(--bone);
+}
+
+/* ---------- textura de grão sobre tudo ---------- */
+
+.flv-grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ---------- tipografia ---------- */
+
+.flv-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+.flv-serif {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+.flv-mono-label {
+  font-family: var(--font-body), ui-sans-serif, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.flv-outline {
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.28vw, 3px) var(--bone);
+  paint-order: stroke fill;
+}
+
+.flv-outline-gol {
+  color: transparent;
+  -webkit-text-stroke: clamp(1px, 0.28vw, 3px) var(--gol);
+}
+
+/* ---------- hero ---------- */
+
+.flv-hero {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 80% at 78% 8%, rgb(255 59 20 / 0.18) 0%, transparent 58%),
+    radial-gradient(90% 70% at 8% 100%, rgb(244 240 232 / 0.07) 0%, transparent 60%),
+    var(--ink);
+}
+
+.flv-court {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  color: var(--court);
+}
+
+.flv-hero-ghost {
+  display: none;
+  position: absolute;
+  right: -0.06em;
+  bottom: -0.32em;
+  z-index: 0;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(16rem, 27vw, 30rem);
+  line-height: 0.72;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(244 240 232 / 0.07);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Abaixo de 1024px a palavra-fantasma briga com o texto do rodapé do hero. */
+@media (min-width: 64rem) {
+  .flv-hero-ghost {
+    display: block;
+  }
+}
+
+/* ---------- marquee ---------- */
+
+.flv-marquee {
+  display: flex;
+  overflow: hidden;
+  border-block: 1px solid var(--ink);
+  background: var(--gol);
+  color: var(--ink);
+}
+
+.flv-marquee-track {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2.5rem;
+  padding-block: 0.9rem;
+  padding-right: 2.5rem;
+  white-space: nowrap;
+  animation: flv-slide 34s linear infinite;
+}
+
+@keyframes flv-slide {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.flv-marquee:hover .flv-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ---------- linha do tempo ---------- */
+
+.flv-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--court-strong) 8%,
+    var(--court-strong) 92%,
+    transparent
+  );
+}
+
+.flv-node {
+  position: absolute;
+  top: 0.75rem;
+  left: -0.3125rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--court-strong);
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+.flv-item:hover .flv-node,
+.flv-item[data-destaque="true"] .flv-node {
+  background: var(--gol);
+  box-shadow: 0 0 0 4px rgb(255 59 20 / 0.16);
+}
+
+.flv-item .flv-year {
+  transition: color 0.35s ease, -webkit-text-stroke-color 0.35s ease;
+}
+
+.flv-item:hover .flv-year {
+  -webkit-text-stroke-color: var(--gol);
+}
+
+/* ---------- cartões de números ---------- */
+
+.flv-stat {
+  position: relative;
+  padding: clamp(1.25rem, 2.4vw, 2rem);
+  border: 1px solid var(--court);
+  background: linear-gradient(180deg, rgb(244 240 232 / 0.03), transparent);
+  overflow: hidden;
+  transition: border-color 0.4s ease, transform 0.4s ease;
+}
+
+.flv-stat::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--gol);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flv-stat:hover {
+  border-color: var(--bone-25);
+  transform: translateY(-3px);
+}
+
+.flv-stat:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------- painel invertido ---------- */
+
+.flv-invert {
+  background: var(--bone);
+  color: var(--ink);
+}
+
+.flv-invert .flv-rule {
+  background: rgb(11 13 14 / 0.16);
+}
+
+/* ---------- listas com marcador de quadra ---------- */
+
+.flv-list li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.flv-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* ---------- reveal ao rolar ---------- */
+
+.flv [data-reveal] {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+
+.flv [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- entrada do hero ---------- */
+
+.flv-rise {
+  opacity: 0;
+  transform: translateY(0.9em);
+  animation: flv-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes flv-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.flv-wipe {
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: flv-wipe 1.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes flv-wipe {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.flv-bounce {
+  animation: flv-bounce 2.4s ease-in-out infinite;
+}
+
+@keyframes flv-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.4rem);
+  }
+}
+
+/* ---------- acessibilidade ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .flv *,
+  .flv *::before,
+  .flv *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .flv [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .flv-rise {
+    opacity: 1;
+    transform: none;
+  }
+
+  .flv-wipe {
+    transform: scaleX(1);
+  }
+}
+
+.flv a:focus-visible,
+.flv button:focus-visible {
+  outline: 2px solid var(--gol);
+  outline-offset: 3px;
+}
