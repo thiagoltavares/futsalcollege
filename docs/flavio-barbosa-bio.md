@@ -1,7 +1,7 @@
 # Flávio Barbosa — bio e copy
 
 > Todas as versões abaixo usam **apenas fatos confirmados em fonte primária** (checagem em 22/08/2026).
-> O que ainda depende de confirmação dele está no fim do arquivo, em "Pendências".
+> Nada aqui deve ser ampliado sem confirmar com ele antes — em especial contagem de títulos, idade e lista de clubes.
 
 ---
 
@@ -69,30 +69,3 @@ Versão Instagram (bio de 150 caracteres):
 - "Campeão dentro da quadra. Campeão do lado de fora dela."
 - "Melhor técnico da Taça Liga Ceará. Campeão invicto no mesmo ano."
 - "Ele fez os gols do título em 2010. Hoje treina quem vai fazer os próximos."
-
----
-
-## Como citar as conquistas (regra editorial)
-
-| Pode afirmar | Redação segura |
-|---|---|
-| Título estadual 2010 | "campeão cearense de futsal pelo Horizonte, em 2010" |
-| Artilharia 2010 | "principal artilheiro do Horizonte na campanha, com 10 gols" |
-| Copa Estado 2019 | "campeão da Copa Estado do Ceará pelo Sport Club Eusébio" |
-| Prêmio 2023 | "melhor técnico da Taça Liga Ceará Sub-20 de 2023" |
-| Cargo atual | "técnico das categorias de base do Futsal Sesc Ceará" |
-
-**Evitar sem confirmação dele:** número total de títulos, "multicampeão", "X vezes campeão", idade, cidade natal, nome civil completo, lista fechada de clubes.
-
----
-
-## Pendências (perguntar direto pro Flávio)
-
-1. Nome civil completo, idade e naturalidade — nada disso está em fonte pública confiável.
-2. Lista completa de clubes e anos. As fontes só cobrem recortes: 2006, 2009, 2010, 2019.
-3. Títulos além dos dois confirmados como atleta. Ele provavelmente tem mais; com clube + ano dá pra checar.
-4. Jogou pelo Maranguape na I Copa TV Verdes Mares (2013)? Um dossiê afirma isso, mas a fonte está inacessível e a matéria do título não cita ele.
-5. Quando encerrou como atleta e quando começou como técnico.
-6. Cargo formal no Sesc e desde quando (a página de núcleos não é datada).
-7. Formação acadêmica (Educação Física? licenças de treinador?).
-8. Instagram / LinkedIn pra linkar no material.

@@ -45,5 +45,5 @@ docs/
 ## Conteúdo
 
 Os dados da página do Flávio ficam em `src/app/profissional/flavio/data.ts`.
-Não adicionar fato sem fonte primária — o registro de verificação e as
-pendências em aberto estão em [docs/flavio-barbosa-bio.md](docs/flavio-barbosa-bio.md).
+Não adicionar fato sem fonte primária. As versões de bio e copy aprovadas
+estão em [docs/flavio-barbosa-bio.md](docs/flavio-barbosa-bio.md).

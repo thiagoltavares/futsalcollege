@@ -35,8 +35,8 @@ Respeita `prefers-reduced-motion`: todas as animações e reveals desligam.
 
 ## Conteúdo
 
-Não adicionar fato em `data.ts` sem fonte primária. O registro de verificação e
-a lista de pendências estão em [flavio-barbosa-bio.md](./flavio-barbosa-bio.md).
+Não adicionar fato em `data.ts` sem fonte primária. As bios e copy aprovadas
+estão em [flavio-barbosa-bio.md](./flavio-barbosa-bio.md).
 
 Placeholders a trocar antes de publicar:
 - `mailto:contato@example.com` no rodapé
