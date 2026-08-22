@@ -369,6 +369,16 @@ Preserva as duas coisas — o funil de aula fica com o diagnóstico gratuito, e 
 
 **Trava adicional sugerida:** o mesmo profissional não faz as duas para a mesma criança. Quem diagnostica para o plano de aula não é quem assina o registro público.
 
+### O formato do pacote
+
+```
+avaliação diagnóstica (grátis) → 8 aulas dirigidas às lacunas → reavaliação
+```
+
+A reavaliação no fim é a peça que fecha o ciclo: ela mostra à família **o que mudou**. É o que transforma "paguei oito aulas" em "meu filho evoluiu nisto, nisto e nisto" — e é o que faz comprar o pacote seguinte.
+
+Também é o que dá honestidade ao modelo: se a reavaliação não mostrar evolução, isso aparece. Um produto que pode falhar publicamente é um produto em que se pode confiar.
+
 ---
 
 ## Duas empresas, um método
@@ -411,12 +421,84 @@ Mantém o controle total sobre a qualidade, mantém o canal funcionando, e o tet
 | Rubrica versionada | Ainda mais central: é o único ativo que sustenta o selo |
 | Rodízio de avaliadores no pacote | Continua, dentro da equipe própria |
 
+### Respondido
+
+**Vínculo do avaliador: CLT.** No MVP, o próprio Flávio. Divisão de trabalho: Thiago na técnica, Flávio no método e na quadra.
+
+> **Risco operacional a controlar.** Um único avaliador significa que se pode vender mais avaliação do que se consegue entregar, e agenda com laudo atrasado queima a confiança exatamente no que se está construindo. Defesa simples e obrigatória: **vagas limitadas por mês, visíveis no momento da compra**.
+
+**Escala de avaliadores: não é problema agora.** O Flávio tem rede no mercado para recrutar quando a demanda exigir — e se exigir, é porque já há capital entrando para ele ficar em tempo integral.
+
+**Duas empresas, separadas.** O app não pode parecer propriedade da escola, ou a neutralidade cai por terra junto com o canal. A escola é apenas **um local certificado para realizar avaliações** — a primeira, não a única.
+
+**Teto geográfico: resolvido por etapas.** Validar em Fortaleza, depois replicar por franquia.
+
+> Franquia tem peso jurídico próprio no Brasil — Lei 13.966/2019, com Circular de Oferta de Franquia obrigatória e prazo mínimo de 10 dias antes da assinatura. Não muda nada agora; quando chegar lá, é trabalho de advogado.
+
+---
+
+## Certificação: o modelo Microsoft
+
+**Esta é a resposta para o conflito com o canal**, e vale mais que comissão.
+
+Se a escola própria é *um* centro certificado de avaliação, e não *a* escola, então a escolinha parceira não está alimentando um concorrente — ela está olhando para um caminho que também pode percorrer. Ela se certifica, avalia os próprios alunos com o método da casa, e a plataforma fica com um percentual e com o controle do padrão.
+
+É como Microsoft, Cisco ou AWS operam: a empresa não ministra todos os cursos, ela credencia quem ministra e é dona do exame. **Vocês não avaliam todo mundo — vocês são donos do que significa ser avaliado.**
+
+| | Comissão sobre o aluno | Certificação do centro |
+|---|---|---|
+| O que a escolinha recebe | Um percentual | Um negócio próprio e um selo |
+| Vínculo com o método | Nenhum | Total — ela é auditada por vocês |
+| Escala | Linear, limitada pela equipe própria | Cresce com a rede |
+| Risco | Ela troca de plataforma por 1% a mais | Ela perde a certificação se sair |
+
+Recomendação: **as duas**, com a comissão servindo de ponte até a certificação existir.
+
+Isso preserva o que a direção *Duas empresas, um método* buscava — controle total sobre a qualidade — sem o teto geográfico e sem transformar o canal em concorrente. E devolve sentido ao cartel público do avaliador: cada laudo mostra quem assinou e por qual centro certificado.
+
+### Como se certifica, e como se fiscaliza
+
+Certificar sem evidência é honra ao mérito. O mecanismo tem quatro peças.
+
+**1. Protocolo padronizado.** Antes de qualquer gravação, a avaliação precisa de roteiro fixo: quais estações, em que ordem, por quanto tempo, o que se observa em cada uma. É o protocolo que torna o laudo de Messejana comparável com o de Juazeiro, e é contra ele que se audita. Sem protocolo, gravação não prova nada — não há padrão de comparação.
+
+**2. Gravação da sessão**, enviada junto com o laudo, como evidência de que o protocolo foi aplicado.
+
+**3. Auditoria por amostragem.** A equipe revê uma fração das sessões contra o protocolo.
+
+**4. Calibração por caso padrão.** Periodicamente, o centro certificado avalia **um vídeo de referência** — o mesmo para toda a rede. A nota dele é comparada com a nota da casa; divergiu, recalibra. Mantém uma rede nacional alinhada sem sair de Fortaleza, e o mesmo vídeo serve de prova de entrada na certificação.
+
+> Também é preciso definir o padrão mínimo de condições: espaço, material, marcação. Se o protocolo exige medida, o centro precisa ter como cumprir.
+
+### A gravação de auditoria é dado sensível de criança
+
+Gravar criança para auditar o método é **finalidade diferente** de tudo o que já foi consentido. Exige consentimento próprio e destacado, e três travas que não podem ser afrouxadas depois:
+
+* **Retenção curta.** A gravação existe para auditar, não para arquivar. Cumprido o fim, apaga. Sugestão: 90 dias.
+* **Acesso restrito à equipe de auditoria.** Nunca olheiro, nunca a família, nunca público.
+* **Nunca vira conteúdo de perfil.** Se a gravação de auditoria for reaproveitada como vídeo de vitrine, a base legal da coleta foi traída — e o custo não é multa, é a confiança que sustenta o produto inteiro.
+
 ### Em aberto nesta direção
 
-* Avaliador da casa é CLT, contratado por avaliação, ou franqueado do método?
-* Quantos avaliadores dá para formar por ano, e qual o teto de laudos por avaliador?
-* A escola própria e o app são a mesma empresa ou duas? Muda contrato, imposto e a percepção de neutralidade pelas escolinhas parceiras.
-* Se o app é neutro e a avaliação é exclusiva de vocês, o que a escolinha parceira ganha para continuar no canal?
+* O que uma escolinha precisa cumprir para virar centro certificado? Curso, prova prática, auditoria de laudos, número mínimo de alunos?
+* A certificação é da escolinha, do profissional, ou dos dois?
+* Percentual da plataforma sobre avaliação feita em centro certificado.
+* Recertificação — vale por quanto tempo, e o que faz perder?
+
+---
+
+## O ERP da escolinha
+
+A escolinha parceira ganha "quase um ERP de graça" — é a isca de entrada, e é boa. Mas convém dimensionar: chamada, ficha do aluno, mensalidade e comunicação com pais são quatro módulos, e juntos dão mais trabalho que a plataforma de avaliação inteira. Como escopo de MVP, inviável.
+
+**A versão mínima que já prende, e que se constrói de qualquer forma:**
+
+* Lista de alunos da turma
+* Status de consentimento de cada um ("187 de 200 assinados")
+* Os laudos da turma reunidos num lugar só
+* A página pública da escolinha, com o selo
+
+Isso já entrega organização real sem abrir uma frente nova. Os módulos de gestão de verdade ficam para fase posterior, e provavelmente pagos.
 
 ---
 
@@ -567,6 +649,24 @@ Um PRD cobre o produto inteiro; a construção não acontece de uma vez.
 **10. Critério do selo de escola credenciada.** O que uma escolinha precisa cumprir para receber o selo e a página própria? Quantos alunos ativos, quantos avaliados, professor certificado?
 
 **11. Nome do produto.** Não temos.
+
+---
+
+## Histórico da ideia
+
+A ideia se moveu bastante durante a conversa, e o registro dessas viradas vale tanto quanto as conclusões. Nada aqui foi apagado do documento — decisões substituídas continuam no texto, marcadas.
+
+| # | Era | Virou | Por quê |
+|---|---|---|---|
+| 1 | Perfil público completo, tipo Sherdog | Ficha pública; vídeo e identificação atrás de olheiro verificado | Página indexada de menor com rosto, nome e localização é ferramenta de localização de criança |
+| 2 | Estatística declarada pelo responsável, marcada como não verificada | Só número oficial e conferível, ou nenhum | Dado declarado é publicidade — o olheiro desconta, e o perfil perde credibilidade junto |
+| 3 | Escolinha paga por aluno | Escolinha recebe comissão sobre o plano | Ela pagava o custo e outro colhia o benefício. Invertido, vira canal de vendas |
+| 4 | Escolinha ganha percentual da avaliação | Não ganha nada da avaliação; ganha selo, página própria e SEO | Decisão do Thiago |
+| 5 | Vitrine como produto — "seja descoberto" | **Plataforma de reconhecimento**; o olheiro é consequência | A vitrine entrega a poucos e frustra o resto. Reconhecimento entrega a todos |
+| 6 | Comparação entre crianças, no modelo LinkedIn | Descartada. Referência a critério da categoria no lugar | Vira ranking de criança e monetiza ansiedade dos pais |
+| 7 | Marketplace aberto de avaliadores verificados | Avaliação sempre da casa, avaliador CLT | Controle total do método, e some a operação de policiar terceiros |
+| 8 | Avaliação como produto pago avulso | Diagnóstica grátis no pacote **+** certificada paga à parte | O funil de aula precisa de porta de entrada; o selo precisa de independência |
+| 9 | Escola própria como destino único da avaliação | Escola como **primeiro centro certificado**, modelo Microsoft | Resolve o teto geográfico e o conflito com o canal de uma vez |
 
 ---
 
