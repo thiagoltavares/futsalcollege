@@ -2,10 +2,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { Metadata } from "next";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { Barlow, Big_Shoulders, Source_Serif_4 } from "next/font/google";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import Scrollspy from "./Scrollspy";
 import "./plan.css";
 
 const display = Big_Shoulders({
@@ -14,16 +15,15 @@ const display = Big_Shoulders({
   display: "swap",
 });
 
-const serif = Instrument_Serif({
-  variable: "--font-serif",
+/* Serifada de texto: são quase nove mil palavras para ler de cabo a rabo. */
+const texto = Source_Serif_4({
+  variable: "--font-texto",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
   display: "swap",
 });
 
-const body = Barlow({
-  variable: "--font-body",
+const ui = Barlow({
+  variable: "--font-ui",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Acentos fora, espaços viram hífen — para os âncoras do sumário. */
-function slug(texto: string) {
-  return texto
+/** Acentos fora, espaços viram hífen — para as âncoras do sumário. */
+function slug(s: string) {
+  return s
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
@@ -47,13 +47,25 @@ function slug(texto: string) {
 }
 
 /** Texto puro de um nó do React, para gerar o id do heading. */
-function texto(node: React.ReactNode): string {
+function puro(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(texto).join("");
+  if (Array.isArray(node)) return node.map(puro).join("");
   if (node && typeof node === "object" && "props" in node) {
-    return texto((node as { props: { children?: React.ReactNode } }).props.children);
+    return puro((node as { props: { children?: React.ReactNode } }).props.children);
   }
   return "";
+}
+
+function Sumario({ secoes }: { secoes: string[] }) {
+  return (
+    <div className="plan-toc">
+      {secoes.map((s) => (
+        <a key={s} href={`#${slug(s)}`}>
+          <span>{s}</span>
+        </a>
+      ))}
+    </div>
+  );
 }
 
 export default async function PlanPage() {
@@ -62,60 +74,66 @@ export default async function PlanPage() {
 
   // O cabeçalho do .md é renderizado à mão abaixo; o resto vem do arquivo.
   const corpo = bruto.slice(bruto.indexOf("\n---\n") + 5);
-
   const secoes = [...bruto.matchAll(/^## (.+)$/gm)].map((m) => m[1].trim());
 
   return (
-    <main className={`plan ${display.variable} ${serif.variable} ${body.variable}`}>
-      <div className="px-[var(--shell)] py-[clamp(3rem,7vw,6rem)]">
-        <header className="border-b border-[var(--court-strong)] pb-10">
-          <p className="plan-label text-[var(--gol)]">
-            Rascunho · não é especificação final
-          </p>
-          <h1 className="plan-display mt-6 text-[clamp(2.75rem,9vw,7rem)]">
-            Pre-PRD
-            <br />
-            <span className="text-[var(--bone-25)]">Reconhecimento da base</span>
-          </h1>
-          <dl className="mt-10 flex flex-wrap gap-x-12 gap-y-4">
-            {[
-              ["Para", "Flávio Barbosa"],
-              ["De", "Thiago"],
-              ["Data", "22 de agosto de 2026"],
-            ].map(([rotulo, valor]) => (
-              <div key={rotulo}>
-                <dt className="plan-label text-[var(--bone-45)]">{rotulo}</dt>
-                <dd className="mt-1.5">{valor}</dd>
-              </div>
-            ))}
-          </dl>
-        </header>
+    <main className={`plan ${display.variable} ${texto.variable} ${ui.variable}`}>
+      <div className="plan-textura" aria-hidden="true" />
+      <Scrollspy />
 
-        <div className="mt-12 grid gap-12 lg:grid-cols-12">
+      <div className="plan-conteudo px-[var(--margem)] py-[clamp(2.5rem,6vw,5rem)]">
+        {/*
+          Três colunas nas telas largas: margem esquerda com o sumário,
+          coluna de leitura no centro, margem direita vazia. É isso que
+          centra opticamente o texto em vez de encostá-lo à esquerda.
+        */}
+        <div className="mx-auto grid w-full max-w-[110rem] gap-x-12 xl:grid-cols-[1fr_minmax(0,var(--medida))_1fr]">
+          <header className="xl:col-start-2">
+            <p className="plan-label text-[var(--gol)]">
+              Rascunho · não é especificação final
+            </p>
+            <h1 className="plan-display mt-5 text-[clamp(2.5rem,7vw,4.75rem)]">
+              Pre-PRD
+              <br />
+              <span className="text-[var(--tinta-40)]">Reconhecimento da base</span>
+            </h1>
+            <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-[var(--regua)] pt-6 font-[family-name:var(--font-ui)]">
+              {[
+                ["Para", "Flávio Barbosa"],
+                ["De", "Thiago"],
+                ["Data", "22 de agosto de 2026"],
+              ].map(([rotulo, valor]) => (
+                <div key={rotulo}>
+                  <dt className="plan-label text-[var(--tinta-40)]">{rotulo}</dt>
+                  <dd className="mt-1 text-[0.9375rem]">{valor}</dd>
+                </div>
+              ))}
+            </dl>
+
+            {/* Nas larguras em que não há margem sobrando, o sumário recolhe. */}
+            <details className="plan-sumario-movel mt-10 xl:hidden">
+              <summary>Sumário — {secoes.length} seções</summary>
+              <Sumario secoes={secoes} />
+            </details>
+          </header>
+
+          {/* Margem esquerda: sumário fixo, alinhado à direita, junto ao texto. */}
           <nav
             aria-label="Sumário"
-            className="lg:col-span-3 lg:order-2 lg:sticky lg:top-10 lg:self-start"
+            className="plan-margem hidden xl:col-start-1 xl:row-start-2 xl:block"
           >
-            <p className="plan-label mb-5 text-[var(--gol)]">Sumário</p>
-            <div className="plan-toc">
-              {secoes.map((s) => (
-                <a key={s} href={`#${slug(s)}`}>
-                  {s}
-                </a>
-              ))}
+            <div className="sticky top-10 ml-auto max-w-[15rem] pt-[4.5rem]">
+              <p className="plan-label mb-4 text-[var(--gol)]">Sumário</p>
+              <Sumario secoes={secoes} />
             </div>
           </nav>
 
-          <article className="plan-doc lg:col-span-8 lg:order-1">
+          <article className="plan-doc xl:col-start-2 xl:row-start-2">
             <Markdown
               remarkPlugins={[remarkGfm]}
               components={{
-                h2: ({ children }) => (
-                  <h2 id={slug(texto(children))}>{children}</h2>
-                ),
-                h3: ({ children }) => (
-                  <h3 id={slug(texto(children))}>{children}</h3>
-                ),
+                h2: ({ children }) => <h2 id={slug(puro(children))}>{children}</h2>,
+                h3: ({ children }) => <h3 id={slug(puro(children))}>{children}</h3>,
                 table: ({ children }) => (
                   <div className="plan-tabela">
                     <table>{children}</table>

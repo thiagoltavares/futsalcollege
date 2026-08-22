@@ -615,6 +615,52 @@ Risco clássico de marketplace de serviço presencial: responsável e avaliador 
 
 ---
 
+## O que é dia 1 e o que é quando doer
+
+Este documento descreve o produto inteiro, e isso cria um risco de leitura: parecer que é preciso entregar tudo para começar. Não é.
+
+O corte útil não é entre simples e complexo. É entre **arquitetura** — caro ou impossível de mudar depois — e **operação** — que espera, e deve esperar.
+
+### Arquitetura: certo no dia 1, mesmo com cinco clientes
+
+* **Consentimento e ciclo de vida do perfil.** Rascunho, aguardando consentimento, ativo, suspenso, removido. Sem isso desde o início, não há como provar que o dado da criança podia estar ali.
+* **Visibilidade por campo, escrita no código.** Retroagir privacidade depois de um vazamento é impossível — o dado já saiu.
+* **Laudo imutável, com a versão da rubrica gravada.** Se os primeiros laudos não registram em qual método foram feitos, o histórico nasce incomparável.
+* **Dado de saúde separado desde o começo**, com consentimento próprio.
+* **O responsável como titular do pagamento.**
+
+**E um caso que parece operação mas é arquitetura: guardar o histórico.** A calibração preditiva só produz resultado daqui a dois ou três anos — mas exige que cada laudo, desde o primeiro, esteja gravado de forma comparável. O uso é tardio; a captura é imediata. Perder os primeiros dois anos de dado significa adiar a métrica em dois anos.
+
+### Operação: espera, e se resolve com gente
+
+| Peça | Só faz sentido a partir de | Enquanto isso |
+|---|---|---|
+| Rodízio de avaliadores | 2 ou mais avaliadores | Não existe — é o Flávio |
+| Concordância entre pares | 2 ou mais avaliadores | Não existe |
+| Cartel público do avaliador | Vários avaliadores | Uma página do Flávio, escrita à mão |
+| Auditoria por amostragem | Volume que justifique amostrar | Ele revê tudo, porque tudo é dele |
+| Calibração preditiva | 2 a 3 anos de histórico | Nada — só garantir que o dado está sendo guardado |
+| Certificação de centros | Uma rede existir | Não existe |
+| Escada disciplinar e fundo de garantia | Avaliador terceiro existir | Não existem |
+| Split de pagamento | Ter para quem repassar | Um pagador, um recebedor |
+| Busca e filtros do olheiro | Perfis suficientes para filtrar | O Flávio manda no WhatsApp |
+| Vagas limitadas no checkout | Agenda encher de verdade | Google Agenda |
+| ERP da escolinha | Escolinhas parceiras existirem | Lista de alunos e status de consentimento |
+
+### O MVP real
+
+Para as primeiras dezenas de famílias:
+
+1. Cadastro com consentimento do responsável
+2. Ficha do atleta, com a régua de visibilidade correta
+3. O laudo do Flávio virando um PDF bonito para a família
+4. Pagamento simples, de um pagador para um recebedor
+5. A página pública da ficha
+
+O resto é o Flávio no WhatsApp — e está tudo bem que seja, até doer.
+
+---
+
 ## Faseamento sugerido
 
 Um PRD cobre o produto inteiro; a construção não acontece de uma vez.

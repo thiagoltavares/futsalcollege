@@ -1,246 +1,426 @@
 /* ------------------------------------------------------------------
    /plan — folha de estilo local da rota.
-   Escopada sob .plan. Mesma paleta da página do Flávio, mas tratada
-   como documento de leitura longa, não como landing.
+   Escopada sob .plan.
+
+   Decisão de design: esta página é um DOCUMENTO, não uma landing.
+   O resto do site é tinta escura; aqui é papel. Ler nove mil palavras
+   em fundo quase preto cansa, e o contraste com o restante do site
+   sinaliza "isto é para ler", não "isto é o produto".
 ------------------------------------------------------------------- */
 
 .plan {
-  --ink: #0b0d0e;
-  --ink-2: #131719;
-  --bone: #f4f0e8;
-  --bone-70: rgb(244 240 232 / 0.72);
-  --bone-45: rgb(244 240 232 / 0.45);
-  --bone-25: rgb(244 240 232 / 0.25);
-  --gol: #ff3b14;
-  --court: rgb(244 240 232 / 0.14);
-  --court-strong: rgb(244 240 232 / 0.3);
+  /* papel */
+  --papel: #f6f2ea;
+  --papel-2: #efe9de;
+  --papel-3: #e7e0d2;
 
-  --shell: clamp(1.25rem, 5vw, 4rem);
-  --medida: 74ch;
+  /* tinta */
+  --tinta: #16191b;
+  --tinta-80: rgb(22 25 27 / 0.82);
+  --tinta-60: rgb(22 25 27 / 0.6);
+  --tinta-40: rgb(22 25 27 / 0.4);
+  --regua: rgb(22 25 27 / 0.14);
+  --regua-forte: rgb(22 25 27 / 0.28);
 
-  background: var(--ink);
-  color: var(--bone);
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  /* acento — mais fechado que o da landing, para contraste em papel */
+  --gol: #c62f0d;
+  --gol-suave: rgb(198 47 13 / 0.08);
+
+  --medida: 68ch;
+  --margem: clamp(1.5rem, 5vw, 4rem);
+
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--font-texto), ui-serif, Georgia, serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .plan ::selection {
   background: var(--gol);
-  color: var(--bone);
+  color: var(--papel);
 }
+
+/* ---------- textura sutil de papel ---------- */
+
+.plan-textura {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+.plan-conteudo {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- tipografia de apoio ---------- */
 
 .plan-display {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.015em;
-  line-height: 0.85;
+  letter-spacing: -0.02em;
+  line-height: 0.88;
   text-transform: uppercase;
 }
 
 .plan-label {
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
 }
 
 /* ---------- corpo do documento ---------- */
 
 .plan-doc {
-  max-width: var(--medida);
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  color: var(--bone-70);
+  font-size: 1.125rem;
+  line-height: 1.72;
+  color: var(--tinta-80);
+  counter-reset: secao;
 }
 
 .plan-doc > * + * {
-  margin-top: 1.5rem;
+  margin-top: 1.4rem;
 }
 
 .plan-doc h2 {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   line-height: 0.95;
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
-  color: var(--bone);
-  margin-top: 5rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--court-strong);
-  scroll-margin-top: 2rem;
+  font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+  color: var(--tinta);
+  margin-top: 4.5rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--regua-forte);
+  scroll-margin-top: 1.5rem;
+  counter-increment: secao;
+  position: relative;
+}
+
+/* Número da seção na margem, fora do texto. */
+.plan-doc h2::before {
+  content: counter(secao, decimal-leading-zero);
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--gol);
+  position: absolute;
+  top: 2.4rem;
+  left: -3.5rem;
+  text-transform: none;
+}
+
+@media (max-width: 79.99rem) {
+  .plan-doc h2::before {
+    position: static;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
 }
 
 .plan-doc h3 {
-  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  font-family: var(--font-ui), sans-serif;
+  font-size: clamp(1.15rem, 1.9vw, 1.4rem);
   font-weight: 600;
-  line-height: 1.25;
-  color: var(--bone);
-  margin-top: 3rem;
-  scroll-margin-top: 2rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--tinta);
+  margin-top: 2.75rem;
+  scroll-margin-top: 1.5rem;
 }
 
 .plan-doc h4 {
-  font-size: 1.0625rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--bone);
+  color: var(--tinta);
   margin-top: 2rem;
 }
 
-.plan-doc strong {
-  color: var(--bone);
-  font-weight: 600;
+.plan-doc p {
+  hyphens: auto;
 }
 
-.plan-doc em {
-  font-family: var(--font-serif), ui-serif, Georgia, serif;
-  font-size: 1.05em;
+.plan-doc strong {
+  color: var(--tinta);
+  font-weight: 600;
 }
 
 .plan-doc a {
   color: var(--gol);
+  text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
 .plan-doc hr {
   border: 0;
-  border-top: 1px solid var(--court);
-  margin-block: 3rem;
+  border-top: 1px solid var(--regua);
+  margin-block: 2.5rem;
+  /* As seções já se separam pela régua do h2 — este some. */
+  display: none;
 }
+
+/* ---------- listas ---------- */
 
 .plan-doc ul,
 .plan-doc ol {
-  padding-left: 1.4rem;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.55rem;
+  padding-left: 0;
 }
 
 .plan-doc ul {
   list-style: none;
-  padding-left: 0;
 }
 
 .plan-doc ul > li {
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: 1.4rem;
 }
 
 .plan-doc ul > li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.85em;
-  width: 0.5rem;
+  top: 0.82em;
+  width: 0.45rem;
   height: 1px;
   background: var(--gol);
 }
 
 .plan-doc ol {
-  list-style: decimal;
+  list-style: none;
+  counter-reset: item;
 }
 
-.plan-doc ol > li::marker {
-  color: var(--gol);
-  font-weight: 600;
+.plan-doc ol > li {
+  position: relative;
+  padding-left: 1.9rem;
+  counter-increment: item;
 }
+
+.plan-doc ol > li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gol);
+}
+
+.plan-doc li > ul,
+.plan-doc li > ol {
+  margin-top: 0.55rem;
+}
+
+/* ---------- código e diagramas ---------- */
 
 .plan-doc code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.9em;
-  background: rgb(244 240 232 / 0.07);
-  padding: 0.15em 0.4em;
+  font-size: 0.875em;
+  background: var(--papel-3);
+  padding: 0.12em 0.38em;
   border-radius: 2px;
-  color: var(--bone);
+  color: var(--tinta);
 }
 
 .plan-doc pre {
-  background: var(--ink-2);
-  border: 1px solid var(--court);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--papel-2);
+  border: 1px solid var(--regua);
   border-left: 2px solid var(--gol);
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.4rem;
   overflow-x: auto;
-  font-size: 0.9375rem;
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.75;
 }
 
 .plan-doc pre code {
   background: none;
   padding: 0;
-  color: var(--bone-70);
+  color: var(--tinta-80);
 }
 
-/* Citação: usada no doc para sugestões e perguntas ao Flávio. */
+/* ---------- citação ---------- */
+
 .plan-doc blockquote {
   border-left: 2px solid var(--gol);
-  background: rgb(255 59 20 / 0.06);
-  padding: 1.1rem 1.5rem;
-  color: var(--bone);
+  background: var(--gol-suave);
+  padding: 1rem 1.4rem;
+  color: var(--tinta);
+  font-size: 1.0625rem;
 }
 
 .plan-doc blockquote > * + * {
-  margin-top: 0.75rem;
+  margin-top: 0.7rem;
 }
 
 /* ---------- tabelas ---------- */
 
 .plan-tabela {
   overflow-x: auto;
-  border: 1px solid var(--court);
+  border: 1px solid var(--regua);
+  background: var(--papel-2);
   max-width: 100%;
 }
 
 .plan-doc table {
   width: 100%;
   border-collapse: collapse;
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.9375rem;
-  line-height: 1.55;
-}
-
-.plan-doc thead {
-  background: var(--ink-2);
+  line-height: 1.5;
 }
 
 .plan-doc th {
   text-align: left;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-45);
-  padding: 0.85rem 1rem;
+  color: var(--tinta-60);
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--regua-forte);
   white-space: nowrap;
 }
 
 .plan-doc td {
-  padding: 0.85rem 1rem;
-  border-top: 1px solid var(--court);
+  padding: 0.8rem 1rem;
+  border-top: 1px solid var(--regua);
   vertical-align: top;
+  color: var(--tinta-80);
 }
 
-.plan-doc tbody tr:hover {
-  background: rgb(244 240 232 / 0.03);
+.plan-doc tbody tr:nth-child(odd) {
+  background: rgb(255 255 255 / 0.45);
 }
 
-/* ---------- sumário lateral ---------- */
+.plan-doc td strong {
+  color: var(--tinta);
+}
+
+/* ---------- sumário ---------- */
 
 .plan-toc {
   display: grid;
-  gap: 0.55rem;
-  border-left: 1px solid var(--court);
-  padding-left: 1.25rem;
+  gap: 0.4rem;
+  counter-reset: toc;
 }
 
 .plan-toc a {
-  font-size: 0.875rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.8125rem;
   line-height: 1.35;
-  color: var(--bone-45);
-  transition: color 0.25s ease;
+  color: var(--tinta-60);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  counter-increment: toc;
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  gap: 0.25rem;
+}
+
+.plan-toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  color: var(--tinta-40);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .plan-toc a:hover {
   color: var(--gol);
 }
 
-.plan a:focus-visible {
+.plan-toc a:hover::before {
+  color: var(--gol);
+}
+
+/* Seção em que o scroll está. */
+.plan-toc a[data-ativo] {
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+.plan-toc a[data-ativo]::before {
+  color: var(--gol);
+}
+
+/* Sumário recolhido, nas larguras em que ele não cabe na margem. */
+.plan-sumario-movel > summary {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gol);
+  cursor: pointer;
+  padding: 0.9rem 0;
+  border-block: 1px solid var(--regua);
+  list-style: none;
+}
+
+.plan-sumario-movel > summary::-webkit-details-marker {
+  display: none;
+}
+
+.plan-sumario-movel > summary::after {
+  content: " +";
+}
+
+.plan-sumario-movel[open] > summary::after {
+  content: " −";
+}
+
+.plan-sumario-movel[open] > summary {
+  border-bottom-color: transparent;
+}
+
+.plan-sumario-movel .plan-toc {
+  padding: 1.25rem 0 1.5rem;
+  border-bottom: 1px solid var(--regua);
+}
+
+/* ---------- foco ---------- */
+
+.plan a:focus-visible,
+.plan summary:focus-visible {
   outline: 2px solid var(--gol);
   outline-offset: 3px;
+}
+
+/* ---------- impressão ---------- */
+
+@media print {
+  .plan-textura,
+  .plan-sumario-movel,
+  .plan-margem {
+    display: none;
+  }
+
+  .plan {
+    background: #fff;
+  }
+
+  .plan-doc h2 {
+    break-after: avoid;
+    margin-top: 2rem;
+  }
+
+  .plan-doc table,
+  .plan-doc pre,
+  .plan-doc blockquote {
+    break-inside: avoid;
+  }
 }
