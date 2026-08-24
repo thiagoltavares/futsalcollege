@@ -291,6 +291,25 @@ describe("RLS — olheiro verificado alcança identificação, nunca saúde", ()
     expect(data![0]!.nome_completo).toBe("João da Silva Santos");
   });
 
+  it.each(TODOS_OS_ESTADOS.filter((e) => e !== "ativo"))(
+    "olheiro NÃO lê identificação de atleta no estado '%s'",
+    async (estado) => {
+      const atletaId = atletasA[estado];
+      await servico.from("atleta_identificacao").insert({
+        atleta_id: atletaId,
+        nome_completo: `Identificação ${estado}`,
+        data_nascimento: "2013-04-02",
+        cidade: "Fortaleza",
+      });
+
+      const { data } = await olheiro.cliente
+        .from("atleta_identificacao")
+        .select("nome_completo")
+        .eq("atleta_id", atletaId);
+      expect(data ?? []).toHaveLength(0);
+    },
+  );
+
   it("olheiro não insere em identificação", async () => {
     const { data, error } = await olheiro.cliente
       .from("atleta_identificacao")
@@ -460,5 +479,13 @@ describe("RLS — desenho da tabela pública", () => {
     for (const proibida of ["bairro", "endereco", "escola", "horario_treino", "local_treino"]) {
       expect(colunas).not.toContain(proibida);
     }
+  });
+
+  it("anônimo não consegue chamar colunas_da_tabela (função é só para o cliente de serviço nos testes)", async () => {
+    const { data, error } = await visitante.rpc("colunas_da_tabela" as never, {
+      nome: "atleta_saude",
+    } as never);
+    expect(data ?? null).toBeNull();
+    expect(error).toBeTruthy();
   });
 });

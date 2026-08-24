@@ -34,6 +34,11 @@ create policy identificacao_olheiro_verificado on atleta_identificacao
   for select
   using (
     coalesce(auth.jwt() -> 'app_metadata' ->> 'papel', '') = 'olheiro_verificado'
+    and exists (
+      select 1 from atletas a
+      where a.id = atleta_identificacao.atleta_id
+        and a.estado = 'ativo'
+    )
   );
 
 -- Saúde: só o responsável dono. Olheiro verificado não entra aqui.
@@ -59,3 +64,6 @@ as $$
   from information_schema.columns c
   where c.table_schema = 'public' and c.table_name = nome;
 $$;
+
+revoke execute on function colunas_da_tabela(text) from public;
+revoke execute on function colunas_da_tabela(text) from anon;
