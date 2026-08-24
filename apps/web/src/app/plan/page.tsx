@@ -69,7 +69,7 @@ function Sumario({ secoes }: { secoes: string[] }) {
 }
 
 export default async function PlanPage() {
-  const arquivo = path.join(process.cwd(), "docs", "pre-prd.md");
+  const arquivo = path.join(process.cwd(), "..", "..", "docs", "pre-prd.md");
   const bruto = await readFile(arquivo, "utf8");
 
   // O cabeçalho do .md é renderizado à mão abaixo; o resto vem do arquivo.
