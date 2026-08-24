@@ -281,6 +281,61 @@ describe("consentimento — é prova, não se apaga (achado 1)", () => {
   });
 });
 
+describe("consentimento — delete direto é sempre rejeitado, mesmo pelo service_role (achado da review)", () => {
+  it("o cliente de serviço (que ignora RLS por rolbypassrls) não consegue apagar consentimento diretamente", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+    await servico.from("atletas").update({ estado: "ativo" }).eq("id", atleta);
+
+    const { error } = await servico.from("consentimentos").delete().eq("id", consentimentoId);
+    expect(error).not.toBeNull();
+
+    const { data: continua } = await servico
+      .from("consentimentos")
+      .select("id")
+      .eq("id", consentimentoId);
+    expect(continua).toHaveLength(1);
+    expect(await estadoAtual(atleta)).toBe("ativo");
+  });
+
+  it("o cliente do responsável dono continua sem conseguir apagar diretamente", async () => {
+    const responsavel = await criarClienteAutenticado(`cons-delete-svc-${Date.now()}@exemplo.test`);
+    await servico.from("responsaveis").insert({ id: responsavel.id, nome: "Responsável Delete Svc" });
+    const atleta = await novoAtleta("aguardando_consentimento", responsavel.id);
+    const consentimentoId = await novoConsentimento(atleta, responsavel.id);
+
+    const { data } = await responsavel.cliente
+      .from("consentimentos")
+      .delete()
+      .eq("id", consentimentoId)
+      .select();
+    expect(data ?? []).toHaveLength(0);
+
+    const { data: continua } = await servico
+      .from("consentimentos")
+      .select("id")
+      .eq("id", consentimentoId);
+    expect(continua).toHaveLength(1);
+  });
+
+  it("apagar o atleta continua apagando os consentimentos por cascata — não é bloqueado", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+
+    const { error } = await servico.from("atletas").delete().eq("id", atleta);
+    expect(error).toBeNull();
+
+    const { data: consentimentoSumiu } = await servico
+      .from("consentimentos")
+      .select("id")
+      .eq("id", consentimentoId);
+    expect(consentimentoSumiu ?? []).toHaveLength(0);
+
+    const { data: atletaSumiu } = await servico.from("atletas").select("id").eq("id", atleta);
+    expect(atletaSumiu ?? []).toHaveLength(0);
+  });
+});
+
 describe("consentimento — registro não se reescreve (achado 2)", () => {
   it("update de documento_url, versao_termo ou aceito_em falha", async () => {
     const atleta = await novoAtleta("aguardando_consentimento");

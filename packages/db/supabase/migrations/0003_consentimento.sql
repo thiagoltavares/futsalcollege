@@ -172,3 +172,50 @@ create trigger consentimentos_impedir_reescrita
   before update on consentimentos
   for each row
   execute function impedir_reescrita_consentimento();
+
+-- As políticas de select/insert/update acima (sem delete) só protegem contra
+-- roles sujeitas a RLS. O role service_role tem rolbypassrls = true — RLS
+-- não existe para ele, então "não conceder política de delete" não segura
+-- nada nesse caminho. Um delete direto na tabela, feito com a chave secreta,
+-- apaga a prova de qualquer jeito: mesmo bug do achado original (perfil
+-- 'ativo' com zero consentimentos), só que pelo backend em vez do cliente do
+-- responsável.
+--
+-- Gatilho é a ferramenta certa aqui porque, ao contrário de política de RLS,
+-- ele dispara para QUALQUER role, incluindo service_role — é exatamente por
+-- isso que os dois gatilhos acima (exigir_responsavel_do_atleta e
+-- impedir_reescrita_consentimento) seguram o cliente de serviço, e por isso
+-- este segue o mesmo padrão.
+--
+-- A pegadinha: consentimentos tem "on delete cascade" a partir de atletas e
+-- de responsaveis, e isso é comportamento desejado — apagar o atleta (ou o
+-- responsável) deve levar junto perfil, identificação e prova, como num
+-- pedido de exclusão. Um gatilho "before delete" ingênuo rejeitaria também
+-- esse caminho, quebrando a exclusão.
+--
+-- pg_trigger_depth() resolve a distinção. Ações de FK ON DELETE CASCADE são
+-- implementadas pelo Postgres como gatilhos internos na tabela referenciada:
+-- apagar um atleta dispara o gatilho interno de cascata de atletas (entramos
+-- em profundidade 1), que por sua vez apaga a linha em consentimentos —
+-- disparando ESTE gatilho já em profundidade 2. Já um delete direto em
+-- consentimentos, feito por um cliente (service_role ou não), é a primeira
+-- invocação de gatilho da transação: profundidade 1. Ou seja:
+--   profundidade <= 1  → delete direto na própria tabela → rejeitar
+--   profundidade  > 1  → delete chegou via cascata de FK  → deixar passar
+create or replace function impedir_delete_consentimento()
+returns trigger
+language plpgsql
+as $$
+begin
+  if pg_trigger_depth() <= 1 then
+    raise exception 'consentimento não pode ser apagado — é prova, e prova não se apaga. Isto vale inclusive para o service_role, que ignora RLS mas não gatilhos. Para desfazer um consentimento, revogue-o (revogado_em); apagar o atleta ou o responsável continua removendo os consentimentos por cascata.'
+      using errcode = 'check_violation';
+  end if;
+  return old;
+end;
+$$;
+
+create trigger consentimentos_impedir_delete
+  before delete on consentimentos
+  for each row
+  execute function impedir_delete_consentimento();
