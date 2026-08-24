@@ -110,9 +110,65 @@ create trigger consentimentos_derrubar
   for each row
   execute function derrubar_ao_revogar();
 
+-- Consentimento é prova, e prova não se apaga. Revogar (update de
+-- revogado_em) já é o caminho correto para desfazer um consentimento — ele
+-- preserva a trilha. Por isso a RLS abaixo concede select, insert e update
+-- ao responsável dono, mas NUNCA delete: sem política de delete, a RLS nega
+-- por padrão. Antes disso era uma única política `for all`, que concedia
+-- delete de graça — um responsável autenticado conseguia apagar
+-- fisicamente o único consentimento de um atleta ativo, e o atleta
+-- continuava 'ativo' com zero linhas em consentimentos (o gatilho
+-- consentimentos_derrubar só dispara em update de revogado_em, nunca em
+-- delete). A garantia central da tarefa dependia de a linha nunca sumir.
 alter table consentimentos enable row level security;
 
-create policy consentimentos_do_responsavel on consentimentos
-  for all
+create policy consentimentos_do_responsavel_select on consentimentos
+  for select
+  using (responsavel_id = auth.uid());
+
+create policy consentimentos_do_responsavel_insert on consentimentos
+  for insert
+  with check (responsavel_id = auth.uid());
+
+create policy consentimentos_do_responsavel_update on consentimentos
+  for update
   using (responsavel_id = auth.uid())
   with check (responsavel_id = auth.uid());
+
+-- A mesma política `for all` antiga também deixava o responsável reescrever
+-- documento_url, aceito_em e versao_termo de um consentimento já criado —
+-- ou seja, editar a evidência do que foi consentido, sem deixar rastro.
+-- Registro que se reescreve não é registro. Este gatilho restringe update
+-- em consentimentos a uma única coisa: revogar (revogado_em de null para um
+-- timestamp). Qualquer tentativa de mudar atleta_id, responsavel_id,
+-- documento_url, versao_termo ou aceito_em falha. E revogação não se
+-- desfaz: uma vez setado, revogado_em não pode voltar a null — para
+-- reativar um atleta, cria-se um consentimento novo.
+create or replace function impedir_reescrita_consentimento()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.atleta_id is distinct from old.atleta_id
+     or new.responsavel_id is distinct from old.responsavel_id
+     or new.documento_url is distinct from old.documento_url
+     or new.versao_termo is distinct from old.versao_termo
+     or new.aceito_em is distinct from old.aceito_em
+  then
+    raise exception 'consentimento não pode ser editado — apenas revogar (revogado_em) é permitido; para reativar, crie um novo consentimento'
+      using errcode = 'check_violation';
+  end if;
+
+  if old.revogado_em is not null and new.revogado_em is null then
+    raise exception 'revogação não pode ser desfeita — crie um novo consentimento para reativar o atleta'
+      using errcode = 'check_violation';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger consentimentos_impedir_reescrita
+  before update on consentimentos
+  for each row
+  execute function impedir_reescrita_consentimento();

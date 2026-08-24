@@ -231,6 +231,118 @@ describe("consentimento — mais de um consentimento para o mesmo atleta", () =>
   });
 });
 
+describe("consentimento — reativação depois de suspenso exige consentimento novo", () => {
+  it("revogar o único consentimento suspende; um consentimento novo permite reativar explicitamente", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+    await servico.from("atletas").update({ estado: "ativo" }).eq("id", atleta);
+    expect(await estadoAtual(atleta)).toBe("ativo");
+
+    await revogar(consentimentoId);
+    expect(await estadoAtual(atleta)).toBe("suspenso");
+
+    await novoConsentimento(atleta);
+    const { error } = await servico.from("atletas").update({ estado: "ativo" }).eq("id", atleta);
+    expect(error).toBeNull();
+    expect(await estadoAtual(atleta)).toBe("ativo");
+  });
+});
+
+describe("consentimento — insert direto em atletas com estado 'ativo'", () => {
+  it("é barrado pelo gatilho quando não há consentimento vigente", async () => {
+    const { data, error } = await servico
+      .from("atletas")
+      .insert({ responsavel_id: responsavelId, apelido: "Teste", categoria: "Sub-13", estado: "ativo" })
+      .select("id");
+    expect(data ?? []).toHaveLength(0);
+    expect(error).not.toBeNull();
+    expect(error!.message).toContain("consentimento");
+  });
+});
+
+describe("consentimento — é prova, não se apaga (achado 1)", () => {
+  it("o próprio responsável dono não consegue apagar o consentimento (nem via service_role a política importaria — aqui via cliente publicável)", async () => {
+    const responsavel = await criarClienteAutenticado(`cons-delete-${Date.now()}@exemplo.test`);
+    await servico.from("responsaveis").insert({ id: responsavel.id, nome: "Responsável Delete" });
+    const atleta = await novoAtleta("aguardando_consentimento", responsavel.id);
+    const consentimentoId = await novoConsentimento(atleta, responsavel.id);
+    await servico.from("atletas").update({ estado: "ativo" }).eq("id", atleta);
+
+    const { data } = await responsavel.cliente
+      .from("consentimentos")
+      .delete()
+      .eq("id", consentimentoId)
+      .select();
+    expect(data ?? []).toHaveLength(0);
+
+    const { data: continua } = await servico.from("consentimentos").select("id").eq("id", consentimentoId);
+    expect(continua).toHaveLength(1);
+    expect(await estadoAtual(atleta)).toBe("ativo");
+  });
+});
+
+describe("consentimento — registro não se reescreve (achado 2)", () => {
+  it("update de documento_url, versao_termo ou aceito_em falha", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+
+    const { error: erroDocumento } = await servico
+      .from("consentimentos")
+      .update({ documento_url: "storage://termos/forjado.pdf" })
+      .eq("id", consentimentoId);
+    expect(erroDocumento).not.toBeNull();
+
+    const { error: erroVersao } = await servico
+      .from("consentimentos")
+      .update({ versao_termo: "2099-01-v9" })
+      .eq("id", consentimentoId);
+    expect(erroVersao).not.toBeNull();
+
+    const { error: erroAceito } = await servico
+      .from("consentimentos")
+      .update({ aceito_em: new Date().toISOString() })
+      .eq("id", consentimentoId);
+    expect(erroAceito).not.toBeNull();
+  });
+
+  it("update de atleta_id ou responsavel_id falha", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const outroAtleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+
+    const { error: erroAtleta } = await servico
+      .from("consentimentos")
+      .update({ atleta_id: outroAtleta })
+      .eq("id", consentimentoId);
+    expect(erroAtleta).not.toBeNull();
+
+    const { error: erroResponsavel } = await servico
+      .from("consentimentos")
+      .update({ responsavel_id: responsavelBId })
+      .eq("id", consentimentoId);
+    expect(erroResponsavel).not.toBeNull();
+  });
+
+  it("revogado_em não pode voltar a null depois de setado", async () => {
+    const atleta = await novoAtleta("aguardando_consentimento");
+    const consentimentoId = await novoConsentimento(atleta);
+    await revogar(consentimentoId);
+
+    const { error } = await servico
+      .from("consentimentos")
+      .update({ revogado_em: null })
+      .eq("id", consentimentoId);
+    expect(error).not.toBeNull();
+
+    const { data } = await servico
+      .from("consentimentos")
+      .select("revogado_em")
+      .eq("id", consentimentoId)
+      .single();
+    expect(data!.revogado_em).not.toBeNull();
+  });
+});
+
 describe("consentimento — gatilho impede consentimento com responsavel_id que não é o dono do atleta", () => {
   it("mesmo o cliente de serviço (que ignora RLS) não passa por cima do gatilho", async () => {
     const atletaDeA = await novoAtleta("aguardando_consentimento", responsavelId);
