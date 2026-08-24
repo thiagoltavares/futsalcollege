@@ -1,0 +1,19 @@
+{
+  "name": "@futsalcollege/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:tipos": "supabase gen types typescript --local > src/tipos.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@futsalcollege/config": "workspace:*"
+  }
+}

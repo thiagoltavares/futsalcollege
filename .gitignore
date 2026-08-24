@@ -49,3 +49,7 @@ next-env.d.ts
 *.m4a
 *.mp3
 *.wav
+
+# supabase (packages/db)
+packages/db/supabase/.branches
+packages/db/supabase/.temp

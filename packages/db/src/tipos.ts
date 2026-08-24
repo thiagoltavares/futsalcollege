@@ -1,0 +1,329 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      atleta_identificacao: {
+        Row: {
+          atleta_id: string
+          cidade: string | null
+          contato_responsavel: string | null
+          data_nascimento: string
+          nome_completo: string
+        }
+        Insert: {
+          atleta_id: string
+          cidade?: string | null
+          contato_responsavel?: string | null
+          data_nascimento: string
+          nome_completo: string
+        }
+        Update: {
+          atleta_id?: string
+          cidade?: string | null
+          contato_responsavel?: string | null
+          data_nascimento?: string
+          nome_completo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atleta_identificacao_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: true
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atleta_saude: {
+        Row: {
+          atleta_id: string
+          atualizado_em: string
+          avaliacao_postural: Json | null
+          historico_lesao: string | null
+          massa_magra_pct: number | null
+        }
+        Insert: {
+          atleta_id: string
+          atualizado_em?: string
+          avaliacao_postural?: Json | null
+          historico_lesao?: string | null
+          massa_magra_pct?: number | null
+        }
+        Update: {
+          atleta_id?: string
+          atualizado_em?: string
+          avaliacao_postural?: Json | null
+          historico_lesao?: string | null
+          massa_magra_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atleta_saude_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: true
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atletas: {
+        Row: {
+          altura_cm: number | null
+          apelido: string
+          atualizado_em: string
+          categoria: string
+          clube_atual: string | null
+          criado_em: string
+          estado: Database["public"]["Enums"]["estado_perfil"]
+          estado_uf: string | null
+          id: string
+          pe_dominante: string | null
+          peso_kg: number | null
+          posicao: string | null
+          responsavel_id: string
+        }
+        Insert: {
+          altura_cm?: number | null
+          apelido: string
+          atualizado_em?: string
+          categoria: string
+          clube_atual?: string | null
+          criado_em?: string
+          estado?: Database["public"]["Enums"]["estado_perfil"]
+          estado_uf?: string | null
+          id?: string
+          pe_dominante?: string | null
+          peso_kg?: number | null
+          posicao?: string | null
+          responsavel_id: string
+        }
+        Update: {
+          altura_cm?: number | null
+          apelido?: string
+          atualizado_em?: string
+          categoria?: string
+          clube_atual?: string | null
+          criado_em?: string
+          estado?: Database["public"]["Enums"]["estado_perfil"]
+          estado_uf?: string | null
+          id?: string
+          pe_dominante?: string | null
+          peso_kg?: number | null
+          posicao?: string | null
+          responsavel_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atletas_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "responsaveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      responsaveis: {
+        Row: {
+          criado_em: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          criado_em?: string
+          id: string
+          nome: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      estado_perfil:
+        | "rascunho"
+        | "aguardando_consentimento"
+        | "ativo"
+        | "suspenso"
+        | "removido"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      estado_perfil: [
+        "rascunho",
+        "aguardando_consentimento",
+        "ativo",
+        "suspenso",
+        "removido",
+      ],
+    },
+  },
+} as const
+
