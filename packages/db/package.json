@@ -10,10 +10,14 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:tipos": "supabase gen types typescript --local > src/tipos.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "supabase status -o env > .env.test && dotenv -e .env.test -- vitest run"
   },
   "devDependencies": {
+    "@futsalcollege/config": "workspace:*",
+    "@supabase/supabase-js": "^2.112.4",
+    "dotenv-cli": "^7.4.4",
     "typescript": "^5.7.2",
-    "@futsalcollege/config": "workspace:*"
+    "vitest": "^2.1.9"
   }
 }
