@@ -154,6 +154,57 @@ export type Database = {
           },
         ]
       }
+      consentimentos: {
+        Row: {
+          aceito_em: string
+          agente: string | null
+          atleta_id: string
+          documento_url: string
+          id: string
+          ip: unknown
+          responsavel_id: string
+          revogado_em: string | null
+          versao_termo: string
+        }
+        Insert: {
+          aceito_em?: string
+          agente?: string | null
+          atleta_id: string
+          documento_url: string
+          id?: string
+          ip?: unknown
+          responsavel_id: string
+          revogado_em?: string | null
+          versao_termo: string
+        }
+        Update: {
+          aceito_em?: string
+          agente?: string | null
+          atleta_id?: string
+          documento_url?: string
+          id?: string
+          ip?: unknown
+          responsavel_id?: string
+          revogado_em?: string | null
+          versao_termo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consentimentos_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: false
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consentimentos_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "responsaveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responsaveis: {
         Row: {
           criado_em: string
@@ -177,7 +228,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      colunas_da_tabela: {
+        Args: { nome: string }
+        Returns: {
+          column_name: string
+        }[]
+      }
+      consentimento_vigente: { Args: { p_atleta: string }; Returns: boolean }
     }
     Enums: {
       estado_perfil:

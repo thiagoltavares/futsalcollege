@@ -87,18 +87,40 @@ beforeAll(async () => {
 
   atletasA = {} as Record<Estado, string>;
   for (const estado of TODOS_OS_ESTADOS) {
+    // Desde a Tarefa 8, o banco exige consentimento vigente para gravar
+    // estado = 'ativo' (na inserção ou na atualização). Para o atleta
+    // "ativo" desta fixture, cria-se em 'aguardando_consentimento', registra
+    // o consentimento e só então ativa — o mesmo caminho que um perfil real
+    // percorreria.
+    const estadoInicial = estado === "ativo" ? "aguardando_consentimento" : estado;
     const { data, error } = await servico
       .from("atletas")
       .insert({
         responsavel_id: responsavelA.id,
         apelido: `Atleta ${estado}`,
         categoria: "Sub-13",
-        estado,
+        estado: estadoInicial,
       })
       .select("id")
       .single();
     if (error || !data) throw new Error(`Falha ao criar atleta ${estado}: ${error?.message}`);
     atletasA[estado] = data.id;
+
+    if (estado === "ativo") {
+      await servico.from("consentimentos").insert({
+        atleta_id: data.id,
+        responsavel_id: responsavelA.id,
+        documento_url: "storage://termos/exemplo.pdf",
+        versao_termo: "2026-08-v1",
+      });
+      const { error: erroAtivacao } = await servico
+        .from("atletas")
+        .update({ estado: "ativo" })
+        .eq("id", data.id);
+      if (erroAtivacao) {
+        throw new Error(`Falha ao ativar atleta de teste 'ativo': ${erroAtivacao.message}`);
+      }
+    }
   }
 
   const { data: b } = await servico
