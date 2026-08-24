@@ -202,6 +202,21 @@ create trigger consentimentos_impedir_reescrita
 -- invocação de gatilho da transação: profundidade 1. Ou seja:
 --   profundidade <= 1  → delete direto na própria tabela → rejeitar
 --   profundidade  > 1  → delete chegou via cascata de FK  → deixar passar
+--
+-- AVISO PARA FUTURAS MIGRAÇÕES:
+--
+-- A proteção acima usa pg_trigger_depth() para distinguir delete direto de
+-- delete por cascata. Hoje funciona porque nenhum outro gatilho na tabela
+-- dispara antes deste. Mas pg_trigger_depth() mede posição na pilha de
+-- gatilhos, NÃO origem do delete. Se no futuro criar um gatilho em qualquer
+-- tabela que faça "delete from consentimentos" de dentro de si, esse delete
+-- chega com profundidade > 1 e passa — desarmando a proteção sem erro, sem
+-- falha de RLS e sem nenhum teste acusando.
+--
+-- Hoje não existe gatilho assim, então não é explorável. Mas se for
+-- realmente necessário criar um no futuro, não faça "delete from
+-- consentimentos" dentro dele. Se inevitável, revise esta função junto com
+-- a proteção — considere uma alternativa como coluna flag ou função segura.
 create or replace function impedir_delete_consentimento()
 returns trigger
 language plpgsql
