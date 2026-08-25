@@ -6,8 +6,8 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
-import { linhaFisico } from "@/ui/formato";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
+import { buscarCapasAtletas } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -302,15 +302,16 @@ export default async function Home() {
     ]);
 
   const destaque = embaralhar(pool).slice(0, 12);
-  const [resumoAvaliacoes, contagensEscolinhas] = await Promise.all([
-    buscarResumoAvaliacoes(
-      supabase,
-      destaque.map((a) => a.id),
-    ),
+  const idsAtletasCartoes = [
+    ...new Set([...destaque.map((a) => a.id), ...avaliadosRecentemente.map((r) => r.atleta.id)]),
+  ];
+  const [resumoAvaliacoes, contagensEscolinhas, capasAtletas] = await Promise.all([
+    buscarResumoAvaliacoes(supabase, idsAtletasCartoes),
     buscarContagensEscolinhas(
       supabase,
       escolinhasDestaque.map((e) => e.id),
     ),
+    buscarCapasAtletas(supabase, idsAtletasCartoes),
   ]);
 
   return (
@@ -396,7 +397,11 @@ export default async function Home() {
             ) : (
               <div className="fc-cartoes-atletas">
                 {destaque.map((a) => (
-                  <CartaoAtleta key={a.id} atleta={a} avaliacao={resumoAvaliacoes.get(a.id) ?? null} />
+                  <CartaoAtleta
+                    key={a.id}
+                    atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
+                    avaliacao={resumoAvaliacoes.get(a.id) ?? null}
+                  />
                 ))}
               </div>
             )}
@@ -416,35 +421,13 @@ export default async function Home() {
               </div>
 
               <div className="fc-cartoes-atletas">
-                {avaliadosRecentemente.map(({ atleta, publicadoEm, avaliadorNome }) => {
-                  const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg) ?? "";
-                  const clubeOuEscolinha = atleta.escolinha?.nome ?? atleta.clube_atual;
-                  const meta = [atleta.posicao, fisico || null, clubeOuEscolinha, atleta.estado_uf]
-                    .filter(Boolean)
-                    .join(" · ");
-
-                  return (
-                    <Link
-                      key={atleta.id}
-                      href={`/atleta/${atleta.id}`}
-                      className="fc-atletas-item-link"
-                    >
-                      <Cartao className="fc-cartao-atleta">
-                        <div className="fc-cartao-atleta__topo">
-                          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
-                        </div>
-                        <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
-                        {meta && <span className="fc-cartao-atleta__meta">{meta}</span>}
-                        <span className="fc-cartao-atleta__data">
-                          Avaliado em {new Date(publicadoEm).toLocaleDateString("pt-BR")}
-                        </span>
-                        <span className="fc-cartao-atleta__avaliacoes">
-                          assinado por {avaliadorNome}
-                        </span>
-                      </Cartao>
-                    </Link>
-                  );
-                })}
+                {avaliadosRecentemente.map(({ atleta }) => (
+                  <CartaoAtleta
+                    key={atleta.id}
+                    atleta={{ ...atleta, capaUrl: capasAtletas.get(atleta.id) ?? null }}
+                    avaliacao={resumoAvaliacoes.get(atleta.id) ?? null}
+                  />
+                ))}
               </div>
             </div>
           </section>

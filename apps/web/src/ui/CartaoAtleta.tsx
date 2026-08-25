@@ -13,6 +13,14 @@ export type AtletaResumoCartao = {
   clube_atual?: string | null;
   estado_uf: string | null;
   escolinha?: { nome: string; credenciada: boolean } | null;
+  /**
+   * URL pública já resolvida da foto de capa (`atleta_midias`, migration
+   * 0011) — `undefined`/`null` quando o atleta não tem mídia; o cartão cai
+   * para o grafismo de marca nesse caso. Quem monta esta lista resolve o
+   * `storage_path` para URL (ver `lib/midias.ts`), o cartão nunca fala com
+   * o storage diretamente.
+   */
+  capaUrl?: string | null;
 };
 
 export type AvaliacaoResumoCartao = {
@@ -25,7 +33,7 @@ export type CartaoAtletaProps = {
   atleta: AtletaResumoCartao;
   avaliacao?: AvaliacaoResumoCartao | null;
   /**
-   * Omite clube/escolinha da linha de meta — usado em `/escolinha/[id]`,
+   * Omite clube/escolinha da faixa de físico — usado em `/escolinha/[id]`,
    * onde a escolinha já é o contexto da página inteira (repetir o nome dela
    * em cada cartão da própria página seria ruído).
    */
@@ -33,54 +41,84 @@ export type CartaoAtletaProps = {
 };
 
 /**
- * Cartão de atleta compartilhado por `/atletas`, `/escolinha/[id]` e a
- * home — as três listagens públicas de atleta usam o mesmo formato denso:
- * nome, categoria, meta física/posição/clube, selo de avaliação e um
- * resumo de "quantas avaliações, quando foi a última, quem assinou".
+ * Cartão de atleta compartilhado por `/atletas`, `/escolinha/[id]`, a home
+ * e a aba "Atletas avaliados" de `/profissional/[slug]` — as quatro
+ * listagens públicas de atleta usam o mesmo cartão.
+ *
+ * Estrutura de FAIXAS FIXAS, sempre nesta ordem, sempre com a mesma altura
+ * por faixa (via `line-clamp`/`min-height` em `estilos.css`) — é o que faz
+ * a faixa N de um cartão alinhar com a faixa N do vizinho na grade, tenha
+ * ou não mídia/escolinha/avaliação:
+ *
+ *   1. mídia       — foto de capa, proporção fixa; sem foto, grafismo de
+ *                     marca (inicial do apelido), nunca um espaço vazio.
+ *   2. apelido      — uma linha, corte por reticências.
+ *   3. categoria e posição — uma linha.
+ *   4. físico, clube ou escolinha — até duas linhas, corte, altura
+ *                     reservada mesmo com texto mais curto.
+ *   5. selos        — linha própria, sempre presente, alinhada à esquerda:
+ *                     escolinha credenciada e avaliação publicada vivem
+ *                     aqui, nunca ao lado do apelido (faixa 2).
+ *   6. metadado da avaliação — quantas, quando, quem assinou; sem
+ *                     avaliação, texto neutro no mesmo espaço, nunca vazio.
  *
  * O nome de quem assinou aparece como texto simples, nunca como link: o
- * cartão inteiro já é um `<Link>` para a ficha do atleta (mais abaixo), e
- * HTML não aceita `<a>` dentro de `<a>`. O link para a página do
- * profissional mora só na ficha pública (`/atleta/[id]`), fora deste
- * cartão — ver AGENTS/brief da rodada.
+ * cartão inteiro já é um `<Link>` para a ficha do atleta, e HTML não aceita
+ * `<a>` dentro de `<a>`. O link para a página do profissional mora só na
+ * ficha pública (`/atleta/[id]`), fora deste cartão — ver AGENTS/brief.
  */
 export function CartaoAtleta({ atleta, avaliacao, ocultarClube }: CartaoAtletaProps) {
-  const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg) ?? "";
+  const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg);
   const clubeOuEscolinha = ocultarClube ? null : (atleta.escolinha?.nome ?? atleta.clube_atual);
-  const meta = [atleta.posicao, atleta.pe_dominante, fisico || null, clubeOuEscolinha, atleta.estado_uf]
+  const categoriaLinha = [atleta.categoria, atleta.posicao].filter(Boolean).join(" · ");
+  const fisicoLinha = [atleta.pe_dominante, fisico, clubeOuEscolinha, atleta.estado_uf]
     .filter(Boolean)
     .join(" · ");
+  const inicial = atleta.apelido.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <Link href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
       <Cartao className="fc-cartao-atleta">
-        <div className="fc-cartao-atleta__topo">
-          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
-          {atleta.escolinha?.credenciada && (
-            <span
-              className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__selo"
-              title="Escolinha credenciada"
-            >
-              Escolinha credenciada
+        <div className="fc-cartao-atleta__midia">
+          {atleta.capaUrl ? (
+            <img src={atleta.capaUrl} alt="" loading="lazy" />
+          ) : (
+            <span className="fc-cartao-atleta__midia-inicial" aria-hidden="true">
+              {inicial}
             </span>
           )}
         </div>
-        <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
-        {meta && <span className="fc-cartao-atleta__meta">{meta}</span>}
 
-        {avaliacao && (
-          <>
-            <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__avaliacao">
-              Avaliação publicada
-            </span>
-            <span className="fc-cartao-atleta__avaliacoes">
-              {avaliacao.quantidade} {avaliacao.quantidade === 1 ? "avaliação" : "avaliações"} ·
-              última em {new Date(avaliacao.ultimaEm).toLocaleDateString("pt-BR")}
-              <br />
-              assinado por {avaliacao.avaliadorNome}
-            </span>
-          </>
-        )}
+        <div className="fc-cartao-atleta__corpo">
+          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
+          <span className="fc-cartao-atleta__categoria">{categoriaLinha}</span>
+          <span className="fc-cartao-atleta__fisico">{fisicoLinha}</span>
+
+          <div className="fc-cartao-atleta__selos">
+            {atleta.escolinha?.credenciada && (
+              <span
+                className="fc-etiqueta fc-etiqueta--sucesso"
+                title="Escolinha credenciada"
+              >
+                Escolinha credenciada
+              </span>
+            )}
+            {avaliacao && <span className="fc-etiqueta fc-etiqueta--sucesso">Avaliação publicada</span>}
+          </div>
+
+          <span className="fc-cartao-atleta__avaliacao-meta">
+            {avaliacao ? (
+              <>
+                {avaliacao.quantidade} {avaliacao.quantidade === 1 ? "avaliação" : "avaliações"} ·
+                última em {new Date(avaliacao.ultimaEm).toLocaleDateString("pt-BR")}
+                <br />
+                assinado por {avaliacao.avaliadorNome}
+              </>
+            ) : (
+              "Sem avaliação publicada"
+            )}
+          </span>
+        </div>
       </Cartao>
     </Link>
   );

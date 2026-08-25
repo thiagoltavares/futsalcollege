@@ -133,11 +133,12 @@ export default async function Profissionais() {
                     <Link href={`/profissional/${p.slug}`} className="fc-atletas-item-link">
                       <Cartao className="fc-cartao-profissional">
                         <span className="fc-cartao-profissional__nome">{p.nome}</span>
-                        {p.credencial && (
-                          <span className="fc-cartao-profissional__credencial">
-                            {p.credencial}
-                          </span>
-                        )}
+                        <span
+                          className="fc-cartao-profissional__credencial"
+                          data-vazio={!p.credencial || undefined}
+                        >
+                          {p.credencial || "Credencial não informada"}
+                        </span>
                         <span className="fc-cartao-profissional__meta">
                           {localidade}
                           {localidade ? " · " : ""}

@@ -1588,56 +1588,121 @@ a.fc-botao--perigo:hover {
   }
 }
 
+/* Cartão de atleta — seis faixas fixas (mídia, apelido, categoria/posição,
+   físico/clube, selos, metadado de avaliação), sempre na mesma ordem e
+   sempre com a mesma altura por faixa, para a faixa N de um cartão alinhar
+   com a faixa N do vizinho em qualquer linha da grade — mesmo com atleta
+   sem mídia, sem escolinha ou sem avaliação publicada. Ver CartaoAtleta.tsx
+   para a estrutura completa e o brief desta rodada para o diagnóstico do
+   problema anterior (chip flutuante, altura esticada pelo vizinho). */
 .fc-cartao-atleta {
   display: grid;
-  gap: 0.3rem;
+  align-content: start;
   height: 100%;
+  padding: 0;
+  overflow: hidden;
 }
 
-.fc-cartao-atleta__topo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
+/* Faixa 1 — mídia: proporção fixa. Sem foto de capa, cai para o grafismo
+   de marca (gradiente "gol" + inicial do apelido) — mesmo raciocínio do
+   avatar da ficha (`.fc-perfil-avatar`) e do círculo de destaque
+   (`.fc-destaque__sem-midia`), nunca um buraco. */
+.fc-cartao-atleta__midia {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  overflow: hidden;
 }
 
+.fc-cartao-atleta__midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fc-cartao-atleta__midia-inicial {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--fc-osso);
+}
+
+/* Faixas 2-6 — o padding que o cartão inteiro tinha antes de a mídia virar
+   faixa própria: a foto sangra até a borda, o texto continua recuado. */
+.fc-cartao-atleta__corpo {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: clamp(1rem, 3vw, 1.35rem);
+}
+
+/* Faixa 2 — apelido: sempre uma linha, corte por reticências. Nunca mais
+   divide linha com o selo de escolinha (faixa 5) — essa falta de faixa
+   própria era a causa do chip "flutuar" em lugares diferentes cartão a
+   cartão. */
 .fc-cartao-atleta__nome {
+  display: block;
   font-size: 1.0625rem;
   font-weight: 700;
+  line-height: 1.25;
   color: var(--fc-tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Faixa 3 — categoria e posição, uma linha. */
 .fc-cartao-atleta__categoria {
+  display: block;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--fc-gol);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.fc-cartao-atleta__meta {
+/* Faixa 4 — físico, clube ou escolinha: até duas linhas, corte, altura
+   reservada mesmo quando o texto é mais curto ou o dado não existe. É essa
+   reserva que faz a faixa 5 (selos) cair na mesma altura em todo cartão da
+   grade, com ou sem físico/escolinha cadastrados. */
+.fc-cartao-atleta__fisico {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.2rem;
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
   line-height: 1.4;
+  color: var(--fc-tinta-60);
 }
 
-.fc-cartao-atleta__data {
-  font-size: 0.75rem;
-  color: var(--fc-tinta-40);
+/* Faixa 5 — selos: linha própria, sempre presente (mesmo vazia, para
+   reservar a altura), alinhada à esquerda. Escolinha credenciada e
+   avaliação publicada vivem aqui, nunca ao lado do apelido. */
+.fc-cartao-atleta__selos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.5rem;
 }
 
-.fc-cartao-atleta__avaliacao,
-.fc-cartao-atleta__selo {
-  margin-top: 0.3rem;
-  align-self: start;
+.fc-cartao-atleta__selos .fc-etiqueta {
   font-size: 0.6875rem;
 }
 
-/* Resumo de avaliação dentro do cartão denso (/atletas, /escolinha/[id],
-   home): quantidade, data da última, quem assinou — texto simples, nunca
-   link (o cartão inteiro já é um link para a ficha; ver CartaoAtleta.tsx). */
-.fc-cartao-atleta__avaliacoes {
-  margin-top: 0.2rem;
+/* Faixa 6 — metadado da avaliação: quantas, quando, quem assinou. Sem
+   avaliação publicada, texto neutro no mesmo espaço — nunca vazio, para o
+   cartão não esticar o vizinho na grade. */
+.fc-cartao-atleta__avaliacao-meta {
+  display: block;
+  min-height: 2.4rem;
   font-size: 0.75rem;
   line-height: 1.5;
   color: var(--fc-tinta-40);
@@ -1658,9 +1723,16 @@ a.fc-botao--perigo:hover {
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 }
 
+/* `height: 100%` + `align-content: start`: mesma disciplina do cartão de
+   atleta (ver acima) para o cartão não ficar mais baixo que o vizinho
+   credenciado da mesma linha — o selo (último elemento, condicional) não
+   precisa de faixa própria porque nada abaixo dele depende da posição, só
+   a altura total do cartão varia, e isso a grade já resolve sozinha. */
 .fc-cartao-escolinha {
   display: grid;
+  align-content: start;
   gap: 0.3rem;
+  height: 100%;
 }
 
 .fc-cartao-escolinha__nome {
@@ -1687,9 +1759,18 @@ a.fc-botao--perigo:hover {
 
 /* ---------- cartão de profissional (/profissionais) ---------- */
 
+/* `height: 100%` + `align-content: start`: mesma disciplina do cartão de
+   atleta. Diferente do selo de escolinha (último elemento), a credencial
+   aqui é uma faixa NO MEIO do cartão — condicional, ela deslocava a faixa
+   de meta (localidade/laudos) para uma altura diferente cartão a cartão.
+   A faixa de credencial agora é sempre renderizada (ver
+   `/profissionais/page.tsx`), com texto neutro quando não há credencial,
+   em vez de sumir. */
 .fc-cartao-profissional {
   display: grid;
+  align-content: start;
   gap: 0.3rem;
+  height: 100%;
 }
 
 .fc-cartao-profissional__nome {
@@ -1702,6 +1783,11 @@ a.fc-botao--perigo:hover {
   font-size: 0.8125rem;
   color: var(--fc-gol);
   font-weight: 600;
+}
+
+.fc-cartao-profissional__credencial[data-vazio] {
+  color: var(--fc-tinta-40);
+  font-weight: 500;
 }
 
 .fc-cartao-profissional__meta {
@@ -2005,8 +2091,15 @@ a.fc-botao--perigo:hover {
   pointer-events: none;
 }
 
+/* `height: 100%` é o que faz o cartão preencher a célula da grade inteira
+   em vez de só o alto dela: o item de grade (`<li>` ou o próprio link,
+   quando não há `<li>`) já estica por padrão (`align-items: stretch` do
+   CSS Grid), mas sem altura explícita aqui esse link `display: block` só
+   ocupa a altura do próprio conteúdo — sobrava um vão vazio abaixo de
+   cartão mais curto que o vizinho mais alto da mesma linha. */
 .fc-atletas-item-link {
   display: block;
+  height: 100%;
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s ease;

@@ -74,6 +74,12 @@ const estilos = StyleSheet.create({
     fontSize: 9.5,
     color: COR.texto,
     backgroundColor: COR.osso,
+    // O rodapé é `fixed` e posicionado de forma absoluta, então ele não empurra
+    // conteúdo nenhum. Quem reserva o espaço dele é o padding do PRÓPRIO `Page`:
+    // padding de View filha só se aplica uma vez, no fim de todo o fluxo, e não
+    // em cada página — foi por isso que a primeira página escorria por baixo do
+    // rodapé, cortando barra e âncora do último item.
+    paddingBottom: 86,
   },
 
   // ---------- cabeçalho ----------
@@ -129,7 +135,6 @@ const estilos = StyleSheet.create({
   corpo: {
     paddingHorizontal: 40,
     paddingTop: 26,
-    paddingBottom: 86,
   },
   rotuloSecao: {
     fontFamily: "Barlow",
@@ -390,15 +395,22 @@ export function LaudoPDF({ dados }: { dados: DadosLaudo }) {
             const cor = COR_EIXO[eixo];
             return (
               <View key={eixo} style={estilos.eixoBloco}>
-                <View style={estilos.eixoCabecalho}>
-                  <View style={[estilos.eixoMarcador, { backgroundColor: cor }]} />
-                  <Text style={[estilos.eixoTitulo, { color: cor }]}>{ROTULO_EIXO[eixo]}</Text>
-                </View>
-
-                {grupos[eixo].map((item) => {
+                {/* Cabeçalho do eixo e o PRIMEIRO item vão juntos, num bloco que
+                    não quebra: senão o título ("TÁTICO") fica órfão no pé de uma
+                    página e os itens dele começam na seguinte. `minPresenceAhead`
+                    sozinho não segurou — grudar os dois resolve de vez. */}
+                {grupos[eixo].map((item, indice) => {
                   const nota = dados.notas[item.chave];
                   return (
                     <View key={item.chave} style={estilos.item} wrap={false}>
+                      {indice === 0 && (
+                        <View style={estilos.eixoCabecalho}>
+                          <View style={[estilos.eixoMarcador, { backgroundColor: cor }]} />
+                          <Text style={[estilos.eixoTitulo, { color: cor }]}>
+                            {ROTULO_EIXO[eixo]}
+                          </Text>
+                        </View>
+                      )}
                       <View style={estilos.itemTopo}>
                         <Text style={estilos.itemRotulo}>{item.rotulo}</Text>
                         <View
