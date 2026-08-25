@@ -2,21 +2,21 @@ import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
-import { anoDeData, formatarTempoDesde } from "@/ui/formato";
+import { anoDeData } from "@/ui/formato";
+import { PerfilProfissional } from "./PerfilProfissional";
 
 export const revalidate = 60;
 
-// `/profissional/flavio` (rota estática, feita à mão) nunca chega aqui: o
-// Next.js resolve um segmento literal ("flavio") antes de cair no segmento
-// dinâmico ([slug]) para o mesmo caminho — é assim que a landing especial
-// do Flávio convive com esta página genérica sem checagem nenhuma em
-// código (ver relatório desta tarefa para a decisão completa).
+// Rota única para qualquer profissional, inclusive Flávio Barbosa
+// (`/profissional/flavio`): a landing especial que existia antes desta
+// rodada foi removida — trajetória, conquistas e citação dele agora são
+// dado (migration 0012 + seed), consumido pelo mesmo template que qualquer
+// outro profissional usa. Ver relatório desta tarefa.
 const display = Big_Shoulders({
   variable: "--font-fc-display",
   subsets: ["latin"],
@@ -58,12 +58,41 @@ const buscarProfissional = cache(async function buscarProfissional(
 ) {
   const { data } = await supabase
     .from("profissionais")
-    .select("id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde")
+    .select(
+      "id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde, citacao_texto, citacao_fonte",
+    )
     .eq("slug", slug)
     .maybeSingle();
 
   return data;
 });
+
+/**
+ * Trajetória (linha do tempo) do profissional, já ordenada — migration
+ * 0012, tabela `profissional_marcos`. Leitura pública (mesma régua de
+ * `profissionais`): carreira de um adulto que assina laudo não tem nada da
+ * régua de "criança não é vitrine".
+ */
+async function buscarMarcos(supabase: SupabaseClient<Database>, profissionalId: string) {
+  const { data } = await supabase
+    .from("profissional_marcos")
+    .select("id, ano, datado, clube, titulos, titulo, descricao, fase, destaque, ordem")
+    .eq("profissional_id", profissionalId)
+    .order("ordem", { ascending: true });
+
+  return data ?? [];
+}
+
+/** Grade de conquistas (números em destaque) — migration 0012, tabela `profissional_conquistas`. */
+async function buscarConquistas(supabase: SupabaseClient<Database>, profissionalId: string) {
+  const { data } = await supabase
+    .from("profissional_conquistas")
+    .select("id, valor, unidade, rotulo, nota, ordem")
+    .eq("profissional_id", profissionalId)
+    .order("ordem", { ascending: true });
+
+  return data ?? [];
+}
 
 /**
  * Laudos publicados assinados por este profissional, do mais novo ao mais
@@ -116,7 +145,11 @@ export default async function ProfissionalDetalhe({
 
   if (!profissional) notFound();
 
-  const laudos = await buscarLaudosDoProfissional(supabase, profissional.id);
+  const [laudos, marcos, conquistas] = await Promise.all([
+    buscarLaudosDoProfissional(supabase, profissional.id),
+    buscarMarcos(supabase, profissional.id),
+    buscarConquistas(supabase, profissional.id),
+  ]);
 
   // Lista de atletas avaliados, sem repetir: um profissional pode ter mais
   // de um laudo no mesmo atleta (evolução) — a página mostra o atleta uma
@@ -133,77 +166,45 @@ export default async function ProfissionalDetalhe({
   }
 
   const localidade = [profissional.cidade, profissional.estado_uf].filter(Boolean).join(" · ");
-  const tempoDesde = formatarTempoDesde(profissional.atua_desde);
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
       <CabecalhoPublicoAuto />
 
-      <main className="fc-corpo">
+      <main className="fc-corpo fc-corpo--perfil">
         <div className="fc-container fc-container--estreito">
-          <div className="fc-ficha-hero">
-            <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">
-              <Link href="/profissionais">Profissionais</Link>
-            </p>
-            <h1 className="fc-ficha-nome">{profissional.nome}</h1>
-
-            <div className="fc-ficha-tags">
-              {profissional.credencial && (
-                <span className="fc-ficha-tag">{profissional.credencial}</span>
-              )}
-              {localidade && <span className="fc-ficha-tag">{localidade}</span>}
-              {!profissional.ativo && (
-                <span className="fc-ficha-tag">Não avalia mais na plataforma</span>
-              )}
-            </div>
-          </div>
-
-          {profissional.bio && <p className="fc-subtitulo fc-subtitulo--livre">{profissional.bio}</p>}
-
-          <dl className="fc-ficha-grid">
-            <div className="fc-ficha-item">
-              <dt>Laudos assinados</dt>
-              <dd>{laudos.length}</dd>
-            </div>
-            <div className="fc-ficha-item">
-              <dt>Atua na plataforma</dt>
-              <dd>
-                {tempoDesde ?? "—"}
-                <span className="fc-campo__ajuda" style={{ display: "block", marginTop: "0.2rem" }}>
-                  desde {anoDeData(profissional.atua_desde)}
-                </span>
-              </dd>
-            </div>
-          </dl>
-
-          <section className="fc-laudo" aria-labelledby="fc-profissional-atletas-titulo">
-            <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Trabalho publicado</p>
-            <h2 id="fc-profissional-atletas-titulo" className="fc-titulo fc-titulo--card">
-              Atletas avaliados
-            </h2>
-
-            {atletasAvaliados.length === 0 ? (
-              <p className="fc-estado-vazio">Ainda sem avaliação publicada.</p>
-            ) : (
-              <ul className="fc-lista fc-espaco-topo">
-                {atletasAvaliados.map((a) => (
-                  <li key={a.id}>
-                    <Link href={`/atleta/${a.id}`} className="fc-atletas-item-link">
-                      <Cartao className="fc-item-atleta">
-                        <div className="fc-item-atleta__info">
-                          <span className="fc-item-atleta__nome">{a.apelido}</span>
-                          <span className="fc-item-atleta__meta">
-                            {a.categoria} · avaliado em{" "}
-                            {new Date(a.publicadoEm).toLocaleDateString("pt-BR")}
-                          </span>
-                        </div>
-                      </Cartao>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          <PerfilProfissional
+            profissional={{
+              nome: profissional.nome,
+              credencial: profissional.credencial,
+              localidade: localidade || null,
+              bio: profissional.bio,
+              ativo: profissional.ativo,
+              desde: anoDeData(profissional.atua_desde),
+              citacaoTexto: profissional.citacao_texto,
+              citacaoFonte: profissional.citacao_fonte,
+            }}
+            stats={{ laudos: laudos.length, marcos: marcos.length }}
+            conquistas={conquistas.map((c) => ({
+              id: c.id,
+              valor: c.valor,
+              unidade: c.unidade,
+              rotulo: c.rotulo,
+              nota: c.nota,
+            }))}
+            marcos={marcos.map((m) => ({
+              id: m.id,
+              ano: m.ano,
+              datado: m.datado,
+              clube: m.clube,
+              titulos: m.titulos ?? [],
+              titulo: m.titulo,
+              descricao: m.descricao,
+              fase: m.fase as "atleta" | "tecnico",
+              destaque: m.destaque,
+            }))}
+            atletasAvaliados={atletasAvaliados}
+          />
 
           <p className="fc-ficha-rodape">
             Página pública do profissional no Futsal College. Só atletas com perfil ativo e

@@ -5,7 +5,7 @@ import { CabecalhoPublico } from "@/ui";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
 
 // Fontes carregadas só neste grupo de rotas (entrar, painel, cadastro,
-// consentimento) — mesmo padrão de /profissional/flavio e /plan, que também
+// consentimento) — mesmo padrão de /profissional/[slug] e /plan, que também
 // carregam suas próprias fontes por rota em vez de mexer no layout raiz.
 const display = Big_Shoulders({
   variable: "--font-fc-display",

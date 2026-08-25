@@ -2,7 +2,7 @@
    apps/web/src/ui — folha de estilo do design system das telas
    autenticadas (entrar, painel, cadastro, consentimento).
 
-   Escopada sob .fc, no mesmo padrão de .flv (/profissional/flavio) e
+   Escopada sob .fc, no mesmo padrão de .flv (/profissional/[slug]) e
    .plan (/plan): tokens e componentes não vazam para fora da rota que
    os usa.
 
@@ -735,6 +735,27 @@ a.fc-botao--perigo:hover {
   font-size: 1.0625rem;
   font-weight: 700;
   color: var(--fc-tinta);
+}
+
+.fc-item-atleta__linha {
+  display: flex;
+  align-items: center;
+  gap: var(--fc-esp-3);
+  min-width: 12rem;
+}
+
+.fc-avatar-mini {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  color: var(--fc-branco);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 0.9375rem;
 }
 
 .fc-item-atleta__meta {
@@ -1554,6 +1575,55 @@ a.fc-botao--perigo:hover {
 
 /* ---------- listagem pública de atletas (/atletas) ---------- */
 
+/* O formulário de filtro é o primeiro bloco de conteúdo da página — em
+   375px, sozinho, ele ocupa a tela inteira e empurra os cartões de atleta
+   (o motivo de alguém estar aqui) para fora da primeira dobra. Um
+   `<details>` nativo resolve sem JavaScript: fechado por padrão mostra os
+   cartões primeiro; quando a página já chega com algum filtro na URL,
+   `open` (definido em `page.tsx`) mantém aberto para a pessoa ver o que
+   está filtrando. */
+.fc-filtros-disclosure {
+  margin-bottom: var(--fc-esp-5);
+}
+
+.fc-filtros-disclosure__resumo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 0.75rem 1.1rem;
+  border: 1px solid var(--fc-linha-forte);
+  border-radius: var(--fc-raio);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--fc-tinta);
+  background: var(--fc-branco);
+}
+
+.fc-filtros-disclosure__resumo::-webkit-details-marker {
+  display: none;
+}
+
+.fc-filtros-disclosure__resumo::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--fc-tinta-40);
+  transition: transform 0.15s ease;
+}
+
+.fc-filtros-disclosure[open] .fc-filtros-disclosure__resumo::after {
+  transform: rotate(180deg);
+}
+
+.fc-filtros-disclosure__contagem {
+  color: var(--fc-gol);
+}
+
+.fc-filtros-disclosure .fc-atletas-filtros-cartao {
+  margin-top: var(--fc-esp-3);
+}
+
 .fc-atletas-filtros {
   display: grid;
   gap: var(--fc-esp-4);
@@ -2252,4 +2322,298 @@ a.fc-botao--perigo:hover {
   .fc-grade-midia {
     grid-template-columns: repeat(5, 1fr);
   }
+}
+
+/* ==========================================================================
+   PERFIL SOCIAL — profissional e escolinha. Reaproveita o cabeçalho de
+   perfil do atleta (`.fc-perfil-header`, `.fc-abas` acima) e acrescenta só o
+   que é específico de trajetória de carreira: grade de conquistas, citação
+   em destaque e a linha do tempo com marcos. Migrado do que era conteúdo
+   fixo da landing /profissional/[slug] (`data.ts` + `flavio.css`) para dado
+   de banco — ver migration 0012.
+   ========================================================================== */
+
+/* ---------- capa (escolinha e profissional não têm foto própria: a
+   identidade visual vem de um bloco de cor com as iniciais, do mesmo jeito
+   que o avatar do atleta cai para iniciais quando não há mídia) ---------- */
+
+.fc-perfil-header--capa {
+  position: relative;
+  overflow: hidden;
+}
+
+.fc-perfil-header--capa::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(255 59 20 / 0.28), transparent 60%),
+    repeating-linear-gradient(-35deg, rgb(244 240 232 / 0.05) 0 2px, transparent 2px 14px);
+  pointer-events: none;
+}
+
+.fc-perfil-header--capa > * {
+  position: relative;
+}
+
+/* ---------- conquistas (grade de números) ---------- */
+
+.fc-conquistas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.fc-conquista {
+  border: 1px solid var(--fc-linha);
+  border-radius: var(--fc-raio);
+  padding: 1rem 1.1rem;
+  background: var(--fc-branco);
+}
+
+.fc-conquista__numero {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.fc-conquista__valor {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  line-height: 0.95;
+  font-size: clamp(1.65rem, 6vw, 2.15rem);
+  color: var(--fc-gol);
+}
+
+.fc-conquista__unidade {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fc-tinta-40);
+}
+
+.fc-conquista__rotulo {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.fc-conquista__nota {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--fc-tinta-60);
+}
+
+@media (min-width: 34rem) {
+  .fc-conquistas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------- citação em destaque ---------- */
+
+.fc-citacao {
+  position: relative;
+  border-radius: var(--fc-raio);
+  background: var(--fc-ink);
+  color: var(--fc-osso);
+  padding: clamp(1.25rem, 5vw, 1.75rem) clamp(1.25rem, 5vw, 2rem);
+  border-left: 4px solid var(--fc-gol-forte);
+}
+
+.fc-citacao__texto {
+  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 4vw, 1.5rem);
+  line-height: 1.35;
+}
+
+.fc-citacao__fonte {
+  margin-top: 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fc-osso-45);
+}
+
+/* ---------- trajetória (linha do tempo de marcos) ---------- */
+
+.fc-trajetoria {
+  display: grid;
+}
+
+.fc-trajetoria__fase {
+  margin: var(--fc-esp-6) 0 var(--fc-esp-3);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fc-gol);
+}
+
+.fc-trajetoria__fase:first-child {
+  margin-top: 0;
+}
+
+.fc-trajetoria__marco {
+  position: relative;
+  padding-left: 1.5rem;
+  padding-bottom: var(--fc-esp-5);
+  border-left: 2px solid var(--fc-linha);
+}
+
+.fc-trajetoria__marco:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.fc-trajetoria__marco::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 0.3rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--fc-gol);
+}
+
+.fc-trajetoria__marco[data-destaque="true"]::before {
+  background: var(--fc-gol-forte);
+  box-shadow: 0 0 0 4px var(--fc-gol-suave);
+}
+
+.fc-trajetoria__cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.65rem;
+}
+
+.fc-trajetoria__ano {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-size: clamp(1.4rem, 5vw, 1.85rem);
+  color: var(--fc-tinta);
+}
+
+.fc-trajetoria__clube {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fc-tinta-40);
+}
+
+.fc-trajetoria__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.fc-trajetoria__chip {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--fc-raio-pill);
+  border: 1px solid var(--fc-linha);
+  color: var(--fc-tinta-60);
+}
+
+.fc-trajetoria__chip--forte {
+  background: var(--fc-gol-suave);
+  border-color: var(--fc-gol);
+  color: var(--fc-gol);
+}
+
+.fc-trajetoria__titulo {
+  margin-top: 0.6rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.fc-trajetoria__texto {
+  margin-top: 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--fc-tinta-60);
+  max-width: 42rem;
+}
+
+.fc-trajetoria__nao-datado {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--fc-tinta-40);
+}
+
+/* ---------- elenco (grade de atletas de uma escolinha) ---------- */
+
+.fc-elenco-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  margin-bottom: var(--fc-esp-4);
+}
+
+/* ---------- progresso (formulários em várias etapas) ---------- */
+
+.fc-progresso {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--fc-esp-5);
+}
+
+.fc-progresso__passo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fc-tinta-40);
+}
+
+.fc-progresso__bolha {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--fc-linha-forte);
+  font-size: 0.6875rem;
+  color: var(--fc-tinta-40);
+  flex: none;
+}
+
+.fc-progresso__passo[data-atual="true"] {
+  color: var(--fc-tinta);
+}
+
+.fc-progresso__passo[data-atual="true"] .fc-progresso__bolha {
+  border-color: var(--fc-gol);
+  background: var(--fc-gol);
+  color: var(--fc-branco);
+}
+
+.fc-progresso__passo[data-concluido="true"] .fc-progresso__bolha {
+  border-color: var(--fc-sucesso);
+  background: var(--fc-sucesso);
+  color: var(--fc-branco);
+}
+
+.fc-progresso__linha {
+  flex: 1;
+  height: 1.5px;
+  background: var(--fc-linha-forte);
+  min-width: 1rem;
 }

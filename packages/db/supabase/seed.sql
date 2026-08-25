@@ -83,9 +83,13 @@ select setseed(0.4231);
 --
 -- PROFISSIONAIS (5 — migration 0010, tabela `profissionais`, página
 -- pública /profissionais e /profissional/[slug]): os 4 acima, mais Flávio
--- Barbosa (slug `flavio`, sem conta de login, sem laudo no seed — página
--- especial já existente em /profissional/flavio, que o Next.js resolve no
--- lugar da rota genérica para esse slug).
+-- Barbosa (slug `flavio`, sem conta de login, sem laudo no seed). Todos os
+-- cinco também ganham trajetória e conquistas (migration 0012, tabelas
+-- `profissional_marcos` e `profissional_conquistas`) — o Flávio com dado
+-- verificado (ver docs/flavio-barbosa-bio.md), os outros quatro com
+-- trajetória plausível, fictícia como o resto do perfil deles. Não existe
+-- mais rota especial para o Flávio: `/profissional/flavio` é servida pela
+-- mesma rota dinâmica `/profissional/[slug]` que qualquer outro.
 --
 -- RESPONSÁVEIS EM MASSA (14 — só para dar volume aos 60-80 atletas da
 -- vitrine; não valem a pena documentar um a um, e o seletor de login de dev
@@ -99,9 +103,11 @@ select setseed(0.4231);
 -- credenciadas), 23 responsáveis (9 nomeados + 14 em massa), 72 atletas
 -- (26 nomeados + 46 em massa) — maioria ativo, alguns em cada um dos outros
 -- quatro estados —, 4 avaliadores (+ 1 profissional sem laudo, Flávio
--- Barbosa — 5 linhas em `profissionais`), e por volta de 32 laudos
--- publicados (17 nos atletas nomeados + 15 nos atletas em massa), cobrindo
--- atletas com mais de um laudo em datas diferentes.
+-- Barbosa — 5 linhas em `profissionais`), 27 marcos de trajetória e 16
+-- conquistas somados nos 5 profissionais (13 marcos + 4 conquistas só do
+-- Flávio, dado verificado), e por volta de 32 laudos publicados (17 nos
+-- atletas nomeados + 15 nos atletas em massa), cobrindo atletas com mais de
+-- um laudo em datas diferentes.
 -- ==========================================================================
 
 -- --------------------------------------------------------------------------
@@ -618,32 +624,40 @@ where id in (
 -- app/profissional/flavio/data.ts — nada inventado.
 -- --------------------------------------------------------------------------
 
-insert into profissionais (id, user_id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde)
+insert into profissionais (id, user_id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde, citacao_texto, citacao_fonte)
 values
   ('d0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000001',
    'Ricardo Bezerra', 'ricardo-bezerra',
    'Educação Física — UECE · ex-atleta de futsal',
    'Fortaleza', 'CE',
    'Professor de Educação Física formado pela UECE, jogou futsal de base e adulto em clubes de Fortaleza antes de migrar para a avaliação técnica. Aplica a rubrica do Futsal College desde 2018, presencial e por vídeo.',
-   true, '2018-03-01'),
+   true, '2018-03-01',
+   'A nota não compara criança com criança — compara o atleta com o critério da própria categoria dele, num dia específico.',
+   'Sobre o método da rubrica, 2022'),
   ('d0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000002',
    'Camila Studart', 'camila-studart',
    'Educação Física — UFC · técnica de categorias de base',
    'Fortaleza', 'CE',
    'Técnica de categorias de base há mais de dez anos, com passagem por escolinhas da região metropolitana de Fortaleza. Formada em Educação Física pela UFC, com foco em desenvolvimento tático de Sub-9 a Sub-15.',
-   true, '2019-08-15'),
+   true, '2019-08-15',
+   'O tático se ensina cedo. Sub-9 já entende de espaço, se alguém tiver paciência de mostrar.',
+   'Em entrevista sobre formação de base, 2023'),
   ('d0000000-0000-0000-0000-000000000003', 'e0000000-0000-0000-0000-000000000003',
    'Everton Aragão Filho', 'everton-aragao-filho',
    'Ex-atleta profissional de futsal · técnico de base',
    'Maracanaú', 'CE',
    'Ex-atleta profissional de futsal no Ceará e no Nordeste, hoje técnico de categorias de base em Maracanaú. Traz para a avaliação técnica a régua de quem viveu o jogo adulto de alto nível.',
-   true, '2016-02-10'),
+   true, '2016-02-10',
+   'Joguei contra quem foi longe e contra quem parou cedo. A diferença raramente era só talento.',
+   'Sobre a transição para a comissão técnica, 2019'),
   ('d0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000004',
    'Larissa Monteiro Cid', 'larissa-monteiro-cid',
    'Educação Física — Unifor · avaliação física e postural',
    'Fortaleza', 'CE',
    'Professora de Educação Física pela Unifor, especializada em avaliação física e postural de atletas em formação. Entrou na plataforma em 2020 e concentra boa parte das avaliações por análise de vídeo.',
-   true, '2020-05-04'),
+   true, '2020-05-04',
+   'Física não é só correr rápido. É chegar inteiro aos vinte anos, sem lesão que a formação causou.',
+   'Sobre avaliação física em categorias de base, 2021'),
   ('d0000000-0000-0000-0000-000000000005', null,
    'Flávio Barbosa', 'flavio',
    'Técnico · Futsal Sesc Ceará',
@@ -654,7 +668,195 @@ values
    -- esse grupo que venceu a Liga Ceará Sub-20 em 2023. Usar 2006 (primeiro
    -- título dele COMO ATLETA) faria a listagem de profissionais afirmar que
    -- ele avalia desde 2006, o que não está escrito em lugar nenhum.
-   true, '2021-01-01');
+   true, '2021-01-01',
+   -- Citação verificada — docs/flavio-barbosa-bio.md, item 6 ("frases soltas
+   -- de apoio"). Não é fala entre aspas de uma entrevista específica (as
+   -- duas citações datadas da landing antiga viraram marcos na linha do
+   -- tempo, abaixo); é a frase-síntese que a própria fonte já usa como pull
+   -- quote.
+   'Treze títulos em quadra. Um mundial na beira dela.',
+   null);
+
+-- --------------------------------------------------------------------------
+-- Trajetória e conquistas dos profissionais (migration 0012, tabelas
+-- `profissional_marcos` e `profissional_conquistas`) — o conteúdo que
+-- sustenta as abas "Trajetória" e "Conquistas" de cada `/profissional/[slug]`.
+--
+-- Flávio Barbosa: dado 100% verificado, migrado de
+-- app/profissional/flavio/data.ts (`linhaDoTempo` e `numeros`) — mesmo
+-- texto, mesmos anos, nada inventado. As duas citações que a landing antiga
+-- mostrava soltas (final do Cearense 2010 e título da Liga Ceará 2023, ver
+-- docs/flavio-barbosa-bio.md) entraram como a frase final da descrição do
+-- marco correspondente, entre aspas, em vez de ganharem coluna própria — o
+-- schema tem uma citação de destaque por profissional (`profissionais.citacao_texto`,
+-- acima), não uma por marco.
+--
+-- Os outros quatro: trajetória fictícia e plausível, coerente com a bio já
+-- escrita para cada um logo acima (nenhum título de nível profissional —
+-- são educadores físicos e ex-atletas amadores/de base, não celebridades do
+-- futsal cearense como o Flávio).
+-- --------------------------------------------------------------------------
+
+insert into profissional_marcos
+  (profissional_id, ano, ano_ordinal, datado, clube, titulos, titulo, descricao, fase, destaque, ordem)
+values
+  -- Ricardo Bezerra (d...0001) — ex-atleta de base em Fortaleza, avaliador desde 2018.
+  ('d0000000-0000-0000-0000-000000000001', '2005', 2005, true, 'Seleção Cearense Sub-17',
+   array['Convocado'], 'Primeira convocação estadual',
+   'Integrou a seleção cearense Sub-17 de futsal, disputando um torneio interestadual em Fortaleza.',
+   'atleta', false, 1),
+  ('d0000000-0000-0000-0000-000000000001', '2010', 2010, true, 'Fortaleza EC (base)',
+   array['Campeão cearense Sub-20'], 'Título estadual de base',
+   'Encerrou a fase de base com o título cearense Sub-20 pelo Fortaleza EC, jogando de fixo.',
+   'atleta', true, 2),
+  ('d0000000-0000-0000-0000-000000000001', '2014', 2014, true, 'UECE',
+   array[]::text[], 'Formado em Educação Física',
+   'Conclui a graduação em Educação Física na UECE e passa a se dedicar à avaliação técnica de categorias de base.',
+   'tecnico', false, 3),
+  ('d0000000-0000-0000-0000-000000000001', '2018', 2018, true, 'Futsal College',
+   array['Primeiro laudo assinado'], 'Começa a avaliar na plataforma',
+   'Passa a aplicar a rubrica do Futsal College, presencial e por análise de vídeo.',
+   'tecnico', true, 4),
+
+  -- Camila Studart (d...0002) — técnica de base na região metropolitana desde 2019.
+  ('d0000000-0000-0000-0000-000000000002', '2008', 2008, true, 'Instituto Bola na Rede',
+   array['Campeã metropolitana Sub-15'], 'Primeiro título como atleta',
+   'Campeã metropolitana Sub-15 pelo Instituto Bola na Rede, no ataque.',
+   'atleta', false, 1),
+  ('d0000000-0000-0000-0000-000000000002', '2013', 2013, true, 'UFC',
+   array[]::text[], 'Formada em Educação Física',
+   'Conclui a graduação em Educação Física na UFC, com foco em desenvolvimento tático de categorias de base.',
+   'tecnico', false, 2),
+  ('d0000000-0000-0000-0000-000000000002', '2015', 2015, true, 'Escolinhas da RMF',
+   array['Início como técnica'], 'Primeira turma de base',
+   'Assume a primeira turma de categorias de base em escolinhas da região metropolitana de Fortaleza.',
+   'tecnico', true, 3),
+  ('d0000000-0000-0000-0000-000000000002', '2019', 2019, true, 'Futsal College',
+   array['Primeiro laudo assinado'], 'Passa a avaliar na plataforma',
+   'Começa a aplicar a rubrica do Futsal College em atletas de Sub-9 a Sub-15.',
+   'tecnico', false, 4),
+
+  -- Everton Aragão Filho (d...0003) — ex-atleta profissional no CE/Nordeste, técnico desde 2016.
+  ('d0000000-0000-0000-0000-000000000003', '2009', 2009, true, 'Maracanaú Futsal',
+   array['Campeão metropolitano adulto'], 'Estreia no futsal adulto',
+   'Campeão metropolitano adulto pelo Maracanaú Futsal, na primeira temporada como profissional.',
+   'atleta', true, 1),
+  ('d0000000-0000-0000-0000-000000000003', '2012', 2012, true, 'Clube do Nordeste (itinerante)',
+   array['Vice-campeão do Nordeste'], 'Vice-campeonato regional',
+   'Vice-campeão do Nordeste por um clube itinerante da categoria adulta, ainda em atividade como atleta.',
+   'atleta', false, 2),
+  ('d0000000-0000-0000-0000-000000000003', '2016', 2016, true, 'Categorias de base — Maracanaú',
+   array['Início como técnico'], 'Muda de lado da quadra',
+   'Encerra a carreira de atleta e assume categorias de base em Maracanaú, levando a régua do jogo adulto para a formação.',
+   'tecnico', true, 3),
+
+  -- Larissa Monteiro Cid (d...0004) — avaliação física e postural, na plataforma desde 2020.
+  ('d0000000-0000-0000-0000-000000000004', '2011', 2011, true, 'Unifor',
+   array[]::text[], 'Formada em Educação Física',
+   'Conclui a graduação em Educação Física na Unifor, com ênfase em biomecânica e avaliação postural.',
+   'tecnico', false, 1),
+  ('d0000000-0000-0000-0000-000000000004', '2016', 2016, true, 'Clínica de avaliação física — Fortaleza',
+   array['Especialização'], 'Especialização em avaliação física',
+   'Passa a atender atletas em formação numa clínica especializada em avaliação física e postural.',
+   'tecnico', false, 2),
+  ('d0000000-0000-0000-0000-000000000004', '2020', 2020, true, 'Futsal College',
+   array['Primeiro laudo assinado'], 'Passa a avaliar na plataforma',
+   'Entra no Futsal College e concentra boa parte das avaliações em análise de vídeo, ao lado da física presencial.',
+   'tecnico', true, 3),
+
+  -- Flávio Barbosa (d...0005) — dado verificado, migrado de app/profissional/flavio/data.ts.
+  ('d0000000-0000-0000-0000-000000000005', '2006', 2006, true, 'Afagu / Russas',
+   array['Cearense adulto', 'Nordeste'], 'Estreia ganhando dois',
+   'A primeira temporada de destaque já termina com duas taças: o Campeonato Cearense adulto e o título do Nordeste. Aos vinte e poucos anos, decidindo estadual contra o Ceará.',
+   'atleta', false, 1),
+  ('d0000000-0000-0000-0000-000000000005', '2007', 2007, true, 'Granja Futsal',
+   array['Cearense', 'Nordeste'], 'A dobradinha, de novo',
+   'Muda de clube e repete a dupla conquista — cearense e Nordeste em temporadas seguidas.',
+   'atleta', false, 2),
+  ('d0000000-0000-0000-0000-000000000005', '2008', 2008, true, 'Fortaleza Futsal',
+   array['Cearense adulto'], 'Tri seguido no estadual',
+   'Terceiro Campeonato Cearense adulto em três anos, com a terceira camisa diferente.',
+   'atleta', false, 3),
+  ('d0000000-0000-0000-0000-000000000005', '2009', 2009, true, 'Sumov',
+   array['Metropolitano'], 'Destaque do elenco',
+   'Campeão metropolitano. A imprensa esportiva local já o tratava como um dos nomes do time.',
+   'atleta', false, 4),
+  ('d0000000-0000-0000-0000-000000000005', '2010', 2010, true, 'Horizonte',
+   array['Cearense adulto'], 'Artilheiro e campeão',
+   'Termina a campanha do Cearense como principal artilheiro do time, com 10 gols, e levanta a taça — o bicampeonato do Horizonte. Depois da final, resumiu assim: "Fizemos um trabalho sério e centrado em tudo o que o treinador orientou. Foi um esforço de vários meses, coroado com este título."',
+   'atleta', true, 5),
+  ('d0000000-0000-0000-0000-000000000005', '2011', 2011, true, 'Horizonte',
+   array['Metropolitano adulto', 'Nordeste'], 'Mais duas pelo Horizonte',
+   'Segunda temporada no clube, mais duas taças: o metropolitano adulto e o terceiro título do Nordeste da carreira.',
+   'atleta', false, 6),
+  ('d0000000-0000-0000-0000-000000000005', '2012', 2012, true, 'Maracanaú',
+   array['Cearense'], 'Quinto estadual',
+   'Mais um Campeonato Cearense, agora pelo Maracanaú.',
+   'atleta', false, 7),
+  ('d0000000-0000-0000-0000-000000000005', '2013', 2013, true, 'Maranguape',
+   array['Copa TV Verdes Mares'], 'A primeira Copa TV',
+   'Campeão da edição de estreia da Copa TV Verdes Mares, torneio transmitido ao vivo pela emissora.',
+   'atleta', false, 8),
+  ('d0000000-0000-0000-0000-000000000005', '2015', 2015, true, 'Granja Futsal',
+   array['Copa TV Verdes Mares'], 'De volta à Granja, campeão',
+   'Segunda Copa TV Verdes Mares da carreira, oito anos após o primeiro título pelo clube.',
+   'atleta', false, 9),
+  ('d0000000-0000-0000-0000-000000000005', '2019', 2019, true, 'Eusébio Futsal',
+   array['Copa do Estado'], 'Treze anos depois, ainda ganhando',
+   'Listado como fixo/ala no elenco campeão da Copa Estado do Ceará — treze anos depois do primeiro título, e ainda decidindo jogo.',
+   'atleta', true, 10),
+  ('d0000000-0000-0000-0000-000000000005', '2023', 2023, true, 'Sesc · Sub-20',
+   array['Liga Ceará', 'Melhor técnico'], 'Campeão invicto, do outro lado da linha',
+   'O grupo que começou a montar em 2021 vence a Taça Liga Ceará sem perder um jogo. Ele é eleito o melhor técnico da competição. Sobre o título: "Esse título foi importante, porque é o primeiro desse grupo que foi formado em 2021. Um trabalho de dois anos jogando juntos."',
+   'tecnico', false, 11),
+  ('d0000000-0000-0000-0000-000000000005', 'Sub-20', 2024, false, 'Campeonato Cearense',
+   array['Vice-campeão'], 'Vice no estadual de base',
+   'Vice-campeão cearense Sub-20 à frente da equipe.',
+   'tecnico', false, 12),
+  ('d0000000-0000-0000-0000-000000000005', 'Mundial', 2025, false, 'Futebol de salão · Sub-13',
+   array['Campeão mundial'], 'Campeão mundial como técnico',
+   'Título mundial de futebol de salão na categoria Sub-13, como técnico principal da equipe. A conquista mais alta da carreira — dentro ou fora da quadra.',
+   'tecnico', true, 13);
+
+insert into profissional_conquistas
+  (profissional_id, valor, unidade, rotulo, nota, ordem)
+values
+  ('d0000000-0000-0000-0000-000000000001', '07', 'anos', 'avaliando no Futsal College',
+   'Desde 2018, presencial e por análise de vídeo.', 1),
+  ('d0000000-0000-0000-0000-000000000001', '01', 'estadual', 'título como atleta de base',
+   'Campeão cearense Sub-20 pelo Fortaleza EC, 2010.', 2),
+  ('d0000000-0000-0000-0000-000000000001', 'UECE', 'graduação', 'Educação Física',
+   'Formado em 2014, com foco em futsal de base e adulto.', 3),
+
+  ('d0000000-0000-0000-0000-000000000002', '06', 'anos', 'avaliando no Futsal College',
+   'Desde 2019, com foco em Sub-9 a Sub-15.', 1),
+  ('d0000000-0000-0000-0000-000000000002', '10+', 'anos', 'como técnica de base',
+   'Passagem por escolinhas da região metropolitana de Fortaleza.', 2),
+  ('d0000000-0000-0000-0000-000000000002', 'UFC', 'graduação', 'Educação Física',
+   'Formada em 2013, foco em desenvolvimento tático.', 3),
+
+  ('d0000000-0000-0000-0000-000000000003', '09', 'anos', 'avaliando no Futsal College',
+   'Desde 2016, presencial na região de Maracanaú.', 1),
+  ('d0000000-0000-0000-0000-000000000003', '02', 'títulos', 'como atleta adulto',
+   'Um metropolitano e um vice-campeonato do Nordeste, 2009 e 2012.', 2),
+  ('d0000000-0000-0000-0000-000000000003', '07', 'anos', 'como atleta profissional',
+   'Futsal adulto no Ceará e no Nordeste, antes da transição para técnico.', 3),
+
+  ('d0000000-0000-0000-0000-000000000004', '05', 'anos', 'avaliando no Futsal College',
+   'Desde 2020, concentrando boa parte em análise de vídeo.', 1),
+  ('d0000000-0000-0000-0000-000000000004', 'Unifor', 'graduação', 'Educação Física',
+   'Formada em 2011, ênfase em biomecânica e avaliação postural.', 2),
+  ('d0000000-0000-0000-0000-000000000004', '01', 'especialização', 'avaliação física e postural',
+   'Concluída em 2016, base do trabalho que aplica hoje.', 3),
+
+  ('d0000000-0000-0000-0000-000000000005', '13', 'títulos', 'como atleta',
+   'Dez temporadas campeão, de 2006 a 2019, por sete clubes diferentes.', 1),
+  ('d0000000-0000-0000-0000-000000000005', '05', 'estaduais', 'campeão cearense adulto',
+   '2006, 2007, 2008, 2010 e 2012 — por quatro clubes.', 2),
+  ('d0000000-0000-0000-0000-000000000005', '03', 'nordestes', 'campeão regional',
+   '2006 e 2007, e mais um em 2011 pelo Horizonte.', 3),
+  ('d0000000-0000-0000-0000-000000000005', '01', 'mundial', 'como técnico',
+   'Campeão mundial de futebol de salão Sub-13, à frente da equipe.', 4);
 
 -- --------------------------------------------------------------------------
 -- Laudos publicados nos atletas nomeados (17) — Manu, Théozinho, Nardinho e

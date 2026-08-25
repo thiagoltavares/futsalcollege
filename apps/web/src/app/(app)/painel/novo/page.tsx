@@ -10,6 +10,18 @@ export default function NovoAtleta() {
 
   return (
     <div className="fc-container fc-container--estreito">
+      <ol className="fc-progresso" aria-label="Progresso do cadastro">
+        <li className="fc-progresso__passo" data-atual="true">
+          <span className="fc-progresso__bolha">1</span>
+          Cadastro
+        </li>
+        <span className="fc-progresso__linha" aria-hidden="true" />
+        <li className="fc-progresso__passo">
+          <span className="fc-progresso__bolha">2</span>
+          Autorização
+        </li>
+      </ol>
+
       <div className="fc-cabecalho-pagina">
         <p className="fc-rotulo-secao fc-etiqueta-rotulo">Novo cadastro</p>
         <h1 className="fc-titulo">Cadastrar atleta</h1>

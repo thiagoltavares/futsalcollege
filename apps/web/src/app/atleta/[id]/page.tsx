@@ -19,7 +19,7 @@ import {
 
 export const revalidate = 300;
 
-// Fontes carregadas só nesta rota — mesmo padrão de /profissional/flavio,
+// Fontes carregadas só nesta rota — mesmo padrão de /profissional/[slug],
 // /plan, da home e do grupo (app): cada rota pública traz as fontes que usa.
 const display = Big_Shoulders({
   variable: "--font-fc-display",

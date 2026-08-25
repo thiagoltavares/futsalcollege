@@ -72,6 +72,16 @@ async function buscarAtletasDaEscolinha(supabase: SupabaseClient<Database>, esco
   return data ?? [];
 }
 
+/** Duas primeiras iniciais do nome da escolinha — mesmo raciocínio do
+ * avatar do atleta e do profissional: não há foto própria, então a
+ * identidade visual do cabeçalho cai para as iniciais. */
+function iniciais(nome: string): string {
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const primeira = partes[0]?.[0] ?? "";
+  const ultima = partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? "") : "";
+  return (primeira + ultima).toUpperCase();
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/escolinha/[id]">): Promise<Metadata> {
@@ -102,43 +112,68 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
     supabase,
     atletas.map((a) => a.id),
   );
+  const avaliados = atletas.filter((a) => resumoAvaliacoes.has(a.id)).length;
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
       <CabecalhoPublicoAuto />
 
-      <main className="fc-corpo">
-        <div className="fc-container">
-          <div className="fc-cabecalho-pagina">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo">
-              <Link href="/escolinhas">Escolinhas</Link>
-            </p>
-            <h1 className="fc-titulo">{escolinha.nome}</h1>
-            <p className="fc-subtitulo">
-              {escolinha.cidade} · {escolinha.estado_uf}
-              {escolinha.credenciada && escolinha.credenciada_desde
-                ? ` · credenciada desde ${new Date(escolinha.credenciada_desde).toLocaleDateString("pt-BR", { year: "numeric", month: "long" })}`
-                : ""}
+      <main className="fc-corpo fc-corpo--perfil">
+        <div className="fc-container fc-container--estreito">
+          <p className="fc-etiqueta-rotulo" style={{ marginBottom: "0.75rem" }}>
+            <Link href="/escolinhas">← Escolinhas</Link>
+          </p>
+
+          <section className="fc-perfil-header fc-perfil-header--capa">
+            <div className="fc-perfil-header__topo">
+              <span className="fc-perfil-avatar" aria-hidden="true">
+                <span>{iniciais(escolinha.nome)}</span>
+              </span>
+
+              <dl className="fc-perfil-stats">
+                <div>
+                  <dt>Atletas ativos</dt>
+                  <dd>{atletas.length}</dd>
+                </div>
+                <div>
+                  <dt>Avaliados</dt>
+                  <dd>{avaliados}</dd>
+                </div>
+                <div>
+                  <dt>Estado</dt>
+                  <dd className="fc-perfil-stats__texto">{escolinha.estado_uf}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <h1 className="fc-perfil-nome">{escolinha.nome}</h1>
+
+            <div className="fc-perfil-tags">
+              <span className="fc-ficha-tag">
+                {escolinha.cidade} · {escolinha.estado_uf}
+              </span>
               {escolinha.credenciada && (
-                <span className="fc-etiqueta fc-etiqueta--sucesso fc-escolinha-selo-titulo">
-                  Credenciada
+                <span className="fc-ficha-tag fc-ficha-tag--selo">
+                  ✓ Credenciada
+                  {escolinha.credenciada_desde
+                    ? ` desde ${new Date(escolinha.credenciada_desde).toLocaleDateString("pt-BR", { year: "numeric", month: "long" })}`
+                    : ""}
                 </span>
               )}
-            </p>
-          </div>
+            </div>
+          </section>
 
-          <div className="fc-cabecalho-pagina">
-            <h2 className="fc-titulo fc-titulo--card">
-              {atletas.length === 0
-                ? "Nenhum atleta ativo nesta escolinha ainda"
-                : `${atletas.length} ${atletas.length === 1 ? "atleta ativo" : "atletas ativos"}`}
-            </h2>
-            {atletas.length > 0 && (
-              <p className="fc-subtitulo">
-                {resumoAvaliacoes.size} {resumoAvaliacoes.size === 1 ? "já avaliado" : "já avaliados"}{" "}
-                com laudo publicado.
-              </p>
-            )}
+          <div className="fc-espaco" />
+
+          <div className="fc-elenco-cabecalho">
+            <div>
+              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Elenco</p>
+              <h2 className="fc-titulo fc-titulo--card">
+                {atletas.length === 0
+                  ? "Nenhum atleta ativo ainda"
+                  : `${atletas.length} ${atletas.length === 1 ? "atleta ativo" : "atletas ativos"}`}
+              </h2>
+            </div>
           </div>
 
           {atletas.length === 0 ? (

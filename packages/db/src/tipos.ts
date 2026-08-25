@@ -408,6 +408,8 @@ export type Database = {
           atua_desde: string
           bio: string | null
           cidade: string | null
+          citacao_fonte: string | null
+          citacao_texto: string | null
           credencial: string | null
           criado_em: string
           estado_uf: string | null
@@ -421,6 +423,8 @@ export type Database = {
           atua_desde?: string
           bio?: string | null
           cidade?: string | null
+          citacao_fonte?: string | null
+          citacao_texto?: string | null
           credencial?: string | null
           criado_em?: string
           estado_uf?: string | null
@@ -434,6 +438,8 @@ export type Database = {
           atua_desde?: string
           bio?: string | null
           cidade?: string | null
+          citacao_fonte?: string | null
+          citacao_texto?: string | null
           credencial?: string | null
           criado_em?: string
           estado_uf?: string | null
@@ -443,6 +449,103 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      profissional_conquistas: {
+        Row: {
+          criado_em: string
+          id: string
+          nota: string | null
+          ordem: number
+          profissional_id: string
+          rotulo: string
+          unidade: string
+          valor: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          nota?: string | null
+          ordem?: number
+          profissional_id: string
+          rotulo: string
+          unidade: string
+          valor: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          nota?: string | null
+          ordem?: number
+          profissional_id?: string
+          rotulo?: string
+          unidade?: string
+          valor?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profissional_conquistas_profissional_id_fkey"
+            columns: ["profissional_id"]
+            isOneToOne: false
+            referencedRelation: "profissionais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profissional_marcos: {
+        Row: {
+          ano: string
+          ano_ordinal: number
+          clube: string | null
+          criado_em: string
+          datado: boolean
+          descricao: string
+          destaque: boolean
+          fase: string
+          id: string
+          ordem: number
+          profissional_id: string
+          titulo: string
+          titulos: string[]
+        }
+        Insert: {
+          ano: string
+          ano_ordinal: number
+          clube?: string | null
+          criado_em?: string
+          datado?: boolean
+          descricao: string
+          destaque?: boolean
+          fase: string
+          id?: string
+          ordem?: number
+          profissional_id: string
+          titulo: string
+          titulos?: string[]
+        }
+        Update: {
+          ano?: string
+          ano_ordinal?: number
+          clube?: string | null
+          criado_em?: string
+          datado?: boolean
+          descricao?: string
+          destaque?: boolean
+          fase?: string
+          id?: string
+          ordem?: number
+          profissional_id?: string
+          titulo?: string
+          titulos?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profissional_marcos_profissional_id_fkey"
+            columns: ["profissional_id"]
+            isOneToOne: false
+            referencedRelation: "profissionais"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       responsaveis: {
         Row: {

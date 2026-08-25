@@ -55,7 +55,7 @@ export type CabecalhoPublicoProps = {
  * vitrine de atletas, ficha do atleta, escolinhas) e área logada (grupo
  * `(app)`: entrar, painel, avaliação, consentimento). Fora do grupo `(app)`,
  * então cada rota que o usa importa `estilos.css` e as fontes do design
- * system por conta própria (mesmo padrão de /profissional/flavio).
+ * system por conta própria (mesmo padrão de /profissional/[slug]).
  *
  * Os links de âncora da nav pública apontam para `/#secao`: funcionam tanto
  * na própria home quanto a partir de outra rota pública, navegando para a

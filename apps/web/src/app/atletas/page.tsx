@@ -12,7 +12,7 @@ import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 export const revalidate = 60;
 
 // Mesmo padrão de fontes por rota pública já usado em /, /atleta/[id] e
-// /profissional/flavio.
+// /profissional/[slug].
 const display = Big_Shoulders({
   variable: "--font-fc-display",
   subsets: ["latin"],
@@ -113,6 +113,13 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
     ordenar: primeiroValor(parametros.ordenar) === "apelido" ? "apelido" : "recentes",
   };
   const somenteAvaliados = primeiroValor(parametros.avaliados) === "1";
+  const filtrosAtivos = [
+    filtros.categoria,
+    filtros.posicao,
+    filtros.uf,
+    filtros.busca,
+    somenteAvaliados,
+  ].filter(Boolean).length;
 
   const supabase = clienteAnonimo();
   const atletas = await buscarAtletas(supabase, filtros);
@@ -139,7 +146,15 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
             </p>
           </div>
 
-          <Cartao className="fc-atletas-filtros-cartao">
+          <details className="fc-filtros-disclosure" open={filtrosAtivos > 0 || undefined}>
+            <summary className="fc-filtros-disclosure__resumo">
+              Filtros
+              {filtrosAtivos > 0 && (
+                <span className="fc-filtros-disclosure__contagem">· {filtrosAtivos} ativo{filtrosAtivos > 1 ? "s" : ""}</span>
+              )}
+            </summary>
+
+            <Cartao className="fc-atletas-filtros-cartao">
             <form method="GET" className="fc-atletas-filtros">
               <Campo id="busca" rotulo="Buscar por apelido" className="fc-atletas-filtro">
                 {(campo) => (
@@ -215,7 +230,8 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
                 </Link>
               </div>
             </form>
-          </Cartao>
+            </Cartao>
+          </details>
 
           <div className="fc-espaco" />
 

@@ -11,7 +11,7 @@ import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 
 export const revalidate = 60;
 
-// Fontes carregadas só nesta rota, mesmo padrão de /profissional/flavio,
+// Fontes carregadas só nesta rota, mesmo padrão de /profissional/[slug],
 // /plan e do grupo (app): cada rota pública traz as fontes que usa em vez
 // de inflar o layout raiz, que é compartilhado por todas as rotas.
 const display = Big_Shoulders({

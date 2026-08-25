@@ -84,9 +84,14 @@ export default async function Painel() {
           {atletas.map((a) => (
             <li key={a.id}>
               <Cartao className="fc-item-atleta">
-                <div className="fc-item-atleta__info">
-                  <span className="fc-item-atleta__nome">{a.apelido}</span>
-                  <span className="fc-item-atleta__meta">{a.categoria}</span>
+                <div className="fc-item-atleta__linha">
+                  <span className="fc-avatar-mini" aria-hidden="true">
+                    {a.apelido.slice(0, 1).toUpperCase()}
+                  </span>
+                  <div className="fc-item-atleta__info">
+                    <span className="fc-item-atleta__nome">{a.apelido}</span>
+                    <span className="fc-item-atleta__meta">{a.categoria}</span>
+                  </div>
                 </div>
 
                 <div className="fc-item-atleta__acoes">

@@ -9,7 +9,7 @@ import "@/ui/estilos.css";
 export const revalidate = 60;
 
 // Mesmo padrão de fontes por rota pública já usado em /, /atletas,
-// /atleta/[id] e /profissional/flavio.
+// /atleta/[id] e /profissional/[slug].
 const display = Big_Shoulders({
   variable: "--font-fc-display",
   subsets: ["latin"],

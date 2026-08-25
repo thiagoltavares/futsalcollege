@@ -54,12 +54,19 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
     <div className="fc-container fc-container--estreito">
       <div className="fc-cabecalho-pagina">
         <p className="fc-rotulo-secao fc-etiqueta-rotulo">Avaliação técnica</p>
-        <h1 className="fc-titulo">
-          {atleta.apelido} · {atleta.categoria}
-        </h1>
+        <div className="fc-item-atleta__linha" style={{ marginTop: "0.35rem" }}>
+          <span className="fc-avatar-mini" aria-hidden="true">
+            {atleta.apelido.slice(0, 1).toUpperCase()}
+          </span>
+          <h1 className="fc-titulo" style={{ marginBottom: 0 }}>
+            {atleta.apelido} · {atleta.categoria}
+          </h1>
+        </div>
         <p className="fc-subtitulo">
-          Rubrica {rubrica.versao}. A nota compara o atleta com o critério da categoria — nunca
-          com outro atleta. Depois de publicado, o laudo não pode mais ser editado.
+          <span className="fc-etiqueta fc-etiqueta--neutro">Rubrica {rubrica.versao}</span>
+          <br />
+          A nota compara o atleta com o critério da categoria — nunca com outro atleta. Depois de
+          publicado, o laudo não pode mais ser editado.
         </p>
       </div>
 
