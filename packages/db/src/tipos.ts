@@ -209,17 +209,17 @@ export type Database = {
         Row: {
           criado_em: string
           id: string
-          nome: string
+          nome: string | null
         }
         Insert: {
           criado_em?: string
           id: string
-          nome: string
+          nome?: string | null
         }
         Update: {
           criado_em?: string
           id?: string
-          nome?: string
+          nome?: string | null
         }
         Relationships: []
       }

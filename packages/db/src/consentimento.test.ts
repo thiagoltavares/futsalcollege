@@ -109,7 +109,10 @@ beforeAll(async () => {
     email_confirm: true,
   });
   responsavelId = data.user!.id;
-  await servico.from("responsaveis").insert({ id: responsavelId, nome: "Responsável" });
+  // O gatilho de signup (migration 0004) já criou a linha em `responsaveis`
+  // com nome nulo assim que `admin.createUser` inseriu em auth.users; um
+  // insert aqui colidiria com a PK. Só damos nome à fixture com update.
+  await servico.from("responsaveis").update({ nome: "Responsável" }).eq("id", responsavelId);
 
   const { data: dataB } = await servico.auth.admin.createUser({
     email: `cons-b-${marca}@exemplo.test`,
@@ -117,7 +120,7 @@ beforeAll(async () => {
     email_confirm: true,
   });
   responsavelBId = dataB.user!.id;
-  await servico.from("responsaveis").insert({ id: responsavelBId, nome: "Responsável B" });
+  await servico.from("responsaveis").update({ nome: "Responsável B" }).eq("id", responsavelBId);
 });
 
 describe("consentimento — bloqueio de ativação (do brief)", () => {
@@ -263,7 +266,7 @@ describe("consentimento — insert direto em atletas com estado 'ativo'", () => 
 describe("consentimento — é prova, não se apaga (achado 1)", () => {
   it("o próprio responsável dono não consegue apagar o consentimento (nem via service_role a política importaria — aqui via cliente publicável)", async () => {
     const responsavel = await criarClienteAutenticado(`cons-delete-${Date.now()}@exemplo.test`);
-    await servico.from("responsaveis").insert({ id: responsavel.id, nome: "Responsável Delete" });
+    await servico.from("responsaveis").update({ nome: "Responsável Delete" }).eq("id", responsavel.id);
     const atleta = await novoAtleta("aguardando_consentimento", responsavel.id);
     const consentimentoId = await novoConsentimento(atleta, responsavel.id);
     await servico.from("atletas").update({ estado: "ativo" }).eq("id", atleta);
@@ -300,7 +303,10 @@ describe("consentimento — delete direto é sempre rejeitado, mesmo pelo servic
 
   it("o cliente do responsável dono continua sem conseguir apagar diretamente", async () => {
     const responsavel = await criarClienteAutenticado(`cons-delete-svc-${Date.now()}@exemplo.test`);
-    await servico.from("responsaveis").insert({ id: responsavel.id, nome: "Responsável Delete Svc" });
+    await servico
+      .from("responsaveis")
+      .update({ nome: "Responsável Delete Svc" })
+      .eq("id", responsavel.id);
     const atleta = await novoAtleta("aguardando_consentimento", responsavel.id);
     const consentimentoId = await novoConsentimento(atleta, responsavel.id);
 
@@ -430,9 +436,9 @@ describe("consentimento — RLS: um responsável não alcança consentimento de 
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    await servico.from("responsaveis").insert([
-      { id: responsavelA.id, nome: "Responsável RLS A" },
-      { id: responsavelB.id, nome: "Responsável RLS B" },
+    await Promise.all([
+      servico.from("responsaveis").update({ nome: "Responsável RLS A" }).eq("id", responsavelA.id),
+      servico.from("responsaveis").update({ nome: "Responsável RLS B" }).eq("id", responsavelB.id),
     ]);
 
     atletaDeA = await novoAtleta("aguardando_consentimento", responsavelA.id);

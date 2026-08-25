@@ -80,9 +80,12 @@ beforeAll(async () => {
     criarClienteAutenticado(`olheiro-${marca}@exemplo.test`, { papel: "olheiro_verificado" }),
   ]);
 
-  await servico.from("responsaveis").insert([
-    { id: responsavelA.id, nome: "Responsável A" },
-    { id: responsavelB.id, nome: "Responsável B" },
+  // O gatilho de signup (migration 0004) já criou as linhas em `responsaveis`
+  // com nome nulo assim que `admin.createUser` inseriu em auth.users; um
+  // insert aqui colidiria com a PK. Só damos nome às fixtures com update.
+  await Promise.all([
+    servico.from("responsaveis").update({ nome: "Responsável A" }).eq("id", responsavelA.id),
+    servico.from("responsaveis").update({ nome: "Responsável B" }).eq("id", responsavelB.id),
   ]);
 
   atletasA = {} as Record<Estado, string>;
