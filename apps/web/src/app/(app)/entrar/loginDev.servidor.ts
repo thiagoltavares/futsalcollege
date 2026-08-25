@@ -36,14 +36,28 @@ export type UsuarioLoginDev = {
  * Rótulo do seletor: nome (ou e-mail, se o responsável ainda não tiver linha
  * em `responsaveis`) seguido da contagem de atletas — é essa contagem, não
  * um papel adivinhado, que diz se este usuário é útil para testar o painel.
- * Zero atletas, neste ambiente de teste, é sinal de conta de avaliador
- * (nenhum responsável do seed fica sem filho) — deixado explícito para
- * ninguém escolher por engano esperando ver painel cheio.
+ *
+ * Zero atletas costumava virar "avaliador" só por exclusão (nenhum
+ * responsável do seed fica sem filho) — uma heurística que quebra assim que
+ * existe qualquer conta de zero atletas que não seja de profissional. Agora
+ * que `profissionais.user_id` liga a conta de login à página pública (ver
+ * migration 0010), o rótulo usa esse dado real em vez de adivinhar: mostra
+ * a credencial de verdade quando a conta é de um profissional, e um rótulo
+ * neutro ("sem atleta") quando não há nenhum vínculo a mostrar.
  */
-function rotuloUsuarioLoginDev(identificacao: string, quantidadeAtletas: number): string {
-  if (quantidadeAtletas === 0) return `${identificacao} — avaliador, sem atleta`;
-  const sufixo = quantidadeAtletas === 1 ? "1 atleta" : `${quantidadeAtletas} atletas`;
-  return `${identificacao} — ${sufixo}`;
+function rotuloUsuarioLoginDev(
+  identificacao: string,
+  quantidadeAtletas: number,
+  profissional: { credencial: string | null } | null,
+): string {
+  if (quantidadeAtletas > 0) {
+    const sufixo = quantidadeAtletas === 1 ? "1 atleta" : `${quantidadeAtletas} atletas`;
+    return `${identificacao} — ${sufixo}`;
+  }
+  if (profissional) {
+    return `${identificacao} — profissional${profissional.credencial ? ` (${profissional.credencial})` : ""}`;
+  }
+  return `${identificacao} — sem atleta`;
 }
 
 /**
@@ -74,9 +88,10 @@ export async function listarUsuariosLoginDev(): Promise<UsuarioLoginDev[]> {
   const ids = usuarios.users.map((u) => u.id);
   if (ids.length === 0) return [];
 
-  const [{ data: atletas }, { data: responsaveis }] = await Promise.all([
+  const [{ data: atletas }, { data: responsaveis }, { data: profissionais }] = await Promise.all([
     admin.from("atletas").select("responsavel_id").in("responsavel_id", ids),
     admin.from("responsaveis").select("id, nome").in("id", ids),
+    admin.from("profissionais").select("user_id, credencial").in("user_id", ids),
   ]);
 
   const filhosPorResponsavel = new Map<string, number>();
@@ -85,6 +100,12 @@ export async function listarUsuariosLoginDev(): Promise<UsuarioLoginDev[]> {
   }
 
   const nomePorId = new Map((responsaveis ?? []).map((r) => [r.id, r.nome]));
+
+  const profissionalPorId = new Map(
+    (profissionais ?? [])
+      .filter((p): p is typeof p & { user_id: string } => Boolean(p.user_id))
+      .map((p) => [p.user_id, { credencial: p.credencial }]),
+  );
 
   return usuarios.users
     .filter((u): u is typeof u & { email: string } => Boolean(u.email))
@@ -97,7 +118,7 @@ export async function listarUsuariosLoginDev(): Promise<UsuarioLoginDev[]> {
         id: u.id,
         email: u.email,
         quantidadeAtletas,
-        rotulo: rotuloUsuarioLoginDev(identificacao, quantidadeAtletas),
+        rotulo: rotuloUsuarioLoginDev(identificacao, quantidadeAtletas, profissionalPorId.get(u.id) ?? null),
       };
     })
     .sort(

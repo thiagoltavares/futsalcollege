@@ -10,9 +10,11 @@ import { Aviso, Botao, Campo, Cartao, Selecao } from "@/ui";
  * `entrarComoDev`, que checa as duas travas de novo antes de criar sessão.
  *
  * A lista já chega ordenada (mais atletas primeiro) de `listarUsuariosLoginDev`
- * — aqui só separamos em dois `<optgroup>`, responsáveis com atleta e
- * avaliadores sem nenhum, para que quem tem interesse em ver o painel cheio
- * nunca escolha por engano um avaliador vazio.
+ * — aqui só separamos em dois `<optgroup>`, com atleta e sem atleta, para
+ * que quem tem interesse em ver o painel cheio nunca escolha por engano uma
+ * conta sem nenhum. O rótulo de cada opção (não o cabeçalho do grupo) é
+ * quem diz, com dado real de `profissionais`, se a conta sem atleta é de um
+ * profissional — ver `rotuloUsuarioLoginDev` em `loginDev.servidor.ts`.
  */
 export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
   const comAtleta = usuarios.filter((u) => u.quantidadeAtletas > 0);
@@ -53,7 +55,7 @@ export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
                   </optgroup>
                 )}
                 {semAtleta.length > 0 && (
-                  <optgroup label="Avaliadores (sem atleta)">
+                  <optgroup label="Sem atleta">
                     {semAtleta.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.rotulo}

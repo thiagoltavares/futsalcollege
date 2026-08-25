@@ -67,6 +67,34 @@ function primeiroValor(valor: string | string[] | undefined): string {
   return valor ?? "";
 }
 
+// 50 perfis hoje, tendência de crescer (ver AGENTS/brief da rodada) — a
+// grade agora pagina em vez de despejar tudo numa lista só. `TAMANHO_PAGINA`
+// é quantos cartões cabem numa página; `MAX_CANDIDATOS` é até quantas linhas
+// a consulta busca no banco antes de paginar em memória — grande o
+// suficiente para o filtro "Só com avaliação publicada" (aplicado depois da
+// consulta, não pelo banco) continuar correto sem uma segunda query por
+// página. Se o catálogo crescer muito além disso, valeria mover a paginação
+// para o banco (`.range()`) — fora do escopo razoável desta rodada.
+const TAMANHO_PAGINA = 24;
+const MAX_CANDIDATOS = 480;
+
+function hrefComPagina(
+  filtros: { categoria: string; posicao: string; uf: string; busca: string; ordenar: string },
+  somenteAvaliados: boolean,
+  pagina: number,
+): string {
+  const params = new URLSearchParams();
+  if (filtros.busca) params.set("busca", filtros.busca);
+  if (filtros.categoria) params.set("categoria", filtros.categoria);
+  if (filtros.posicao) params.set("posicao", filtros.posicao);
+  if (filtros.uf) params.set("uf", filtros.uf);
+  if (filtros.ordenar === "apelido") params.set("ordenar", filtros.ordenar);
+  if (somenteAvaliados) params.set("avaliados", "1");
+  if (pagina > 1) params.set("pagina", String(pagina));
+  const consulta = params.toString();
+  return consulta ? `/atletas?${consulta}` : "/atletas";
+}
+
 /**
  * Colunas escritas à mão, nunca `select("*")`: só os campos públicos da
  * ficha (mesma lista de `/atleta/[id]`, menos `id`/`apelido` que sempre
@@ -98,7 +126,7 @@ async function buscarAtletas(
       ? consulta.order("apelido", { ascending: true })
       : consulta.order("criado_em", { ascending: false });
 
-  const { data } = await consulta.limit(200);
+  const { data } = await consulta.limit(MAX_CANDIDATOS);
   return data ?? [];
 }
 
@@ -128,7 +156,13 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
     atletas.map((a) => a.id),
   );
 
-  const lista = somenteAvaliados ? atletas.filter((a) => resumoAvaliacoes.has(a.id)) : atletas;
+  const listaFiltrada = somenteAvaliados ? atletas.filter((a) => resumoAvaliacoes.has(a.id)) : atletas;
+
+  const totalPaginas = Math.max(1, Math.ceil(listaFiltrada.length / TAMANHO_PAGINA));
+  const paginaPedida = Number(primeiroValor(parametros.pagina)) || 1;
+  const pagina = Math.min(Math.max(1, paginaPedida), totalPaginas);
+  const inicio = (pagina - 1) * TAMANHO_PAGINA;
+  const lista = listaFiltrada.slice(inicio, inicio + TAMANHO_PAGINA);
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -250,6 +284,34 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
                 </li>
               ))}
             </ul>
+          )}
+
+          {totalPaginas > 1 && (
+            <nav className="fc-paginacao" aria-label="Páginas de atletas">
+              {pagina > 1 ? (
+                <Link href={hrefComPagina(filtros, somenteAvaliados, pagina - 1)} className="fc-botao fc-botao--secundario">
+                  ← Anterior
+                </Link>
+              ) : (
+                <span className="fc-botao fc-botao--secundario fc-botao--desabilitado" aria-hidden="true">
+                  ← Anterior
+                </span>
+              )}
+
+              <span className="fc-paginacao__marcador">
+                Página {pagina} de {totalPaginas}
+              </span>
+
+              {pagina < totalPaginas ? (
+                <Link href={hrefComPagina(filtros, somenteAvaliados, pagina + 1)} className="fc-botao fc-botao--secundario">
+                  Próxima →
+                </Link>
+              ) : (
+                <span className="fc-botao fc-botao--secundario fc-botao--desabilitado" aria-hidden="true">
+                  Próxima →
+                </span>
+              )}
+            </nav>
           )}
         </div>
       </main>

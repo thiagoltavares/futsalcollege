@@ -9,16 +9,19 @@ import { Aviso, Botao, Campo, Selecao } from "@/ui";
 const NOTAS = ["1", "2", "3", "4", "5"] as const;
 
 type Grupo = { eixo: Eixo; rotulo: string; itens: ItemRubrica[] };
+type ProfissionalOpcao = { id: string; nome: string; credencial: string | null };
 
 export function FormularioAvaliacao({
   atletaId,
   grupos,
-  nomeInicial,
+  profissionais,
+  profissionalIdInicial,
 }: {
   atletaId: string;
   rubricaVersao: string;
   grupos: Grupo[];
-  nomeInicial: string;
+  profissionais: ProfissionalOpcao[];
+  profissionalIdInicial: string;
 }) {
   const acao = publicarLaudo.bind(null, atletaId);
   const [estado, disparar, pendente] = useActionState(acao, null);
@@ -68,15 +71,22 @@ export function FormularioAvaliacao({
           )}
         </Campo>
 
-        <Campo id="avaliador_nome" rotulo="Seu nome (avaliador)">
+        <Campo
+          id="profissional_id"
+          rotulo="Avaliador"
+          ajuda="Quem assina este laudo — a ficha do atleta vira link para a página dele."
+        >
           {(campo) => (
-            <input
-              {...campo}
-              name="avaliador_nome"
-              required
-              maxLength={120}
-              defaultValue={nomeInicial}
-            />
+            <Selecao {...campo} name="profissional_id" required defaultValue={profissionalIdInicial}>
+              <option value="" disabled>
+                Escolha um profissional
+              </option>
+              {profissionais.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.credencial ? `${p.nome} — ${p.credencial}` : p.nome}
+                </option>
+              ))}
+            </Selecao>
           )}
         </Campo>
 

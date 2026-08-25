@@ -77,6 +77,14 @@ type AtletaCartao = {
   escolinha: { nome: string; credenciada: boolean } | null;
 };
 
+/** Iniciais do nome para o avatar redondo da seção "Quem assina" (ex.: "Flávio Barbosa" → "FB"). */
+function iniciais(nome: string): string {
+  const partes = nome.trim().split(/\s+/);
+  const primeira = partes[0]?.[0] ?? "";
+  const ultima = partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? "") : "";
+  return (primeira + ultima).toUpperCase();
+}
+
 /**
  * Embaralha em memória (Fisher-Yates) — não é ordenação por nota, atividade
  * nem qualquer critério que compare atletas entre si; é só a trava de
@@ -208,6 +216,26 @@ async function buscarContagensEscolinhas(
   return { ativos, avaliados };
 }
 
+/**
+ * Profissional em destaque na seção "Quem assina" — hoje sempre o Flávio
+ * Barbosa (slug `flavio`), mas lido do banco em vez de escrito à mão no
+ * componente: `profissionais.bio` é a mesma fonte que já alimenta
+ * `/profissional/flavio` (migration 0010 + seed), então mudar o texto lá
+ * atualiza a home junto, sem duplicar a informação em dois lugares. `null`
+ * quando a linha some do banco — a seção inteira não renderiza nesse caso,
+ * em vez de inventar um texto de substituição.
+ */
+async function buscarProfissionalDestaque(supabase: SupabaseClient<Database>) {
+  const { data } = await supabase
+    .from("profissionais")
+    .select("nome, slug, credencial, bio")
+    .eq("slug", "flavio")
+    .eq("ativo", true)
+    .maybeSingle();
+
+  return data;
+}
+
 async function buscarNumeros(supabase: SupabaseClient<Database>) {
   const [atletas, escolinhas, laudos] = await Promise.all([
     supabase.from("atletas").select("id", { count: "exact", head: true }).eq("estado", "ativo"),
@@ -252,12 +280,14 @@ const PASSOS = [
 export default async function Home() {
   const supabase = clienteAnonimo();
 
-  const [pool, avaliadosRecentemente, escolinhasDestaque, numeros] = await Promise.all([
-    buscarPoolDestaque(supabase),
-    buscarAvaliadosRecentemente(supabase),
-    buscarEscolinhasDestaque(supabase),
-    buscarNumeros(supabase),
-  ]);
+  const [pool, avaliadosRecentemente, escolinhasDestaque, numeros, profissionalDestaque] =
+    await Promise.all([
+      buscarPoolDestaque(supabase),
+      buscarAvaliadosRecentemente(supabase),
+      buscarEscolinhasDestaque(supabase),
+      buscarNumeros(supabase),
+      buscarProfissionalDestaque(supabase),
+    ]);
 
   const destaque = embaralhar(pool).slice(0, 12);
   const [resumoAvaliacoes, contagensEscolinhas] = await Promise.all([
@@ -502,38 +532,40 @@ export default async function Home() {
         </section>
 
         {/* ============================ AUTORIDADE ======================== */}
-        <section id="flavio" className="fc-home-secao">
-          <div className="fc-container">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem assina</p>
-            <h2 className="fc-titulo">A avaliação tem nome e trajetória</h2>
+        {profissionalDestaque && (
+          <section id="flavio" className="fc-home-secao">
+            <div className="fc-container">
+              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem assina</p>
+              <h2 className="fc-titulo">A avaliação tem nome e trajetória</h2>
 
-            <Cartao className="fc-home-autoridade fc-home-eixo-nota">
-              <div className="fc-home-autoridade__cabeca">
-                <span className="fc-home-avatar" aria-hidden="true">
-                  FB
-                </span>
-                <div>
-                  <p className="fc-home-autoridade__nome">Flávio Barbosa</p>
-                  <p className="fc-campo__ajuda">
-                    Técnico das seleções de base (Sub-15, Sub-17 e Sub-20) do Futsal Sesc Ceará
-                  </p>
+              <Cartao className="fc-home-autoridade fc-home-eixo-nota">
+                <div className="fc-home-autoridade__cabeca">
+                  <span className="fc-home-avatar" aria-hidden="true">
+                    {iniciais(profissionalDestaque.nome)}
+                  </span>
+                  <div>
+                    <p className="fc-home-autoridade__nome">{profissionalDestaque.nome}</p>
+                    {profissionalDestaque.credencial && (
+                      <p className="fc-campo__ajuda">{profissionalDestaque.credencial}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <p className="fc-subtitulo fc-subtitulo--livre">
-                  Vinte anos de futsal cearense — de artilheiro do Horizonte no Campeonato
-                  Cearense de 2010 a técnico campeão invicto da Taça Liga Ceará 2023, eleito o
-                  melhor técnico do torneio. É essa experiência que forma o método por trás de
-                  cada laudo assinado na plataforma.
-                </p>
-                <Link href="/profissional/flavio" className="fc-botao fc-botao--secundario">
-                  Conhecer a trajetória completa
-                </Link>
-              </div>
-            </Cartao>
-          </div>
-        </section>
+                {profissionalDestaque.bio && (
+                  <div>
+                    <p className="fc-subtitulo fc-subtitulo--livre">{profissionalDestaque.bio}</p>
+                    <Link
+                      href={`/profissional/${profissionalDestaque.slug}`}
+                      className="fc-botao fc-botao--secundario"
+                    >
+                      Conhecer a trajetória completa
+                    </Link>
+                  </div>
+                )}
+              </Cartao>
+            </div>
+          </section>
+        )}
 
         {/* =========================== PRIVACIDADE ========================= */}
         <section id="privacidade" className="fc-home-secao">

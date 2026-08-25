@@ -8,6 +8,13 @@ import { z } from "zod";
  * só o `type` declarado.
  */
 
+// Fonte única dos limites de tamanho de mídia — servidor (`enviarMidia`,
+// que valida de verdade) e cliente (`lib/midia-cliente.ts`, que comprime
+// e avisa antes do upload) importam daqui, em vez de cada um repetir o
+// mesmo número em arquivos diferentes.
+export const TAMANHO_MAX_FOTO_BYTES = 8 * 1024 * 1024; // 8 MB
+export const TAMANHO_MAX_VIDEO_BYTES = 40 * 1024 * 1024; // 40 MB
+
 export const TIPOS_FOTO_PERMITIDOS = [
   "image/jpeg",
   "image/png",

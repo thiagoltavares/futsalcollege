@@ -48,6 +48,13 @@ export type CabecalhoPublicoProps = {
    * para `true` no cliente, depois de consultar a sessão no navegador.
    */
   autenticado?: boolean;
+  /**
+   * `true` remove o link "Entrar" da nav — usado só pela própria página
+   * `/entrar`, que já é a tela de entrar: o link levaria para a página em
+   * que o visitante já está. Sem efeito quando `autenticado` é `true` (a
+   * nav logada nunca mostra "Entrar" de qualquer forma).
+   */
+  ocultarEntrar?: boolean;
 };
 
 /**
@@ -61,7 +68,11 @@ export type CabecalhoPublicoProps = {
  * na própria home quanto a partir de outra rota pública, navegando para a
  * home antes de rolar até a seção.
  */
-export function CabecalhoPublico({ className, autenticado = false }: CabecalhoPublicoProps) {
+export function CabecalhoPublico({
+  className,
+  autenticado = false,
+  ocultarEntrar = false,
+}: CabecalhoPublicoProps) {
   return (
     <header className={cn("fc-cabecalho", className)}>
       <div className="fc-cabecalho-conteudo">
@@ -135,9 +146,11 @@ export function CabecalhoPublico({ className, autenticado = false }: CabecalhoPu
               </button>
             </form>
           ) : (
-            <Link href="/entrar" className="fc-cabecalho-nav__entrar">
-              Entrar
-            </Link>
+            !ocultarEntrar && (
+              <Link href="/entrar" className="fc-cabecalho-nav__entrar">
+                Entrar
+              </Link>
+            )
           )}
         </nav>
       </div>

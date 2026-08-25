@@ -24,6 +24,29 @@ export async function publicarLaudo(
 
   if (!rubrica) return { erro: "Nenhuma rubrica ativa no momento." };
 
+  // O avaliador é um profissional cadastrado, nunca texto livre vindo do
+  // cliente (ver AGENTS/brief da rodada — antes disto, todo laudo criado
+  // pela tela nascia órfão de `profissional_id`). Busca de novo no
+  // servidor, pela mesma razão de nunca confiar na rubrica devolvida pelo
+  // FormData: o id escolhido prova só a intenção, o nome que vai gravado em
+  // `avaliador_nome` (snapshot imutável do momento da assinatura) é sempre
+  // o que está no banco agora, nunca o que a tela mandou de volta.
+  const profissionalId = formulario.get("profissional_id");
+  if (typeof profissionalId !== "string" || !profissionalId) {
+    return { erro: "Escolha um profissional para assinar o laudo." };
+  }
+
+  const { data: profissional } = await supabase
+    .from("profissionais")
+    .select("id, nome")
+    .eq("id", profissionalId)
+    .eq("ativo", true)
+    .maybeSingle();
+
+  if (!profissional) {
+    return { erro: "Esse profissional não está mais disponível. Escolha outro da lista." };
+  }
+
   const itens = rubrica.itens as unknown as ItemRubrica[];
 
   const notas: Record<string, number> = {};
@@ -38,7 +61,7 @@ export async function publicarLaudo(
 
   const analise = esquemaLaudo.safeParse({
     contexto: formulario.get("contexto"),
-    avaliador_nome: formulario.get("avaliador_nome"),
+    avaliador_nome: profissional.nome,
     texto: formulario.get("texto") || undefined,
     notas,
   });
@@ -55,6 +78,7 @@ export async function publicarLaudo(
       atleta_id: atletaId,
       avaliador_id: sessao.user.id,
       avaliador_nome: d.avaliador_nome,
+      profissional_id: profissional.id,
       rubrica_versao: rubrica.versao,
       contexto: d.contexto,
       notas: d.notas,

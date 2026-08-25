@@ -1,14 +1,16 @@
 "use server";
 
-import { esquemaLegendaMidia, validarMidia } from "@futsalcollege/core";
+import {
+  esquemaLegendaMidia,
+  TAMANHO_MAX_FOTO_BYTES,
+  TAMANHO_MAX_VIDEO_BYTES,
+  validarMidia,
+} from "@futsalcollege/core";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
 
 type EstadoEnvioMidia = { erro: string } | null;
-
-const TAMANHO_MAX_FOTO = 8 * 1024 * 1024; // 8 MB
-const TAMANHO_MAX_VIDEO = 40 * 1024 * 1024; // 40 MB
 
 async function clienteAutenticado() {
   const supabase = await criarClienteServidor();
@@ -47,9 +49,23 @@ export async function enviarMidia(
   const validacao = validarMidia(arquivo.type, cabecalho);
   if (!validacao.valido) return { erro: validacao.motivo };
 
-  const tamanhoMax = validacao.categoria === "foto" ? TAMANHO_MAX_FOTO : TAMANHO_MAX_VIDEO;
+  const tamanhoMax = validacao.categoria === "foto" ? TAMANHO_MAX_FOTO_BYTES : TAMANHO_MAX_VIDEO_BYTES;
   if (arquivo.size > tamanhoMax) {
-    return { erro: `O arquivo precisa ter menos de ${Math.round(tamanhoMax / (1024 * 1024))} MB.` };
+    const limiteMb = Math.round(tamanhoMax / (1024 * 1024));
+    const tamanhoMb = Math.round(arquivo.size / (1024 * 1024));
+    // Mensagem específica por categoria: quem manda um vídeo de celular
+    // acima do limite precisa saber o que fazer, não só que passou do
+    // tamanho (ver AGENTS/brief da rodada). No caminho comum, com
+    // JavaScript, `FormularioEnvioMidia` já pega isso antes de subir
+    // qualquer byte (`lib/midia-cliente.ts`); este erro aqui é o reforço
+    // para quando o envio chega direto, sem passar pelo cliente.
+    const sugestao =
+      validacao.categoria === "video"
+        ? "Grave em qualidade menor, corte um trecho mais curto ou comprima o vídeo antes de enviar (o próprio app de câmera ou um editor do celular fazem isso)."
+        : "Tire a foto com resolução menor ou envie uma versão já comprimida.";
+    return {
+      erro: `Esse arquivo tem ${tamanhoMb} MB — o limite é ${limiteMb} MB. ${sugestao}`,
+    };
   }
 
   const { supabase, userId } = await clienteAutenticado();
@@ -74,13 +90,26 @@ export async function enviarMidia(
     .select("id", { count: "exact", head: true })
     .eq("atleta_id", atletaId);
 
+  // Só existe UMA capa por atleta (índice único, migration 0011), e capa só
+  // faz sentido numa foto — `avatarMidia` na ficha pública (atleta/[id]/page.tsx)
+  // só olha `tipo === "foto"`. Checa se já existe alguma antes de decidir
+  // quem ganha a marca agora: nem sempre é a primeira linha inserida (um
+  // vídeo enviado primeiro nunca deve levar `capa`, senão trava o índice
+  // único sem nenhuma foto poder assumir depois).
+  const { count: contagemCapa } = await supabase
+    .from("atleta_midias")
+    .select("id", { count: "exact", head: true })
+    .eq("atleta_id", atletaId)
+    .eq("capa", true);
+  const jaTemCapa = (contagemCapa ?? 0) > 0;
+
   const { error: erroLinha } = await supabase.from("atleta_midias").insert({
     atleta_id: atletaId,
     tipo: validacao.categoria,
     storage_path: caminho,
     legenda: legendaAnalise.data ?? null,
     ordem: count ?? 0,
-    capa: (count ?? 0) === 0,
+    capa: validacao.categoria === "foto" && !jaTemCapa,
   });
 
   if (erroLinha) {
@@ -88,6 +117,39 @@ export async function enviarMidia(
     // isto, o arquivo já enviado ficaria órfão no bucket.
     await supabase.storage.from("midias").remove([caminho]);
     return { erro: "Não consegui salvar a mídia. Tente de novo." };
+  }
+
+  // Quadro de capa extraído do vídeo no cliente (ver `lib/midia-cliente.ts`
+  // e `Formulario.tsx`) — só existe quando o arquivo principal era vídeo.
+  // Falha aqui não derruba o envio do vídeo, que já está salvo: sem quadro
+  // de capa, o perfil só fica sem avatar até uma foto de verdade ser
+  // enviada, exatamente como já acontecia antes desta rodada.
+  const capaExtraida = formulario.get("capa_extraida");
+  if (validacao.categoria === "video" && capaExtraida instanceof File && capaExtraida.size > 0) {
+    const cabecalhoCapa = new Uint8Array(await capaExtraida.slice(0, 32).arrayBuffer());
+    const validacaoCapa = validarMidia(capaExtraida.type, cabecalhoCapa);
+
+    if (validacaoCapa.valido && validacaoCapa.categoria === "foto") {
+      const caminhoCapa = `${userId}/${atletaId}/${crypto.randomUUID()}.${extensaoDoTipo(validacaoCapa.tipo)}`;
+
+      const { error: erroEnvioCapa } = await supabase.storage
+        .from("midias")
+        .upload(caminhoCapa, capaExtraida, { contentType: validacaoCapa.tipo, upsert: false });
+
+      if (!erroEnvioCapa) {
+        const { error: erroLinhaCapa } = await supabase.from("atleta_midias").insert({
+          atleta_id: atletaId,
+          tipo: "foto",
+          storage_path: caminhoCapa,
+          legenda: null,
+          ordem: (count ?? 0) + 1,
+          capa: !jaTemCapa,
+        });
+        if (erroLinhaCapa) {
+          await supabase.storage.from("midias").remove([caminhoCapa]);
+        }
+      }
+    }
   }
 
   revalidatePath(`/painel/${atletaId}/midias`);

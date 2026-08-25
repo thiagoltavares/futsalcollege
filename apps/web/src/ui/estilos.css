@@ -1646,6 +1646,26 @@ a.fc-botao--perigo:hover {
   border-top: 1px solid var(--fc-linha);
 }
 
+.fc-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fc-esp-3);
+  margin-top: var(--fc-esp-4);
+  flex-wrap: wrap;
+}
+
+.fc-paginacao__marcador {
+  color: var(--fc-tinta-60);
+  font-size: 0.9375rem;
+  white-space: nowrap;
+}
+
+.fc-botao--desabilitado {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .fc-atletas-item-link {
   display: block;
   text-decoration: none;
@@ -2120,13 +2140,23 @@ a.fc-botao--perigo:hover {
   justify-items: center;
 }
 
-.fc-lightbox__conteudo img,
-.fc-lightbox__conteudo video {
-  max-width: 100%;
+.fc-lightbox__midia {
+  /* Largura alinhada ao `max-width` de `.fc-lightbox`, altura reservada por
+     proporção fixa — evita o salto de layout de o diálogo crescer só quando
+     a imagem/vídeo termina de carregar. */
+  width: min(94vw, 34rem);
+  aspect-ratio: 4 / 3;
   max-height: 78vh;
   border-radius: var(--fc-raio);
-  object-fit: contain;
   background: var(--fc-ink);
+  overflow: hidden;
+}
+
+.fc-lightbox__midia img,
+.fc-lightbox__midia video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .fc-lightbox__fechar {

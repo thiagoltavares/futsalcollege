@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 import "@/ui/estilos.css";
-import { CabecalhoPublico } from "@/ui";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { CabecalhoGrupoApp } from "./CabecalhoGrupoApp";
 
 // Fontes carregadas só neste grupo de rotas (entrar, painel, cadastro,
 // consentimento) — mesmo padrão de /profissional/[slug] e /plan, que também
@@ -40,7 +40,7 @@ export default async function LayoutApp({ children }: { children: ReactNode }) {
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
-      <CabecalhoPublico autenticado={Boolean(sessao.user)} />
+      <CabecalhoGrupoApp autenticado={Boolean(sessao.user)} />
 
       <div className="fc-corpo">{children}</div>
     </div>

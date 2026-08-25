@@ -197,12 +197,20 @@ export function PerfilFicha({ atleta, stats, destaques, midias, laudoAtual, hist
             >
               ×
             </button>
-            {lightbox.tipo === "foto" ? (
-              // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente (local/produção).
-              <img src={lightbox.url} alt="" />
-            ) : (
-              <video src={lightbox.url} controls autoPlay playsInline />
-            )}
+            {/* Caixa de tamanho fixo (mesma largura máxima de `.fc-lightbox`,
+                proporção 4:3 reservada de propósito): sem isto, o diálogo
+                nasce do tamanho do botão fechar e do texto da legenda,
+                só ganhando a altura da mídia quando ela termina de
+                carregar — um salto visível de layout. Reservando o espaço
+                aqui, a caixa já abre no tamanho final. */}
+            <div className="fc-lightbox__midia">
+              {lightbox.tipo === "foto" ? (
+                // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente (local/produção).
+                <img src={lightbox.url} alt="" />
+              ) : (
+                <video src={lightbox.url} controls autoPlay playsInline />
+              )}
+            </div>
             {lightbox.legenda && <p className="fc-lightbox__legenda">{lightbox.legenda}</p>}
           </div>
         )}

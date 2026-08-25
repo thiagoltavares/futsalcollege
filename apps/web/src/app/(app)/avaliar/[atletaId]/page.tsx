@@ -42,10 +42,39 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
     );
   }
 
-  const { data: perfil } = await supabase
-    .from("responsaveis")
-    .select("nome")
-    .eq("id", sessao.user.id)
+  // O avaliador é escolhido entre os profissionais cadastrados — nunca mais
+  // texto livre (ver AGENTS/brief da rodada): só assim o laudo nasce com
+  // `profissional_id` preenchido e o nome vira link na ficha do atleta.
+  // Só profissional `ativo` entra na lista: um profissional desativado não
+  // deve ganhar novo laudo, mesmo que a página antiga dele continue no ar.
+  const { data: profissionais } = await supabase
+    .from("profissionais")
+    .select("id, nome, credencial")
+    .eq("ativo", true)
+    .order("nome", { ascending: true });
+
+  if (!profissionais || profissionais.length === 0) {
+    return (
+      <div className="fc-container fc-container--estreito">
+        <Cartao>
+          <p className="fc-estado-vazio">
+            Nenhum profissional cadastrado no momento. Não é possível avaliar sem escolher quem
+            assina o laudo — peça para um profissional ser cadastrado antes de continuar.
+          </p>
+        </Cartao>
+      </div>
+    );
+  }
+
+  // Se a conta logada tem uma página de profissional vinculada
+  // (`profissionais.user_id`), pré-seleciona ela — poupa um clique de quem
+  // está logado como o próprio profissional. Sem vínculo, a tela não chuta
+  // nada: quem avalia escolhe explicitamente da lista.
+  const { data: profissionalVinculado } = await supabase
+    .from("profissionais")
+    .select("id")
+    .eq("user_id", sessao.user.id)
+    .eq("ativo", true)
     .maybeSingle();
 
   const grupos = agruparPorEixo(rubrica.itens as never);
@@ -75,7 +104,8 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
           atletaId={atleta.id}
           rubricaVersao={rubrica.versao}
           grupos={EIXOS.map((eixo) => ({ eixo, rotulo: ROTULO_EIXO[eixo], itens: grupos[eixo] }))}
-          nomeInicial={perfil?.nome ?? ""}
+          profissionais={profissionais}
+          profissionalIdInicial={profissionalVinculado?.id ?? ""}
         />
       </Cartao>
     </div>
