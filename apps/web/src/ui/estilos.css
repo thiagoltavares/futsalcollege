@@ -181,7 +181,8 @@
   gap: var(--fc-esp-4);
 }
 
-.fc-cabecalho-nav a {
+.fc-cabecalho-nav a,
+.fc-cabecalho-nav button {
   color: var(--fc-osso-70);
   font-size: 0.875rem;
   font-weight: 600;
@@ -189,8 +190,19 @@
   padding: var(--fc-esp-2) 0;
 }
 
-.fc-cabecalho-nav a:hover {
+.fc-cabecalho-nav a:hover,
+.fc-cabecalho-nav button:hover {
   color: var(--fc-osso);
+}
+
+/* Botão "Sair": mesma pinta dos links da nav, mas continua um <button>
+   (dentro de um <form> que aciona a Server Action de logout) — reseta a
+   aparência nativa de botão para não destoar dos links ao lado. */
+.fc-cabecalho-nav__sair {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
 }
 
 .fc-corpo {
@@ -781,7 +793,12 @@ a.fc-botao--perigo:hover {
 }
 
 @media (max-width: 42rem) {
-  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar):not(.fc-cabecalho-nav__atletas) {
+  /* Nav pública (visitante): só "Entrar" e "Atletas" cabem no recorte
+     móvel, o resto (Escolinhas, Como funciona, Avaliação, Clubes) some.
+     Nav da área logada (`fc-cabecalho-nav__logado`) é bem mais curta e fica
+     inteira visível nos dois recortes — inclui Escolinhas e Painel, que o
+     usuário logado precisa alcançar também no celular. */
+  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar):not(.fc-cabecalho-nav__atletas):not(.fc-cabecalho-nav__logado) {
     display: none;
   }
 }

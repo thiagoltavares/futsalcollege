@@ -28,23 +28,22 @@ export function loginDevHabilitado(): boolean {
 export type UsuarioLoginDev = {
   id: string;
   email: string;
-  papel: string;
   rotulo: string;
+  quantidadeAtletas: number;
 };
 
 /**
- * Papel aproximado do usuário, só para rotular o seletor — não é uma coluna
- * nem uma fonte de verdade de permissão. Conta quantos atletas apontam para
- * este responsável: zero filhos aqui, neste ambiente de teste, é sinal de
- * conta de avaliador (nenhum responsável do seed fica sem filho); o corte
- * entre "poucos" e "muitos" só existe para diferenciar
- * responsavel.dois/responsavel.solo (2-3 filhos) de responsavel.multiplos
- * (8 filhos) no seletor.
+ * Rótulo do seletor: nome (ou e-mail, se o responsável ainda não tiver linha
+ * em `responsaveis`) seguido da contagem de atletas — é essa contagem, não
+ * um papel adivinhado, que diz se este usuário é útil para testar o painel.
+ * Zero atletas, neste ambiente de teste, é sinal de conta de avaliador
+ * (nenhum responsável do seed fica sem filho) — deixado explícito para
+ * ninguém escolher por engano esperando ver painel cheio.
  */
-function papelPorContagemDeFilhos(filhos: number): string {
-  if (filhos === 0) return "Avaliador";
-  if (filhos >= 5) return "Responsável — muitos filhos";
-  return "Responsável — poucos filhos";
+function rotuloUsuarioLoginDev(identificacao: string, quantidadeAtletas: number): string {
+  if (quantidadeAtletas === 0) return `${identificacao} — avaliador, sem atleta`;
+  const sufixo = quantidadeAtletas === 1 ? "1 atleta" : `${quantidadeAtletas} atletas`;
+  return `${identificacao} — ${sufixo}`;
 }
 
 /**
@@ -52,6 +51,13 @@ function papelPorContagemDeFilhos(filhos: number): string {
  * criada durante o próprio smoke test) para popular o seletor de login de
  * desenvolvimento. Usa a Admin API (chave secreta) porque `auth.users` não é
  * alcançável por RLS a partir de nenhum cliente comum.
+ *
+ * Ordenada por quantidade de atletas, do maior para o menor: quem serve pra
+ * testar o painel (responsável com filhos) aparece primeiro, e os
+ * avaliadores sem atleta nenhum — que antes vinham no topo só porque
+ * "Avaliador" vem antes de "Responsável" no alfabeto — ficam por último,
+ * claramente identificados no próprio rótulo. `SeletorLoginDev` usa
+ * `quantidadeAtletas` para agrupar a lista em dois `<optgroup>`.
  *
  * Chame só depois de `loginDevHabilitado()` ter devolvido `true` — esta
  * função não repete a checagem, para não esconder de quem lê o call site que
@@ -83,17 +89,18 @@ export async function listarUsuariosLoginDev(): Promise<UsuarioLoginDev[]> {
   return usuarios.users
     .filter((u): u is typeof u & { email: string } => Boolean(u.email))
     .map((u) => {
-      const filhos = filhosPorResponsavel.get(u.id) ?? 0;
-      const papel = papelPorContagemDeFilhos(filhos);
+      const quantidadeAtletas = filhosPorResponsavel.get(u.id) ?? 0;
       const nome = nomePorId.get(u.id);
       const identificacao = nome ? `${nome} (${u.email})` : u.email;
 
       return {
         id: u.id,
         email: u.email,
-        papel,
-        rotulo: `${identificacao} — ${papel}`,
+        quantidadeAtletas,
+        rotulo: rotuloUsuarioLoginDev(identificacao, quantidadeAtletas),
       };
     })
-    .sort((a, b) => a.papel.localeCompare(b.papel) || a.rotulo.localeCompare(b.rotulo));
+    .sort(
+      (a, b) => b.quantidadeAtletas - a.quantidadeAtletas || a.rotulo.localeCompare(b.rotulo),
+    );
 }

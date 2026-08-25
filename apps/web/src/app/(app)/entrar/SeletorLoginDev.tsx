@@ -8,8 +8,16 @@ import { Aviso, Botao, Campo, Cartao, Selecao } from "@/ui";
  * nenhum estado próprio de propósito (nem `"use client"`): é um `<form>`
  * comum, enviado pelo navegador direto para a Server Action
  * `entrarComoDev`, que checa as duas travas de novo antes de criar sessão.
+ *
+ * A lista já chega ordenada (mais atletas primeiro) de `listarUsuariosLoginDev`
+ * — aqui só separamos em dois `<optgroup>`, responsáveis com atleta e
+ * avaliadores sem nenhum, para que quem tem interesse em ver o painel cheio
+ * nunca escolha por engano um avaliador vazio.
  */
 export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
+  const comAtleta = usuarios.filter((u) => u.quantidadeAtletas > 0);
+  const semAtleta = usuarios.filter((u) => u.quantidadeAtletas === 0);
+
   return (
     <Cartao className="fc-cartao--dev">
       <Aviso tipo="aviso">
@@ -25,17 +33,34 @@ export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
         </p>
       ) : (
         <form action={entrarComoDev} className="fc-form" style={{ marginTop: "1.25rem" }}>
-          <Campo id="usuario_id" rotulo="Entrar como">
+          <Campo
+            id="usuario_id"
+            rotulo="Entrar como"
+            ajuda="Responsáveis com mais atletas aparecem primeiro — são os mais úteis para testar o painel."
+          >
             {(campo) => (
               <Selecao {...campo} name="usuario_id" required defaultValue="">
                 <option value="" disabled>
                   Escolha um usuário do seed
                 </option>
-                {usuarios.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.rotulo}
-                  </option>
-                ))}
+                {comAtleta.length > 0 && (
+                  <optgroup label="Responsáveis (com atleta)">
+                    {comAtleta.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.rotulo}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {semAtleta.length > 0 && (
+                  <optgroup label="Avaliadores (sem atleta)">
+                    {semAtleta.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.rotulo}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </Selecao>
             )}
           </Campo>
