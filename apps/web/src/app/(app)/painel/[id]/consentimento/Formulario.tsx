@@ -29,7 +29,7 @@ export function FormularioConsentimento({
         id="documento"
         name="documento"
         type="file"
-        accept="image/*,application/pdf"
+        accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
         required
       />
 

@@ -212,6 +212,56 @@ describe("esquema do atleta — enums opcionais", () => {
   });
 });
 
+/**
+ * Achado de review: um `<select>`/`<input>` de formulário deixado em branco
+ * envia `""`, nunca `undefined`. Um campo opcional que recusa `""` trava o
+ * cadastro para quem não preenche esse campo — mesmo ele sendo opcional por
+ * definição. A correção mora no schema (`objetoComOpcionaisTolerantes`), não
+ * em cada formulário; estes testes cobrem TODOS os campos opcionais do
+ * schema, não uma amostra, e nas duas direções: `""` tem que ser aceito e
+ * resultar em ausente, e um valor inválido não-vazio tem que continuar
+ * sendo recusado (a tolerância não pode virar "aceita qualquer coisa").
+ */
+const CAMPOS_OPCIONAIS = [
+  { campo: "posicao", valorInvalido: "Zagueiro" },
+  { campo: "pe_dominante", valorInvalido: "Canhoto" },
+  { campo: "altura_cm", valorInvalido: 500 },
+  { campo: "peso_kg", valorInvalido: 999 },
+  { campo: "clube_atual", valorInvalido: "A".repeat(81) },
+  { campo: "estado_uf", valorInvalido: "CEA" },
+  { campo: "cidade", valorInvalido: "A".repeat(81) },
+  { campo: "contato_responsavel", valorInvalido: "A".repeat(61) },
+] as const;
+
+describe("esquema do atleta — campos opcionais toleram string vazia (achado de review)", () => {
+  it.each(CAMPOS_OPCIONAIS)(
+    "'$campo': string vazia é aceita e resulta em ausente",
+    ({ campo }) => {
+      const dados = { ...BASE, [campo]: "" };
+      const r = esquemaAtleta.safeParse(dados);
+      expect(r.success).toBe(true);
+      if (r.success) {
+        expect((r.data as Record<string, unknown>)[campo]).toBeUndefined();
+      }
+    },
+  );
+
+  it.each(CAMPOS_OPCIONAIS)(
+    "'$campo': valor inválido não-vazio continua sendo recusado",
+    ({ campo, valorInvalido }) => {
+      const dados = { ...BASE, [campo]: valorInvalido };
+      expect(aceita(dados)).toBe(false);
+    },
+  );
+
+  it("campo obrigatório com string vazia continua sendo recusado (a tolerância é só para opcionais)", () => {
+    expect(aceita({ ...BASE, apelido: "" })).toBe(false);
+    expect(aceita({ ...BASE, nome_completo: "" })).toBe(false);
+    expect(aceita({ ...BASE, categoria: "" })).toBe(false);
+    expect(aceita({ ...BASE, data_nascimento: "" })).toBe(false);
+  });
+});
+
 describe("esquema do atleta — formato de data de nascimento", () => {
   it("aceita AAAA-MM-DD", () => {
     expect(aceita({ ...BASE, data_nascimento: "2013-04-02" })).toBe(true);

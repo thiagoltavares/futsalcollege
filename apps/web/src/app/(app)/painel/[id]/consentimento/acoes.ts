@@ -1,5 +1,6 @@
 "use server";
 
+import { validarDocumento } from "@futsalcollege/core";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { VERSAO_TERMO } from "@/conteudo/termo-2026-08-v1";
@@ -34,6 +35,17 @@ export async function assinarConsentimento(
     return { erro: "O arquivo precisa ter menos de 8 MB." };
   }
 
+  // O `type` de um FormData é informado pelo navegador a partir da extensão
+  // do arquivo e é falsificável (renomear um executável para `.pdf` já
+  // basta) — por isso a checagem real olha para a assinatura dos primeiros
+  // bytes, não só para o `type` declarado. Este é o documento de
+  // identidade do responsável, prova jurídica do consentimento.
+  const cabecalho = new Uint8Array(await documento.slice(0, 32).arrayBuffer());
+  const validacaoDocumento = validarDocumento(documento.type, cabecalho);
+  if (!validacaoDocumento.valido) {
+    return { erro: validacaoDocumento.motivo };
+  }
+
   const supabase = await criarClienteServidor();
   const { data: sessao } = await supabase.auth.getUser();
   if (!sessao.user) redirect("/entrar");
@@ -59,7 +71,14 @@ export async function assinarConsentimento(
     versao_termo: VERSAO_TERMO,
   });
 
-  if (erroConsentimento) return { erro: "Não consegui registrar o consentimento." };
+  if (erroConsentimento) {
+    // Sem isto, o arquivo já enviado ficaria órfão no bucket — ninguém
+    // aponta para ele, mas ele continua ocupando espaço e existindo fora de
+    // qualquer registro. Mesmo padrão de rollback compensatório usado em
+    // `painel/novo/acoes.ts` para o insert de `atleta_identificacao`.
+    await supabase.storage.from("termos").remove([caminho]);
+    return { erro: "Não consegui registrar o consentimento." };
+  }
 
   // O gatilho do banco só deixa passar porque o consentimento acima já existe.
   const { error: erroAtivacao } = await supabase
@@ -79,16 +98,28 @@ export async function revogarConsentimento(atletaId: string) {
   const { data: sessao } = await supabase.auth.getUser();
   if (!sessao.user) redirect("/entrar");
 
-  // O gatilho derrubar_ao_revogar suspende o perfil sozinho.
-  const { error } = await supabase
+  // `.select("id")` força o Postgres a devolver as linhas de fato afetadas
+  // pelo update. Sem isso, um `update` que não muda nenhuma linha não é um
+  // erro para o Postgres nem para o Supabase — "sem erro" não distingue
+  // "revoguei" de "não havia nada vigente para revogar" (inclusive o caso
+  // da RLS filtrar a linha silenciosamente, ex. atleta que não é deste
+  // responsável): as duas situações devolviam `{ ok: true }`, uma
+  // confirmação falsa de que a revogação aconteceu.
+  const { data, error } = await supabase
     .from("consentimentos")
     .update({ revogado_em: new Date().toISOString() })
     .eq("atleta_id", atletaId)
-    .is("revogado_em", null);
+    .is("revogado_em", null)
+    .select("id");
 
-  if (error) return { erro: "Não consegui revogar. Tente de novo." };
+  if (error) return { ok: false as const, erro: "Não consegui revogar. Tente de novo." };
 
+  if (!data || data.length === 0) {
+    return { ok: false as const, erro: "Não havia autorização vigente para revogar." };
+  }
+
+  // O gatilho derrubar_ao_revogar suspende o perfil sozinho.
   revalidatePath(`/atleta/${atletaId}`);
   revalidatePath("/painel");
-  return { ok: true };
+  return { ok: true as const };
 }

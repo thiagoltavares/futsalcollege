@@ -7,7 +7,44 @@ export const CATEGORIAS = [
 
 export const POSICOES = ["Goleiro", "Fixo", "Ala", "Pivô"] as const;
 
-export const esquemaAtleta = z.object({
+/**
+ * Um `<select>` HTML nunca envia `undefined` — na opção padrão ("Não
+ * informada", "Escolha depois" etc.) ele envia `value=""`. Todo `FormData`
+ * de um formulário não controlado tem essa mesma característica para
+ * qualquer campo opcional deixado em branco (select ou input de texto).
+ *
+ * Um campo `z.enum([...]).optional()` recusa `""` (não é um dos valores do
+ * enum) com um erro cru do Zod, em inglês — travando o cadastro para quem
+ * não preenche esse campo, mesmo ele sendo opcional por definição.
+ *
+ * `objetoComOpcionaisTolerantes` resolve isso uma vez, no nível do schema:
+ * detecta automaticamente, campo a campo, quais aceitam ausência
+ * (`campo.safeParse(undefined).success`) e, só para esses, troca `""` por
+ * `undefined` antes da validação de verdade. Um campo obrigatório com `""`
+ * continua sendo recusado normalmente. Qualquer campo opcional acrescentado
+ * depois a um schema construído com esta função herda o comportamento
+ * automaticamente — não é preciso lembrar de tratar caso a caso, nem no
+ * schema nem em cada formulário que o consome.
+ */
+function objetoComOpcionaisTolerantes<Forma extends Record<string, z.ZodType>>(forma: Forma) {
+  const camposOpcionais = Object.entries(forma)
+    .filter(([, campo]) => campo.safeParse(undefined).success)
+    .map(([chave]) => chave);
+
+  return z.preprocess((valor) => {
+    if (typeof valor !== "object" || valor === null || Array.isArray(valor)) {
+      return valor;
+    }
+    const entrada = valor as Record<string, unknown>;
+    const tratado: Record<string, unknown> = { ...entrada };
+    for (const chave of camposOpcionais) {
+      if (tratado[chave] === "") tratado[chave] = undefined;
+    }
+    return tratado;
+  }, z.object(forma));
+}
+
+export const esquemaAtleta = objetoComOpcionaisTolerantes({
   apelido: z.string().min(1, "Informe como ele é chamado").max(40),
   categoria: z.enum(CATEGORIAS),
   posicao: z.enum(POSICOES).optional(),
