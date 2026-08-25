@@ -16,7 +16,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/laudo/[id]/pdf"
   const { data: laudo } = await supabase
     .from("laudos")
     .select(
-      "notas, texto, contexto, rubrica_versao, avaliador_nome, publicado_em, atletas(apelido, categoria)",
+      "notas, texto, contexto, rubrica_versao, avaliador_nome, publicado_em, atletas(apelido, categoria, posicao, escolinhas(nome)), profissionais(credencial, cidade, estado_uf)",
     )
     .eq("id", id)
     .not("publicado_em", "is", null)
@@ -30,15 +30,35 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/laudo/[id]/pdf"
     .eq("versao", laudo.rubrica_versao)
     .single();
 
-  const atleta = laudo.atletas as unknown as { apelido: string; categoria: string };
+  const atleta = laudo.atletas as unknown as {
+    apelido: string;
+    categoria: string;
+    posicao: string | null;
+    escolinhas: { nome: string } | null;
+  };
+  // `profissional_id` é opcional em `laudos` (laudo antigo pode não ter
+  // vínculo — ver migration 0010): sem profissional, a "assinatura" do PDF
+  // cai só no nome gravado no próprio laudo (`avaliador_nome`).
+  const profissional = laudo.profissionais as unknown as {
+    credencial: string | null;
+    cidade: string | null;
+    estado_uf: string | null;
+  } | null;
+  const avaliadorLocal = profissional
+    ? [profissional.cidade, profissional.estado_uf].filter(Boolean).join(" · ") || null
+    : null;
 
   const buffer = await renderToBuffer(
     <LaudoPDF
       dados={{
         apelido: atleta.apelido,
         categoria: atleta.categoria,
+        posicao: atleta.posicao,
+        escolinhaNome: atleta.escolinhas?.nome ?? null,
         contexto: laudo.contexto === "presencial" ? "Presencial" : "Análise de vídeo",
         avaliador: laudo.avaliador_nome,
+        avaliadorCredencial: profissional?.credencial ?? null,
+        avaliadorLocal,
         rubricaVersao: laudo.rubrica_versao,
         publicadoEm: new Date(laudo.publicado_em!).toLocaleDateString("pt-BR"),
         itens: rubrica!.itens as unknown as ItemRubrica[],
