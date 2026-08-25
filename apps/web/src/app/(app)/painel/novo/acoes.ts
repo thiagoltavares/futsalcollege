@@ -42,13 +42,22 @@ export async function criarAtleta(_estadoAnterior: unknown, formulario: FormData
 
   if (error || !atleta) return { erro: "Não consegui salvar. Tente de novo." };
 
-  await supabase.from("atleta_identificacao").insert({
+  const { error: erroIdentificacao } = await supabase.from("atleta_identificacao").insert({
     atleta_id: atleta.id,
     nome_completo: d.nome_completo,
     data_nascimento: d.data_nascimento,
     cidade: d.cidade ?? null,
     contato_responsavel: d.contato_responsavel ?? null,
   });
+
+  if (erroIdentificacao) {
+    // Sem identificação, o atleta ficaria órfão — visível só na própria tela
+    // de consentimento, sem nome nem data de nascimento para colocar no
+    // termo. Desfaz o cadastro em vez de deixar esse estado inconsistente
+    // para a tela seguinte encontrar.
+    await supabase.from("atletas").delete().eq("id", atleta.id);
+    return { erro: "Não consegui salvar. Tente de novo." };
+  }
 
   redirect(`/painel/${atleta.id}/consentimento`);
 }

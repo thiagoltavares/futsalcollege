@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { revogarConsentimento } from "./[id]/consentimento/acoes";
 
 // A Tarefa 11 cria @futsalcollege/api com listarAtletasDoResponsavel; até lá,
 // a consulta fica inline aqui (decisão do coordenador da Tarefa 9, já que o
@@ -13,6 +14,11 @@ const ROTULO_ESTADO: Record<string, string> = {
   suspenso: "Suspenso",
   removido: "Removido",
 };
+
+async function revogar(atletaId: string): Promise<void> {
+  "use server";
+  await revogarConsentimento(atletaId);
+}
 
 export default async function Painel() {
   const supabase = await criarClienteServidor();
@@ -45,10 +51,17 @@ export default async function Painel() {
                 {a.apelido} · {a.categoria}
               </span>
               <span>{ROTULO_ESTADO[a.estado] ?? a.estado}</span>
-              {a.estado === "aguardando_consentimento" && (
+              {(a.estado === "aguardando_consentimento" || a.estado === "suspenso") && (
                 <Link href={`/painel/${a.id}/consentimento`}>Assinar autorização</Link>
               )}
-              {a.estado === "ativo" && <Link href={`/atleta/${a.id}`}>Ver ficha pública</Link>}
+              {a.estado === "ativo" && (
+                <>
+                  <Link href={`/atleta/${a.id}`}>Ver ficha pública</Link>
+                  <form action={revogar.bind(null, a.id)}>
+                    <button type="submit">Revogar autorização</button>
+                  </form>
+                </>
+              )}
             </li>
           ))}
         </ul>
