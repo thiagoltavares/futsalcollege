@@ -31,8 +31,8 @@ export function FormularioAvaliacao({
       {grupos
         .filter((grupo) => grupo.itens.length > 0)
         .map((grupo) => (
-          <fieldset key={grupo.eixo} className="fc-fieldset fc-form">
-            <legend className="fc-fieldset__legenda">{grupo.rotulo}</legend>
+          <fieldset key={grupo.eixo} className="fc-fieldset fc-form" data-eixo={grupo.eixo}>
+            <legend className="fc-fieldset__legenda fc-fieldset__legenda--eixo">{grupo.rotulo}</legend>
 
             {grupo.itens.map((item) => (
               <fieldset key={item.chave} className="fc-item-avaliar">

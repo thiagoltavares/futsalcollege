@@ -57,6 +57,34 @@
   --fc-perigo-suave: rgb(198 47 13 / 0.08);
   --fc-neutro-suave: rgb(20 23 26 / 0.06);
 
+  /* tom de apoio — banda intermediária entre osso/papel e tinta, usada para
+     dar ritmo às seções (ver `.fc-home-secao--areia` mais abaixo) sem
+     recorrer sempre ao par claro/escuro. */
+  --fc-areia: #eadfc2;
+
+  /* eixos da avaliação — cor com função, não só decoração: técnico, físico,
+     tático e comportamental precisam ser reconhecíveis à distância no
+     radar, no formulário de avaliação e nos blocos "como funciona". Técnico
+     reaproveita o "gol" (o pilar central da marca); os outros três ganham
+     tons novos da mesma família de peso/saturação — nunca um arco-íris.
+     Cada eixo expõe uma variante de texto (AA sobre papel/branco/areia) e
+     uma "-forte" para fundo escuro/preenchimento. */
+  --fc-eixo-tecnico: var(--fc-gol);
+  --fc-eixo-tecnico-forte: var(--fc-gol-forte);
+  --fc-eixo-tecnico-suave: var(--fc-gol-suave);
+
+  --fc-eixo-fisico: #0b6d63;
+  --fc-eixo-fisico-forte: #17b8a6;
+  --fc-eixo-fisico-suave: rgb(11 109 99 / 0.09);
+
+  --fc-eixo-tatico: #2a4a8f;
+  --fc-eixo-tatico-forte: #4d78e0;
+  --fc-eixo-tatico-suave: rgb(42 74 143 / 0.09);
+
+  --fc-eixo-comportamental: #7a3f7a;
+  --fc-eixo-comportamental-forte: #c25fc2;
+  --fc-eixo-comportamental-suave: rgb(122 63 122 / 0.09);
+
   /* espaçamento */
   --fc-esp-1: 0.25rem;
   --fc-esp-2: 0.5rem;
@@ -76,7 +104,15 @@
   --fc-medida: 40rem;
   --fc-margem: clamp(1.1rem, 5vw, 2.5rem);
 
-  background: var(--fc-papel);
+  /* Fundo com uma textura muito discreta em vez de osso liso — só um
+     gradiente radial suave no canto do acento da marca, fixo à viewport
+     (não rola com a página) para não interferir com nenhum fundo de seção
+     por cima (`.fc-home-secao--areia/--tinta`, cartões, cabeçalho). Em
+     telas de formulário estreito (entrar, cadastro) é o que evita a
+     sensação de "página em branco esticada"; nas demais, é só uma camada a
+     mais de profundidade atrás do conteúdo. */
+  background: radial-gradient(120% 70% at 100% 0%, rgb(255 59 20 / 0.05), transparent 55%) fixed,
+    var(--fc-papel);
   color: var(--fc-tinta);
   font-family: var(--font-fc-corpo), ui-sans-serif, system-ui, sans-serif;
   min-height: 100svh;
@@ -148,6 +184,21 @@
   gap: var(--fc-esp-4);
 }
 
+/* Acompanha o mesmo degrau de largura de `.fc-container`, para a marca e a
+   nav ficarem alinhadas com o conteúdo de baixo em telas largas em vez de
+   sobrar mais vazio no cabeçalho do que no corpo. */
+@media (min-width: 64rem) {
+  .fc-cabecalho-conteudo {
+    max-width: 72rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .fc-cabecalho-conteudo {
+    max-width: 78rem;
+  }
+}
+
 .fc-marca {
   display: flex;
   align-items: baseline;
@@ -208,16 +259,67 @@
 .fc-corpo {
   flex: 1;
   padding-block: var(--fc-esp-7) var(--fc-esp-7);
-  padding-inline: var(--fc-margem);
+  /* Sem padding horizontal aqui de propósito: quem cuida da margem lateral é
+     `.fc-container` (abaixo). Isso deixa uma seção de largura total — banda
+     de cor, grade de mídia — encostar nas bordas da viewport (sangria)
+     enquanto o conteúdo de dentro continua alinhado ao mesmo eixo. */
 }
 
+/* Largura de conteúdo padrão: listagens, home, painel. Em telas até ~64rem
+   o valor é o mesmo de sempre (64rem) — só cresce a partir daí, para não
+   mudar nada no recorte onde o público principal (mobile) e tablets vivem.
+   Acima disso, 1280px deixava ~130px de vazio de cada lado; agora a régua
+   acompanha telas largas de verdade. */
 .fc-container {
   max-width: 64rem;
   margin-inline: auto;
+  padding-inline: var(--fc-margem);
+}
+
+@media (min-width: 64rem) {
+  .fc-container {
+    max-width: 72rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .fc-container {
+    max-width: 78rem;
+  }
 }
 
 .fc-container--estreito {
   max-width: var(--fc-medida);
+}
+
+/* Largura de "perfil": ficha do atleta, escolinha e profissional, mais a
+   gestão de mídia e o formulário de avaliação — telas que hoje usam
+   `--estreito` (40rem) mas carregam mídia, radar e grade de conquistas que
+   merecem mais fôlego em telas largas. Continua igual a `--estreito` até
+   ~48rem (nenhuma mudança em mobile/tablet) e só cresce depois disso —
+   diferente de formulário curto (entrar, cadastro, consentimento), que
+   continua estreito porque um campo de texto esticado não lê melhor, só
+   fica esquisito. */
+.fc-container--perfil {
+  max-width: var(--fc-medida);
+}
+
+@media (min-width: 48rem) {
+  .fc-container--perfil {
+    max-width: 52rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .fc-container--perfil {
+    max-width: 62rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .fc-container--perfil {
+    max-width: 70rem;
+  }
 }
 
 .fc-cabecalho-pagina {
@@ -244,6 +346,12 @@
   text-transform: uppercase;
   font-size: clamp(1.9rem, 5.5vw, 2.75rem);
   color: var(--fc-tinta);
+}
+
+@media (min-width: 80rem) {
+  .fc-titulo {
+    font-size: 3.25rem;
+  }
 }
 
 .fc-subtitulo {
@@ -281,6 +389,98 @@
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--fc-tinta);
+}
+
+/* Legenda de eixo no formulário de avaliação (Técnico/Físico/Tático/
+   Comportamental): maiúsculo, com uma pastilha de cor do próprio eixo à
+   esquerda — a mesma cor que aparece no radar da ficha pública, para o
+   avaliador reconhecer o eixo antes mesmo de ler o nome. */
+.fc-fieldset__legenda--eixo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fc-fieldset__legenda--eixo::before {
+  content: "";
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: var(--fc-eixo-tecnico);
+  flex: none;
+}
+
+.fc-fieldset[data-eixo="tecnico"] .fc-fieldset__legenda--eixo {
+  color: var(--fc-eixo-tecnico);
+}
+
+.fc-fieldset[data-eixo="fisico"] .fc-fieldset__legenda--eixo {
+  color: var(--fc-eixo-fisico);
+}
+
+.fc-fieldset[data-eixo="fisico"] .fc-fieldset__legenda--eixo::before {
+  background: var(--fc-eixo-fisico);
+}
+
+.fc-fieldset[data-eixo="tatico"] .fc-fieldset__legenda--eixo {
+  color: var(--fc-eixo-tatico);
+}
+
+.fc-fieldset[data-eixo="tatico"] .fc-fieldset__legenda--eixo::before {
+  background: var(--fc-eixo-tatico);
+}
+
+.fc-fieldset[data-eixo="comportamental"] .fc-fieldset__legenda--eixo {
+  color: var(--fc-eixo-comportamental);
+}
+
+.fc-fieldset[data-eixo="comportamental"] .fc-fieldset__legenda--eixo::before {
+  background: var(--fc-eixo-comportamental);
+}
+
+/* A opção marcada dentro de cada eixo usa a cor do eixo em vez do "gol"
+   uniforme — reforça a mesma cor do início ao fim do formulário. */
+.fc-fieldset[data-eixo="fisico"] .fc-escala__opcao:has(input:checked) {
+  border-color: var(--fc-eixo-fisico);
+  background: var(--fc-eixo-fisico-suave);
+}
+
+.fc-fieldset[data-eixo="fisico"] .fc-escala__opcao:has(input:checked) .fc-escala__numero {
+  background: var(--fc-eixo-fisico);
+}
+
+.fc-fieldset[data-eixo="fisico"] input[type="radio"] {
+  accent-color: var(--fc-eixo-fisico);
+}
+
+.fc-fieldset[data-eixo="tatico"] .fc-escala__opcao:has(input:checked) {
+  border-color: var(--fc-eixo-tatico);
+  background: var(--fc-eixo-tatico-suave);
+}
+
+.fc-fieldset[data-eixo="tatico"] .fc-escala__opcao:has(input:checked) .fc-escala__numero {
+  background: var(--fc-eixo-tatico);
+}
+
+.fc-fieldset[data-eixo="tatico"] input[type="radio"] {
+  accent-color: var(--fc-eixo-tatico);
+}
+
+.fc-fieldset[data-eixo="comportamental"] .fc-escala__opcao:has(input:checked) {
+  border-color: var(--fc-eixo-comportamental);
+  background: var(--fc-eixo-comportamental-suave);
+}
+
+.fc-fieldset[data-eixo="comportamental"] .fc-escala__opcao:has(input:checked) .fc-escala__numero {
+  background: var(--fc-eixo-comportamental);
+}
+
+.fc-fieldset[data-eixo="comportamental"] input[type="radio"] {
+  accent-color: var(--fc-eixo-comportamental);
 }
 
 .fc-campo {
@@ -1021,6 +1221,16 @@ a.fc-botao--perigo:hover {
   color: var(--fc-tinta);
 }
 
+/* Mais contraste de escala em telas largas — o teto de 4rem já era
+   alcançado bem antes de 1280px (a fórmula é em vw), então o título parava
+   de crescer justo onde sobrava mais espaço para ele ser grande. */
+@media (min-width: 80rem) {
+  .fc-home-h1 {
+    font-size: 4.75rem;
+    max-width: 54rem;
+  }
+}
+
 .fc-home-lead {
   margin-top: var(--fc-esp-4);
   font-size: 1.125rem;
@@ -1040,6 +1250,49 @@ a.fc-botao--perigo:hover {
 .fc-home-secao {
   padding-block: clamp(2.5rem, 7vw, 4.5rem);
   border-top: 1px solid var(--fc-linha);
+}
+
+/* Ritmo por seção: a home inteira era uma esteira de osso — cada seção
+   igual à anterior, separada só por um fio de 1px. As duas variantes abaixo
+   dão fundo de largura total (a seção já não tem padding horizontal do
+   `.fc-corpo`, só o `.fc-container` de dentro) a seções específicas,
+   alternando com o osso padrão em vez de precisar de linha divisória.
+   Reservado para 2-3 seções por página no máximo — o objetivo é dar
+   respiração, não pintar tudo. */
+.fc-home-secao--areia {
+  background: var(--fc-areia);
+  border-top: none;
+  /* Ajuste fino de contraste: tons a 60%/opacidade pensados para o osso
+     (mais claro) caem um pouco abaixo de AA sobre a areia (mais escura).
+     Escopar as variáveis aqui em vez de mudar as classes de texto mantém
+     o mesmo componente (`.fc-subtitulo`, `.fc-rotulo-secao` etc.) legível
+     nos dois fundos sem duplicar CSS. */
+  --fc-tinta-60: rgb(20 23 26 / 0.65);
+  --fc-gol: var(--fc-gol-hover);
+  --fc-sucesso: #175f3d;
+  --fc-alerta: #7a4800;
+}
+
+.fc-home-secao--tinta {
+  background: var(--fc-ink);
+  border-top: none;
+}
+
+.fc-home-secao--tinta .fc-titulo,
+.fc-home-secao--tinta .fc-home-passo h3 {
+  color: var(--fc-osso);
+}
+
+.fc-home-secao--tinta .fc-subtitulo,
+.fc-home-secao--tinta .fc-home-passo p,
+.fc-home-secao--tinta .fc-home-eixo p {
+  color: var(--fc-osso-70);
+}
+
+.fc-home-secao--tinta .fc-rotulo-secao,
+.fc-home-secao--tinta .fc-rotulo-secao .fc-etiqueta-rotulo,
+.fc-home-secao--tinta .fc-home-passo__numero {
+  color: var(--fc-gol-forte);
 }
 
 .fc-home-secao__cabecalho {
@@ -1082,6 +1335,11 @@ a.fc-botao--perigo:hover {
   margin-top: var(--fc-esp-5);
 }
 
+.fc-home-eixo {
+  border-left: 3px solid var(--fc-eixo-tecnico-forte);
+  padding-left: var(--fc-esp-3);
+}
+
 .fc-home-eixo__rotulo {
   font-size: 0.75rem;
   font-weight: 700;
@@ -1095,6 +1353,34 @@ a.fc-botao--perigo:hover {
   font-size: 0.875rem;
   color: var(--fc-tinta-60);
   line-height: 1.5;
+}
+
+/* Cor com função: cada eixo da avaliação (técnico, físico, tático,
+   comportamental) ganha o mesmo tom em qualquer lugar que apareça — aqui,
+   no radar da ficha pública e no formulário de avaliação. As variáveis
+   "-forte" entram aqui porque este bloco vive dentro da seção `--tinta`. */
+.fc-home-eixo[data-eixo="fisico"] {
+  border-left-color: var(--fc-eixo-fisico-forte);
+}
+
+.fc-home-eixo[data-eixo="fisico"] .fc-home-eixo__rotulo {
+  color: var(--fc-eixo-fisico-forte);
+}
+
+.fc-home-eixo[data-eixo="tatico"] {
+  border-left-color: var(--fc-eixo-tatico-forte);
+}
+
+.fc-home-eixo[data-eixo="tatico"] .fc-home-eixo__rotulo {
+  color: var(--fc-eixo-tatico-forte);
+}
+
+.fc-home-eixo[data-eixo="comportamental"] {
+  border-left-color: var(--fc-eixo-comportamental-forte);
+}
+
+.fc-home-eixo[data-eixo="comportamental"] .fc-home-eixo__rotulo {
+  color: var(--fc-eixo-comportamental-forte);
 }
 
 .fc-home-duplo {
@@ -1236,6 +1522,23 @@ a.fc-botao--perigo:hover {
   border-block: 1px solid var(--fc-linha);
 }
 
+/* Dentro da banda `--areia` (ver home), a seção já dá o respiro vertical e
+   a cor de fundo já separa do resto — a régua/margem duplicada por cima
+   ficaria redundante. */
+.fc-home-secao--numeros.fc-home-secao--areia {
+  padding-block: clamp(2.25rem, 6vw, 3.5rem);
+}
+
+.fc-home-secao--numeros .fc-vitrine-numeros {
+  margin-top: 0;
+  padding-block: 0;
+  border-block: none;
+}
+
+.fc-home-secao--numeros .fc-vitrine-numero__valor {
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+}
+
 .fc-vitrine-numero {
   display: grid;
   gap: 0.2rem;
@@ -1271,6 +1574,18 @@ a.fc-botao--perigo:hover {
   display: grid;
   gap: var(--fc-esp-4);
   grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+}
+
+/* Em telas largas o `.fc-container` cresceu (ver acima) — sem isto, o
+   auto-fill só acrescenta mais colunas finas em vez de dar mais espaço por
+   cartão. Este piso maior (17.5rem) prioriza cartão maior a mais colunas
+   apertadas, até parar de caber e o auto-fill assumir de novo. */
+@media (min-width: 64rem) {
+  .fc-cartoes-atletas,
+  .fc-grade-cartoes,
+  .fc-cartoes-escolinhas {
+    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+  }
 }
 
 .fc-cartao-atleta {
@@ -1439,6 +1754,18 @@ a.fc-botao--perigo:hover {
   gap: 0.5rem;
 }
 
+/* Em mobile, as 5 opções continuam empilhadas (uma por linha) — é o
+   recorte principal e a leitura vertical funciona bem para um texto de
+   âncora que pode ser longo. Em telas largas, empilhar 5 opções por item
+   de rubrica (e a rubrica tem dezenas de itens) faz a página de avaliação
+   rolar bem mais do que precisa; 2-3 colunas usam a largura sem apertar o
+   texto da âncora. */
+@media (min-width: 40rem) {
+  .fc-escala {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  }
+}
+
 .fc-escala__opcao {
   display: flex;
   align-items: flex-start;
@@ -1527,6 +1854,18 @@ a.fc-botao--perigo:hover {
   text-transform: uppercase;
   color: var(--fc-gol);
   margin-bottom: var(--fc-esp-2);
+}
+
+.fc-laudo-eixo__rotulo[data-eixo="fisico"] {
+  color: var(--fc-eixo-fisico);
+}
+
+.fc-laudo-eixo__rotulo[data-eixo="tatico"] {
+  color: var(--fc-eixo-tatico);
+}
+
+.fc-laudo-eixo__rotulo[data-eixo="comportamental"] {
+  color: var(--fc-eixo-comportamental);
 }
 
 .fc-laudo-item {
@@ -2129,6 +2468,16 @@ a.fc-botao--perigo:hover {
   overflow: visible;
 }
 
+/* Mídia é a protagonista da ficha — em telas largas o lightbox de 34rem
+   (o teto pensado pra tela de celular) sobra moldura em volta da foto/
+   vídeo. Acima do recorte móvel, ele cresce para perto do tamanho da
+   viewport. */
+@media (min-width: 48rem) {
+  .fc-lightbox {
+    max-width: min(88vw, 54rem);
+  }
+}
+
 .fc-lightbox::backdrop {
   background: rgb(11 13 14 / 0.86);
 }
@@ -2150,6 +2499,12 @@ a.fc-botao--perigo:hover {
   border-radius: var(--fc-raio);
   background: var(--fc-ink);
   overflow: hidden;
+}
+
+@media (min-width: 48rem) {
+  .fc-lightbox__midia {
+    width: min(88vw, 54rem);
+  }
 }
 
 .fc-lightbox__midia img,
@@ -2234,6 +2589,38 @@ a.fc-botao--perigo:hover {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   fill: var(--fc-tinta-60);
+}
+
+/* Cada vértice/rótulo do radar leva a cor do próprio eixo (ver tokens
+   `--fc-eixo-*` no topo do arquivo) — a área preenchida continua num tom só
+   (o "gol" da marca), porque um polígono não lê bem com quatro cores, mas
+   os pontos e os rótulos ao redor dele sim. */
+.fc-radar__ponto[data-eixo="fisico"] {
+  fill: var(--fc-eixo-fisico);
+}
+
+.fc-radar__ponto[data-eixo="tatico"] {
+  fill: var(--fc-eixo-tatico);
+}
+
+.fc-radar__ponto[data-eixo="comportamental"] {
+  fill: var(--fc-eixo-comportamental);
+}
+
+.fc-radar__rotulo[data-eixo="tecnico"] {
+  fill: var(--fc-eixo-tecnico);
+}
+
+.fc-radar__rotulo[data-eixo="fisico"] {
+  fill: var(--fc-eixo-fisico);
+}
+
+.fc-radar__rotulo[data-eixo="tatico"] {
+  fill: var(--fc-eixo-tatico);
+}
+
+.fc-radar__rotulo[data-eixo="comportamental"] {
+  fill: var(--fc-eixo-comportamental);
 }
 
 .fc-laudo-item {
@@ -2354,6 +2741,15 @@ a.fc-botao--perigo:hover {
   }
 }
 
+/* A partir daqui, `.fc-container--perfil` já alargou (ver acima) — mais uma
+   coluna aproveita a largura extra em vez de deixar os ladrilhos com o
+   mesmo tamanho de uma tela bem mais estreita. */
+@media (min-width: 72rem) {
+  .fc-grade-midia {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
 /* ==========================================================================
    PERFIL SOCIAL — profissional e escolinha. Reaproveita o cabeçalho de
    perfil do atleta (`.fc-perfil-header`, `.fc-abas` acima) e acrescenta só o
@@ -2413,6 +2809,12 @@ a.fc-botao--perigo:hover {
   line-height: 0.95;
   font-size: clamp(1.65rem, 6vw, 2.15rem);
   color: var(--fc-gol);
+}
+
+@media (min-width: 64rem) {
+  .fc-conquista__valor {
+    font-size: 2.75rem;
+  }
 }
 
 .fc-conquista__unidade {

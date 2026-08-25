@@ -424,8 +424,10 @@ function AbaAvaliacoes({
 
       <div className="fc-laudo-eixos">
         {EIXOS.filter((eixo) => laudoAtual.grupos[eixo].length > 0).map((eixo) => (
-          <div key={eixo}>
-            <p className="fc-laudo-eixo__rotulo">{ROTULO_EIXO[eixo]}</p>
+          <div key={eixo} data-eixo={eixo}>
+            <p className="fc-laudo-eixo__rotulo" data-eixo={eixo}>
+              {ROTULO_EIXO[eixo]}
+            </p>
             {laudoAtual.grupos[eixo].map((item) => {
               const nota = laudoAtual.notas[item.chave];
               return (
@@ -546,7 +548,14 @@ function RadarAvaliacao({
       ))}
       <polygon points={pontosArea.map((p) => `${p.x},${p.y}`).join(" ")} className="fc-radar__area" />
       {pontosArea.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r={4} className="fc-radar__ponto" />
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r={4}
+          className="fc-radar__ponto"
+          data-eixo={eixosComNota[i]}
+        />
       ))}
       {pontosBorda.map((p, i) => {
         // Rótulo cresce PARA FORA do centro (nunca centrado sobre o ponto):
@@ -559,7 +568,15 @@ function RadarAvaliacao({
         const rx = centroX + Math.cos(p.angulo) * (raio + 14) + deslocamento;
         const ry = centroY + Math.sin(p.angulo) * (raio + 14);
         return (
-          <text key={i} x={rx} y={ry} textAnchor={ancora} dominantBaseline="middle" className="fc-radar__rotulo">
+          <text
+            key={i}
+            x={rx}
+            y={ry}
+            textAnchor={ancora}
+            dominantBaseline="middle"
+            className="fc-radar__rotulo"
+            data-eixo={eixosComNota[i]}
+          >
             {ROTULO_EIXO_RADAR[eixosComNota[i]!]}
           </text>
         );

@@ -172,7 +172,7 @@ export default async function ProfissionalDetalhe({
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">
-        <div className="fc-container fc-container--estreito">
+        <div className="fc-container fc-container--perfil">
           <PerfilProfissional
             profissional={{
               nome: profissional.nome,

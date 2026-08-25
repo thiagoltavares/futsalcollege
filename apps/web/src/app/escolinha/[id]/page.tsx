@@ -119,7 +119,7 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">
-        <div className="fc-container fc-container--estreito">
+        <div className="fc-container fc-container--perfil">
           <p className="fc-etiqueta-rotulo" style={{ marginBottom: "0.75rem" }}>
             <Link href="/escolinhas">← Escolinhas</Link>
           </p>

@@ -252,11 +252,23 @@ async function buscarNumeros(supabase: SupabaseClient<Database>) {
 
 const PILLS_CATEGORIA = ["Sub-9", "Sub-11", "Sub-13", "Sub-15", "Sub-17", "Sub-20"] as const;
 
+// `chave` alimenta `data-eixo` (ver `.fc-home-eixo[data-eixo]` em
+// estilos.css) — mesma chave que a rubrica usa (`@futsalcollege/core`), para
+// o mesmo eixo levar sempre a mesma cor aqui, no radar da ficha pública e no
+// formulário de avaliação.
 const EIXOS = [
-  { nome: "Técnico", texto: "Domínio de bola, passe, finalização, 1x1." },
-  { nome: "Físico", texto: "Velocidade, resistência, coordenação — medidos com protocolo, não a olho." },
-  { nome: "Tático", texto: "Leitura de jogo, posicionamento, decisão sob pressão." },
-  { nome: "Comportamental", texto: "Liderança, disciplina, reação ao erro, relação com o time." },
+  { chave: "tecnico", nome: "Técnico", texto: "Domínio de bola, passe, finalização, 1x1." },
+  {
+    chave: "fisico",
+    nome: "Físico",
+    texto: "Velocidade, resistência, coordenação — medidos com protocolo, não a olho.",
+  },
+  { chave: "tatico", nome: "Tático", texto: "Leitura de jogo, posicionamento, decisão sob pressão." },
+  {
+    chave: "comportamental",
+    nome: "Comportamental",
+    texto: "Liderança, disciplina, reação ao erro, relação com o time.",
+  },
 ] as const;
 
 const PASSOS = [
@@ -343,18 +355,20 @@ export default async function Home() {
         </section>
 
         {/* =========================== NÚMEROS =========================== */}
-        <section className="fc-container fc-vitrine-numeros">
-          <div className="fc-vitrine-numero">
-            <span className="fc-vitrine-numero__valor">{numeros.atletas}</span>
-            <span className="fc-vitrine-numero__rotulo">atletas com perfil ativo</span>
-          </div>
-          <div className="fc-vitrine-numero">
-            <span className="fc-vitrine-numero__valor">{numeros.escolinhas}</span>
-            <span className="fc-vitrine-numero__rotulo">escolinhas parceiras</span>
-          </div>
-          <div className="fc-vitrine-numero">
-            <span className="fc-vitrine-numero__valor">{numeros.laudos}</span>
-            <span className="fc-vitrine-numero__rotulo">avaliações técnicas assinadas</span>
+        <section className="fc-home-secao fc-home-secao--areia fc-home-secao--numeros">
+          <div className="fc-container fc-vitrine-numeros">
+            <div className="fc-vitrine-numero">
+              <span className="fc-vitrine-numero__valor">{numeros.atletas}</span>
+              <span className="fc-vitrine-numero__rotulo">atletas com perfil ativo</span>
+            </div>
+            <div className="fc-vitrine-numero">
+              <span className="fc-vitrine-numero__valor">{numeros.escolinhas}</span>
+              <span className="fc-vitrine-numero__rotulo">escolinhas parceiras</span>
+            </div>
+            <div className="fc-vitrine-numero">
+              <span className="fc-vitrine-numero__valor">{numeros.laudos}</span>
+              <span className="fc-vitrine-numero__rotulo">avaliações técnicas assinadas</span>
+            </div>
           </div>
         </section>
 
@@ -391,7 +405,7 @@ export default async function Home() {
 
         {/* ===================== AVALIADOS RECENTEMENTE ==================== */}
         {avaliadosRecentemente.length > 0 && (
-          <section className="fc-home-secao">
+          <section className="fc-home-secao fc-home-secao--areia">
             <div className="fc-container">
               <div className="fc-vitrine-secao-cabecalho">
                 <div>
@@ -467,7 +481,7 @@ export default async function Home() {
         </section>
 
         {/* ======================= COMO FUNCIONA + AVALIAÇÃO =============== */}
-        <section id="como-funciona" className="fc-home-secao">
+        <section id="como-funciona" className="fc-home-secao fc-home-secao--tinta">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">Como funciona</p>
@@ -495,7 +509,7 @@ export default async function Home() {
 
               <div className="fc-home-eixos">
                 {EIXOS.map((eixo) => (
-                  <div key={eixo.nome} className="fc-home-eixo">
+                  <div key={eixo.nome} className="fc-home-eixo" data-eixo={eixo.chave}>
                     <p className="fc-home-eixo__rotulo">{eixo.nome}</p>
                     <p>{eixo.texto}</p>
                   </div>
@@ -533,7 +547,7 @@ export default async function Home() {
 
         {/* ============================ AUTORIDADE ======================== */}
         {profissionalDestaque && (
-          <section id="flavio" className="fc-home-secao">
+          <section id="flavio" className="fc-home-secao fc-home-secao--areia">
             <div className="fc-container">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem assina</p>
               <h2 className="fc-titulo">A avaliação tem nome e trajetória</h2>

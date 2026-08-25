@@ -37,7 +37,7 @@ export default async function GerenciarMidias({ params }: PageProps<"/painel/[id
   const urlPublica = (caminho: string) => supabase.storage.from("midias").getPublicUrl(caminho).data.publicUrl;
 
   return (
-    <div className="fc-container fc-container--estreito">
+    <div className="fc-container fc-container--perfil">
       <div className="fc-cabecalho-pagina">
         <p className="fc-rotulo-secao fc-etiqueta-rotulo">Mídia do atleta</p>
         <h1 className="fc-titulo">{atleta.apelido}</h1>

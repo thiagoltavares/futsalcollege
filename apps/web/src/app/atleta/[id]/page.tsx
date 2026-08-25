@@ -248,7 +248,7 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">
-        <div className="fc-container fc-container--estreito">
+        <div className="fc-container fc-container--perfil">
           <PerfilFicha
             atleta={{
               apelido: ficha.apelido,

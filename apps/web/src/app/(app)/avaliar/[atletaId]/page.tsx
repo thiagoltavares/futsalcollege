@@ -32,7 +32,7 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
 
   if (!rubrica) {
     return (
-      <div className="fc-container fc-container--estreito">
+      <div className="fc-container fc-container--perfil">
         <Cartao>
           <p className="fc-estado-vazio">
             Nenhuma rubrica ativa no momento. Não é possível avaliar sem uma rubrica publicada.
@@ -55,7 +55,7 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
 
   if (!profissionais || profissionais.length === 0) {
     return (
-      <div className="fc-container fc-container--estreito">
+      <div className="fc-container fc-container--perfil">
         <Cartao>
           <p className="fc-estado-vazio">
             Nenhum profissional cadastrado no momento. Não é possível avaliar sem escolher quem
@@ -80,7 +80,7 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
   const grupos = agruparPorEixo(rubrica.itens as never);
 
   return (
-    <div className="fc-container fc-container--estreito">
+    <div className="fc-container fc-container--perfil">
       <div className="fc-cabecalho-pagina">
         <p className="fc-rotulo-secao fc-etiqueta-rotulo">Avaliação técnica</p>
         <div className="fc-item-atleta__linha" style={{ marginTop: "0.35rem" }}>
