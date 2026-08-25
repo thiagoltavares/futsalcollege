@@ -10,6 +10,7 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:tipos": "supabase gen types typescript --local > src/tipos.ts",
+    "seed:midias": "node scripts/seed-midias.ts",
     "typecheck": "tsc --noEmit",
     "test": "supabase status -o env > .env.test && dotenv -e .env.test -- vitest run"
   },

@@ -92,6 +92,12 @@ export default async function Painel() {
                 <div className="fc-item-atleta__acoes">
                   <Etiqueta estado={a.estado}>{ROTULO_ESTADO[a.estado] ?? a.estado}</Etiqueta>
 
+                  {a.estado !== "removido" && (
+                    <Link href={`/painel/${a.id}/midias`} className="fc-botao fc-botao--secundario">
+                      Gerenciar mídia
+                    </Link>
+                  )}
+
                   {(a.estado === "aguardando_consentimento" || a.estado === "suspenso") && (
                     <Link
                       href={`/painel/${a.id}/consentimento`}

@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
-import { agruparPorEixo, EIXOS, ROTULO_CONTEXTO, ROTULO_EIXO, type ItemRubrica } from "@futsalcollege/core";
+import { agruparPorEixo, EIXOS, type Eixo, type ItemRubrica } from "@futsalcollege/core";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
-import { formatarAltura, formatarPeso } from "@/ui/formato";
+import { linhaFisico } from "@/ui/formato";
+import {
+  PerfilFicha,
+  type DestaquePublico,
+  type LaudoDetalhado,
+  type LaudoResumo,
+  type MidiaPublica,
+} from "./PerfilFicha";
 
 export const revalidate = 300;
 
@@ -60,7 +66,9 @@ function clienteAnonimo() {
  * `atleta_identificacao` nem `atleta_saude`; esta lista de colunas é a
  * segunda camada, dentro da própria tabela `atletas`. Nome completo, data de
  * nascimento, cidade e qualquer dado de saúde vivem em outras tabelas e nem
- * chegam a ser pedidos aqui.
+ * chegam a ser pedidos aqui. `criado_em` entrou nesta rodada só para calcular
+ * "temporadas" no cabeçalho — é metadado estrutural (quando o perfil nasceu
+ * na plataforma), não dado que localiza a criança.
  *
  * `cache()` (React) faz `generateMetadata` e o componente da página
  * reaproveitarem a mesma consulta numa única renderização, em vez de bater
@@ -73,7 +81,7 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
   const { data } = await supabase
     .from("atletas")
     .select(
-      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha:escolinhas(id, nome, credenciada)",
+      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(id, nome, credenciada)",
     )
     .eq("id", id)
     .eq("estado", "ativo")
@@ -82,39 +90,103 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
   return data;
 });
 
+/** Mídia pública do atleta — a política `midias_leitura_publica` (migration 0011) já restringe a atleta `ativo`. */
+async function buscarMidiasPublicas(supabase: SupabaseClient<Database>, atletaId: string) {
+  const { data } = await supabase
+    .from("atleta_midias")
+    .select("id, tipo, storage_path, legenda, ordem, capa")
+    .eq("atleta_id", atletaId)
+    .order("ordem", { ascending: true });
+  return data ?? [];
+}
+
+/** Destaques públicos (stories fixos) — mesma régua de leitura de `atleta_midias`. */
+async function buscarDestaquesPublicos(supabase: SupabaseClient<Database>, atletaId: string) {
+  const { data } = await supabase
+    .from("atleta_destaques")
+    .select("id, titulo, ordem, midia:atleta_midias(id, storage_path, tipo)")
+    .eq("atleta_id", atletaId)
+    .order("ordem", { ascending: true });
+  return data ?? [];
+}
+
+function calcularPorEixo(
+  notas: Record<string, number>,
+  itens: ItemRubrica[],
+): Record<Eixo, number | null> {
+  const grupos = agruparPorEixo(itens);
+  const resultado = {} as Record<Eixo, number | null>;
+  for (const eixo of EIXOS) {
+    const itensComNota = grupos[eixo].filter((item) => notas[item.chave] != null);
+    resultado[eixo] =
+      itensComNota.length > 0
+        ? itensComNota.reduce((soma, item) => soma + notas[item.chave]!, 0) / itensComNota.length
+        : null;
+  }
+  return resultado;
+}
+
 /**
- * Último laudo publicado do atleta. A política `laudos_leitura_publica`
- * (migration 0008) já é quem decide se alguma linha volta aqui — publicado
- * e atleta ativo, exatamente a mesma condição de `buscarFichaPublica`. Esta
- * função não ordena nem compara atletas entre si: devolve no máximo UM
- * laudo, do atleta já identificado por `id` — nunca uma lista.
+ * Histórico completo de laudos publicados do atleta, do mais antigo ao mais
+ * recente — diferente da ficha antiga, que só buscava o último. É o que
+ * sustenta a aba "Avaliações" (radar + barras do laudo mais recente) e a
+ * evolução ao longo do tempo. Mesma régua de `laudos_leitura_publica`
+ * (migration 0008): publicado, de atleta ativo, nunca comparando atletas
+ * entre si — cada linha aqui é sempre de UM atleta só.
  */
-async function buscarLaudoPublico(supabase: SupabaseClient<Database>, atletaId: string) {
-  const { data: laudo } = await supabase
+async function buscarHistoricoAvaliacoes(
+  supabase: SupabaseClient<Database>,
+  atletaId: string,
+): Promise<{ atual: LaudoDetalhado | null; historico: LaudoResumo[] }> {
+  const { data: laudos } = await supabase
     .from("laudos")
     .select(
       "id, contexto, avaliador_nome, rubrica_versao, texto, notas, publicado_em, profissional:profissionais(slug, nome)",
     )
     .eq("atleta_id", atletaId)
     .not("publicado_em", "is", null)
-    .order("publicado_em", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order("publicado_em", { ascending: true });
 
-  if (!laudo) return null;
+  if (!laudos || laudos.length === 0) return { atual: null, historico: [] };
 
-  const { data: rubrica } = await supabase
-    .from("rubricas")
-    .select("itens")
-    .eq("versao", laudo.rubrica_versao)
-    .maybeSingle();
+  const versoes = [...new Set(laudos.map((l) => l.rubrica_versao))];
+  const { data: rubricas } = await supabase.from("rubricas").select("versao, itens").in("versao", versoes);
+  const itensPorVersao = new Map<string, ItemRubrica[]>();
+  for (const rubrica of rubricas ?? []) {
+    itensPorVersao.set(rubrica.versao, rubrica.itens as unknown as ItemRubrica[]);
+  }
 
-  if (!rubrica) return null;
+  const resumos: LaudoDetalhado[] = laudos.map((laudo) => {
+    const itens = itensPorVersao.get(laudo.rubrica_versao) ?? [];
+    const notas = laudo.notas as Record<string, number>;
+    const porEixo = calcularPorEixo(notas, itens);
+    const valores = Object.values(porEixo).filter((v): v is number => v != null);
+    const media = valores.length > 0 ? valores.reduce((s, v) => s + v, 0) / valores.length : 0;
 
-  const itens = rubrica.itens as unknown as ItemRubrica[];
-  const notas = laudo.notas as Record<string, number>;
+    return {
+      id: laudo.id,
+      publicadoEm: laudo.publicado_em!,
+      contexto: laudo.contexto,
+      avaliadorNome: laudo.avaliador_nome,
+      profissional: laudo.profissional,
+      texto: laudo.texto,
+      rubricaVersao: laudo.rubrica_versao,
+      porEixo,
+      media,
+      grupos: agruparPorEixo(itens),
+      notas,
+    };
+  });
 
-  return { ...laudo, grupos: agruparPorEixo(itens), notas };
+  return { atual: resumos[resumos.length - 1] ?? null, historico: resumos };
+}
+
+/** "2025-01-10" com hoje em 2026 → 2 temporadas (2025 e 2026). Metadado estrutural, não dado de identificação. */
+function calcularTemporadas(criadoEm: string): number {
+  const inicio = new Date(criadoEm).getFullYear();
+  const agora = new Date().getFullYear();
+  if (!Number.isFinite(inicio)) return 1;
+  return Math.max(1, agora - inicio + 1);
 }
 
 export async function generateMetadata({
@@ -151,148 +223,62 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
 
   if (!ficha) notFound();
 
-  const laudo = await buscarLaudoPublico(supabase, id);
+  const [midiasBrutas, destaquesBrutos, { atual: laudoAtual, historico }] = await Promise.all([
+    buscarMidiasPublicas(supabase, id),
+    buscarDestaquesPublicos(supabase, id),
+    buscarHistoricoAvaliacoes(supabase, id),
+  ]);
 
-  const fisico = [formatarAltura(ficha.altura_cm), formatarPeso(ficha.peso_kg)].filter(Boolean);
+  const urlPublica = (caminho: string) => supabase.storage.from("midias").getPublicUrl(caminho).data.publicUrl;
+
+  const midias: MidiaPublica[] = midiasBrutas.map((m) => ({
+    id: m.id,
+    tipo: m.tipo,
+    url: urlPublica(m.storage_path),
+    legenda: m.legenda,
+    capa: m.capa,
+  }));
+
+  const destaques: DestaquePublico[] = destaquesBrutos.map((d) => ({
+    id: d.id,
+    titulo: d.titulo,
+    midiaUrl: d.midia ? urlPublica(d.midia.storage_path) : null,
+    midiaTipo: d.midia?.tipo ?? null,
+  }));
+
+  const avatarMidia =
+    midias.find((m) => m.capa && m.tipo === "foto") ?? midias.find((m) => m.tipo === "foto") ?? null;
+
+  const fisico = linhaFisico(ficha.altura_cm, ficha.peso_kg);
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
       <CabecalhoPublicoAuto />
 
-      <main className="fc-corpo">
+      <main className="fc-corpo fc-corpo--perfil">
         <div className="fc-container fc-container--estreito">
-          <div className="fc-ficha-hero">
-            <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Ficha esportiva</p>
-            <h1 className="fc-ficha-nome">{ficha.apelido}</h1>
-
-            <div className="fc-ficha-tags">
-              <span className="fc-ficha-tag">{ficha.categoria}</span>
-              {ficha.posicao && <span className="fc-ficha-tag">{ficha.posicao}</span>}
-              {ficha.estado_uf && <span className="fc-ficha-tag">{ficha.estado_uf}</span>}
-            </div>
-          </div>
-
-          <dl className="fc-ficha-grid">
-            {ficha.posicao && (
-              <div className="fc-ficha-item">
-                <dt>Posição</dt>
-                <dd>{ficha.posicao}</dd>
-              </div>
-            )}
-            {ficha.pe_dominante && (
-              <div className="fc-ficha-item">
-                <dt>Pé dominante</dt>
-                <dd>{ficha.pe_dominante}</dd>
-              </div>
-            )}
-            {fisico.length > 0 && (
-              <div className="fc-ficha-item">
-                <dt>Físico</dt>
-                <dd>{fisico.join(" · ")}</dd>
-              </div>
-            )}
-            {ficha.escolinha ? (
-              <div className="fc-ficha-item">
-                <dt>Escolinha</dt>
-                <dd>
-                  <Link href={`/escolinha/${ficha.escolinha.id}`}>{ficha.escolinha.nome}</Link>
-                  {ficha.escolinha.credenciada && (
-                    <span className="fc-etiqueta fc-etiqueta--sucesso fc-ficha-selo-escolinha">
-                      Credenciada
-                    </span>
-                  )}
-                </dd>
-              </div>
-            ) : (
-              ficha.clube_atual && (
-                <div className="fc-ficha-item">
-                  <dt>Clube atual</dt>
-                  <dd>{ficha.clube_atual}</dd>
-                </div>
-              )
-            )}
-            {ficha.estado_uf && (
-              <div className="fc-ficha-item">
-                <dt>Estado</dt>
-                <dd>{ficha.estado_uf}</dd>
-              </div>
-            )}
-          </dl>
-
-          {laudo ? (
-            <section className="fc-laudo" aria-labelledby="fc-laudo-titulo">
-              <div className="fc-laudo__cabecalho">
-                <div>
-                  <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Avaliação técnica</p>
-                  <h2 id="fc-laudo-titulo" className="fc-titulo fc-titulo--card">
-                    Notas por eixo
-                  </h2>
-                </div>
-                <p className="fc-laudo__meta">
-                  Assinado por{" "}
-                  {laudo.profissional ? (
-                    <Link href={`/profissional/${laudo.profissional.slug}`}>
-                      {laudo.avaliador_nome}
-                    </Link>
-                  ) : (
-                    laudo.avaliador_nome
-                  )}{" "}
-                  · {ROTULO_CONTEXTO[laudo.contexto]} · rubrica {laudo.rubrica_versao}
-                  <br />
-                  Publicado em {new Date(laudo.publicado_em!).toLocaleDateString("pt-BR")}
-                </p>
-              </div>
-
-              <div className="fc-laudo-eixos">
-                {EIXOS.filter((eixo) => laudo.grupos[eixo].length > 0).map((eixo) => (
-                  <div key={eixo}>
-                    <p className="fc-laudo-eixo__rotulo">{ROTULO_EIXO[eixo]}</p>
-                    {laudo.grupos[eixo].map((item) => {
-                      const nota = laudo.notas[item.chave];
-                      return (
-                        <div key={item.chave} className="fc-laudo-item">
-                          <span className="fc-laudo-item__rotulo">{item.rotulo}</span>
-                          <span className="fc-laudo-item__nota">
-                            {nota ?? "—"} —{" "}
-                            {nota ? item.ancoras[String(nota) as "1"] : "não avaliado"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-
-              {laudo.texto && <p className="fc-laudo__texto">{laudo.texto}</p>}
-
-              <p className="fc-laudo__rodape">
-                A avaliação compara {ficha.apelido} com o critério da categoria {ficha.categoria}{" "}
-                — nunca com outro atleta.
-              </p>
-
-              <div className="fc-laudo__acoes">
-                <a
-                  href={`/api/laudo/${laudo.id}/pdf`}
-                  className="fc-botao fc-botao--secundario"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Baixar PDF da avaliação
-                </a>
-              </div>
-            </section>
-          ) : (
-            <section className="fc-laudo">
-              <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Avaliação técnica</p>
-              <p className="fc-estado-vazio">Ainda sem avaliação técnica publicada.</p>
-            </section>
-          )}
-
-          <p className="fc-ficha-rodape">
-            Ficha pública do Futsal College. Estatísticas e avaliação são conferidas por quem
-            assina — nome completo, data de nascimento, cidade e vídeos ficam restritos a clube
-            verificado.
-          </p>
+          <PerfilFicha
+            atleta={{
+              apelido: ficha.apelido,
+              categoria: ficha.categoria,
+              posicao: ficha.posicao,
+              peDominante: ficha.pe_dominante,
+              fisico,
+              estadoUf: ficha.estado_uf,
+              escolinhaNome: ficha.escolinha?.nome ?? ficha.clube_atual ?? null,
+              escolinhaId: ficha.escolinha?.id ?? null,
+              escolinhaCredenciada: ficha.escolinha?.credenciada ?? false,
+              avatarUrl: avatarMidia?.url ?? null,
+            }}
+            stats={{
+              avaliacoes: historico.length,
+              temporadas: calcularTemporadas(ficha.criado_em),
+            }}
+            destaques={destaques}
+            midias={midias}
+            laudoAtual={laudoAtual}
+            historico={historico}
+          />
         </div>
       </main>
     </div>

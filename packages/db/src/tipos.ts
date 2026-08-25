@@ -34,6 +34,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      atleta_destaques: {
+        Row: {
+          atleta_id: string
+          criado_em: string
+          id: string
+          midia_id: string | null
+          ordem: number
+          titulo: string
+        }
+        Insert: {
+          atleta_id: string
+          criado_em?: string
+          id?: string
+          midia_id?: string | null
+          ordem?: number
+          titulo: string
+        }
+        Update: {
+          atleta_id?: string
+          criado_em?: string
+          id?: string
+          midia_id?: string | null
+          ordem?: number
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atleta_destaques_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: false
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atleta_destaques_midia_id_fkey"
+            columns: ["midia_id"]
+            isOneToOne: false
+            referencedRelation: "atleta_midias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       atleta_identificacao: {
         Row: {
           atleta_id: string
@@ -61,6 +103,47 @@ export type Database = {
             foreignKeyName: "atleta_identificacao_atleta_id_fkey"
             columns: ["atleta_id"]
             isOneToOne: true
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      atleta_midias: {
+        Row: {
+          atleta_id: string
+          capa: boolean
+          criado_em: string
+          id: string
+          legenda: string | null
+          ordem: number
+          storage_path: string
+          tipo: Database["public"]["Enums"]["tipo_midia"]
+        }
+        Insert: {
+          atleta_id: string
+          capa?: boolean
+          criado_em?: string
+          id?: string
+          legenda?: string | null
+          ordem?: number
+          storage_path: string
+          tipo: Database["public"]["Enums"]["tipo_midia"]
+        }
+        Update: {
+          atleta_id?: string
+          capa?: boolean
+          criado_em?: string
+          id?: string
+          legenda?: string | null
+          ordem?: number
+          storage_path?: string
+          tipo?: Database["public"]["Enums"]["tipo_midia"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atleta_midias_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: false
             referencedRelation: "atletas"
             referencedColumns: ["id"]
           },
@@ -421,6 +504,7 @@ export type Database = {
         | "ativo"
         | "suspenso"
         | "removido"
+      tipo_midia: "foto" | "video"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -559,6 +643,7 @@ export const Constants = {
         "suspenso",
         "removido",
       ],
+      tipo_midia: ["foto", "video"],
     },
   },
 } as const

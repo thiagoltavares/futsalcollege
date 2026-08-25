@@ -1591,3 +1591,665 @@ a.fc-botao--perigo:hover {
 .fc-atletas-item-link:active {
   transform: translateY(1px);
 }
+
+/* ---------- gestão de mídia (painel do responsável) ---------- */
+
+.fc-gestao-midias {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+.fc-gestao-midia {
+  display: grid;
+  gap: var(--fc-esp-3);
+}
+
+.fc-gestao-midia__preview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--fc-raio-sm);
+  overflow: hidden;
+  background: var(--fc-ink);
+}
+
+.fc-gestao-midia__preview img,
+.fc-gestao-midia__preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fc-gestao-midia__tipo,
+.fc-gestao-midia__selo {
+  position: absolute;
+  top: 0.5rem;
+}
+
+.fc-gestao-midia__tipo {
+  left: 0.5rem;
+}
+
+.fc-gestao-midia__selo {
+  right: 0.5rem;
+}
+
+.fc-gestao-midia__corpo {
+  display: grid;
+  gap: var(--fc-esp-3);
+}
+
+.fc-gestao-midia__legenda {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.fc-gestao-midia__legenda textarea {
+  min-height: 3.5rem;
+  resize: vertical;
+}
+
+.fc-gestao-midia__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.fc-gestao-midia__acoes .fc-botao {
+  padding-inline: 0.85rem;
+  min-height: 2.25rem;
+  font-size: 0.8125rem;
+}
+
+/* ==========================================================================
+   PERFIL SOCIAL — ficha pública do atleta (v2). Referência declarada: perfil
+   do Instagram — foto, destaques, abas, grade de mídia, avaliação visual.
+   Mobile é o dispositivo principal: tudo abaixo é desenhado primeiro para
+   ~375px, com telas largas como consequência (media query no fim do bloco).
+   ========================================================================== */
+
+.fc-corpo--perfil {
+  padding-block-start: var(--fc-esp-5);
+}
+
+/* ---------- cabeçalho de perfil ---------- */
+
+.fc-perfil-header {
+  background: var(--fc-ink);
+  color: var(--fc-osso);
+  border-radius: var(--fc-raio);
+  padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 5vw, 2.5rem);
+  border-bottom: 3px solid var(--fc-gol-forte);
+}
+
+.fc-perfil-header__topo {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 4vw, 1.75rem);
+}
+
+.fc-perfil-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(3.75rem, 16vw, 6rem);
+  height: clamp(3.75rem, 16vw, 6rem);
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  color: var(--fc-osso);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  box-shadow: 0 0 0 3px rgb(244 240 232 / 0.18), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+}
+
+.fc-perfil-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fc-perfil-stats {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(0.35rem, 2vw, 1.5rem);
+  min-width: 0;
+}
+
+.fc-perfil-stats > div {
+  display: grid;
+  gap: 0.15rem;
+  text-align: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.fc-perfil-stats dd {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.15rem, 5vw, 1.6rem);
+  color: var(--fc-gol-forte);
+  line-height: 1;
+}
+
+.fc-perfil-stats dd.fc-perfil-stats__texto {
+  font-family: var(--font-fc-corpo), ui-sans-serif, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--fc-osso);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 6.5rem;
+}
+
+.fc-perfil-stats dt {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fc-osso-45);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+@media (min-width: 26rem) {
+  .fc-perfil-stats dt {
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+.fc-perfil-nome {
+  margin-top: clamp(1.1rem, 4vw, 1.5rem);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  font-size: clamp(2.25rem, 9vw, 3.5rem);
+  overflow-wrap: anywhere;
+}
+
+.fc-perfil-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--fc-esp-3);
+}
+
+.fc-ficha-tag--selo {
+  color: var(--fc-osso);
+  background: rgb(31 122 77 / 0.35);
+  border-color: rgb(31 122 77 / 0.5);
+}
+
+/* ---------- destaques (stories fixos) ---------- */
+
+.fc-destaques {
+  display: flex;
+  gap: clamp(0.9rem, 3vw, 1.25rem);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: var(--fc-esp-5) var(--fc-esp-1) var(--fc-esp-2);
+  margin-inline: calc(var(--fc-esp-1) * -1);
+  scrollbar-width: none;
+}
+
+.fc-destaques::-webkit-scrollbar {
+  display: none;
+}
+
+.fc-destaque {
+  flex: none;
+  scroll-snap-align: start;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: 4.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem;
+}
+
+.fc-destaque__circulo {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 999px;
+  padding: 3px;
+  background: linear-gradient(135deg, var(--fc-gol-forte), var(--fc-alerta) 55%, var(--fc-gol));
+  transition: transform 0.15s ease;
+}
+
+.fc-destaque:hover .fc-destaque__circulo,
+.fc-destaque:focus-visible .fc-destaque__circulo {
+  transform: scale(1.06);
+}
+
+.fc-destaque:active .fc-destaque__circulo {
+  transform: scale(0.97);
+}
+
+.fc-destaque__circulo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid var(--fc-branco);
+  display: block;
+}
+
+.fc-destaque__sem-midia {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--fc-papel);
+  border: 2px solid var(--fc-branco);
+  color: var(--fc-gol);
+  font-size: 1.25rem;
+}
+
+.fc-destaque__titulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fc-tinta-80);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ---------- abas ---------- */
+
+.fc-abas {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 0.25rem;
+  background: var(--fc-papel);
+  border-bottom: 1.5px solid var(--fc-linha);
+  margin-top: var(--fc-esp-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.fc-abas::-webkit-scrollbar {
+  display: none;
+}
+
+.fc-aba-botao {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  padding: 0.85rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--fc-tinta-40);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.fc-aba-botao:hover {
+  color: var(--fc-tinta-80);
+}
+
+.fc-aba-botao[data-ativo] {
+  color: var(--fc-tinta);
+  border-bottom-color: var(--fc-gol);
+}
+
+@keyframes fc-aba-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fc-aba-painel {
+  padding-block: var(--fc-esp-5);
+  animation: fc-aba-entrar 0.28s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-aba-painel {
+    animation: none;
+  }
+}
+
+/* ---------- visão geral ---------- */
+
+.fc-visao-geral {
+  display: grid;
+  gap: var(--fc-esp-6);
+}
+
+.fc-visao-geral__sobre {
+  margin-top: 0;
+}
+
+.fc-visao-geral__secao {
+  display: grid;
+  gap: var(--fc-esp-3);
+}
+
+.fc-visao-geral__cabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+}
+
+.fc-visao-geral__radar {
+  display: flex;
+  justify-content: center;
+}
+
+.fc-link-botao {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--fc-gol);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.fc-link-botao:hover {
+  color: var(--fc-gol-hover);
+  text-decoration: underline;
+}
+
+/* ---------- grade de mídia ---------- */
+
+.fc-grade-midia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.fc-grade-midia--compacta {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.fc-midia-tile {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--fc-papel-3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.fc-midia-tile img,
+.fc-midia-tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.fc-midia-tile:hover img,
+.fc-midia-tile:hover video {
+  transform: scale(1.04);
+}
+
+.fc-midia-tile__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--fc-branco);
+  font-size: 1.1rem;
+  text-shadow: 0 2px 8px rgb(0 0 0 / 0.55);
+  background: linear-gradient(rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.35));
+  pointer-events: none;
+}
+
+/* ---------- lightbox (destaque, foto, vídeo em tela cheia) ---------- */
+
+.fc-lightbox {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: min(94vw, 34rem);
+  max-height: 92vh;
+  margin: auto;
+  overflow: visible;
+}
+
+.fc-lightbox::backdrop {
+  background: rgb(11 13 14 / 0.86);
+}
+
+.fc-lightbox__conteudo {
+  position: relative;
+  display: grid;
+  gap: var(--fc-esp-3);
+  justify-items: center;
+}
+
+.fc-lightbox__conteudo img,
+.fc-lightbox__conteudo video {
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: var(--fc-raio);
+  object-fit: contain;
+  background: var(--fc-ink);
+}
+
+.fc-lightbox__fechar {
+  position: absolute;
+  top: -2.75rem;
+  right: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: none;
+  background: rgb(244 240 232 / 0.14);
+  color: var(--fc-osso);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fc-lightbox__fechar:hover {
+  background: rgb(244 240 232 / 0.24);
+}
+
+.fc-lightbox__legenda {
+  color: var(--fc-osso-70);
+  font-size: 0.9375rem;
+  text-align: center;
+  max-width: 28rem;
+}
+
+/* ---------- avaliação: radar, barras, evolução ---------- */
+
+.fc-laudo--aba {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.fc-radar {
+  display: block;
+  width: 100%;
+  max-width: 15.5rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+.fc-radar--grande {
+  max-width: 19rem;
+  margin-block: var(--fc-esp-5);
+}
+
+.fc-radar__grade {
+  fill: none;
+  stroke: var(--fc-linha);
+  stroke-width: 1;
+}
+
+.fc-radar__eixo {
+  stroke: var(--fc-linha-forte);
+  stroke-width: 1;
+}
+
+.fc-radar__area {
+  fill: var(--fc-gol-suave);
+  stroke: var(--fc-gol);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.fc-radar__ponto {
+  fill: var(--fc-gol);
+}
+
+.fc-radar__rotulo {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  fill: var(--fc-tinta-60);
+}
+
+.fc-laudo-item {
+  display: block;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--fc-linha);
+}
+
+.fc-laudo-item:last-child {
+  border-bottom: 0;
+}
+
+.fc-laudo-item__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  font-size: 0.9375rem;
+}
+
+.fc-laudo-item__barra-fundo {
+  margin-top: 0.4rem;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--fc-neutro-suave);
+  overflow: hidden;
+}
+
+.fc-laudo-item__barra-preenchido {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--fc-gol);
+  transition: width 0.4s ease;
+}
+
+.fc-laudo-item__ancora {
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--fc-tinta-40);
+}
+
+.fc-evolucao-bloco {
+  margin-top: var(--fc-esp-6);
+  padding-top: var(--fc-esp-5);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc-evolucao {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  margin-top: var(--fc-esp-3);
+}
+
+.fc-evolucao__linha {
+  fill: none;
+  stroke: var(--fc-gol);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fc-evolucao__ponto {
+  fill: var(--fc-branco);
+  stroke: var(--fc-gol);
+  stroke-width: 2;
+}
+
+.fc-evolucao-lista {
+  margin-top: var(--fc-esp-3);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.fc-evolucao-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--fc-linha);
+}
+
+.fc-evolucao-item:last-child {
+  border-bottom: 0;
+}
+
+.fc-evolucao-item__data {
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-evolucao-item__meta {
+  color: var(--fc-tinta-60);
+  flex: 1;
+  min-width: 10rem;
+}
+
+/* ---------- telas largas ---------- */
+
+@media (min-width: 40rem) {
+  .fc-grade-midia {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+
+  .fc-perfil-stats dd.fc-perfil-stats__texto {
+    max-width: none;
+  }
+}
+
+@media (min-width: 56rem) {
+  .fc-grade-midia {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
