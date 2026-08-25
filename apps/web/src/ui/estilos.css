@@ -104,6 +104,17 @@
   --fc-medida: 40rem;
   --fc-margem: clamp(1.1rem, 5vw, 2.5rem);
 
+  /* Altura do cabeçalho fixo (`.fc-cabecalho`, border-bottom incluído —
+     `border-box` do preflight do Tailwind). Um único valor para toda
+     largura de tela: o botão do menu móvel (`.fc-cabecalho-menu__botao`)
+     já reserva `--fc-alvo` (2.75rem) de alvo de toque, e esta altura
+     sobra um pouco acima disso para não ficar apertado. Quem precisa
+     compensar o espaço que o cabeçalho fixo tira do fluxo normal
+     (`.fc-pagina`), grudar logo abaixo dele (`.fc-abas`) ou não deixar um
+     título de âncora escondido atrás dele (`scroll-margin-top`) usa esta
+     mesma variável — um só número, um só lugar para ajustar. */
+  --fc-cabecalho-altura: 3.75rem;
+
   /* Fundo com uma textura muito discreta em vez de osso liso — só um
      gradiente radial suave no canto do acento da marca, fixo à viewport
      (não rola com a página) para não interferir com nenhum fundo de seção
@@ -166,18 +177,34 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+  /* Compensa o cabeçalho fixo (posicionado fora do fluxo, ver
+     `.fc-cabecalho` abaixo): sem este respiro, `.fc-corpo` — o primeiro
+     filho depois dele — nasceria coberto atrás do cabeçalho. */
+  padding-top: var(--fc-cabecalho-altura);
 }
 
+/* Fixo no topo ao rolar (antes acompanhava a página). `z-index` alto o
+   bastante para ficar acima de tudo que rola por baixo — inclusive
+   `.fc-abas` (10) mais abaixo, que gruda logo abaixo dele em vez de atrás
+   (ver `.fc-abas`, que soma `--fc-cabecalho-altura` ao próprio `top`). */
 .fc-cabecalho {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 30;
+  height: var(--fc-cabecalho-altura);
+  display: flex;
+  align-items: center;
   background: var(--fc-ink);
   color: var(--fc-osso);
   border-bottom: 3px solid var(--fc-gol-forte);
 }
 
 .fc-cabecalho-conteudo {
+  width: 100%;
   max-width: 64rem;
   margin-inline: auto;
-  padding: var(--fc-esp-4) var(--fc-margem);
+  padding-inline: var(--fc-margem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -197,6 +224,17 @@
   .fc-cabecalho-conteudo {
     max-width: 78rem;
   }
+}
+
+/* Alvos de âncora da nav pública (`/#como-funciona`, `/#avaliacao`,
+   `/#clubes` — ver CabecalhoPublico.tsx): sem isto, rolar até a âncora
+   para o título logo atrás do cabeçalho fixo, escondido por baixo dele. Um
+   pouco mais que `--fc-cabecalho-altura` (respiro de `--fc-esp-4`) para o
+   título não ficar colado na borda do cabeçalho. */
+#como-funciona,
+#avaliacao,
+#clubes {
+  scroll-margin-top: calc(var(--fc-cabecalho-altura) + var(--fc-esp-4));
 }
 
 .fc-marca {
@@ -1723,64 +1761,151 @@ a.fc-botao--perigo:hover {
   grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
 }
 
-/* `height: 100%` + `align-content: start`: mesma disciplina do cartão de
-   atleta (ver acima) para o cartão não ficar mais baixo que o vizinho
-   credenciado da mesma linha — o selo (último elemento, condicional) não
-   precisa de faixa própria porque nada abaixo dele depende da posição, só
-   a altura total do cartão varia, e isso a grade já resolve sozinha. */
+/* Cartão de escolinha — cinco faixas fixas (identidade, nome, cidade/UF,
+   números, selos), sempre na mesma ordem e sempre com a mesma altura por
+   faixa, mesma disciplina do cartão de atleta logo acima (ver
+   CartaoAtleta.tsx e CartaoEscolinha.tsx para a estrutura completa). */
 .fc-cartao-escolinha {
   display: grid;
   align-content: start;
-  gap: 0.3rem;
   height: 100%;
+  padding: 0;
+  overflow: hidden;
 }
 
+/* Faixa 1 — identidade: nenhuma coluna de mídia em `escolinhas`, então é
+   sempre o grafismo de marca com a inicial do nome — mesmo raciocínio do
+   avatar do atleta sem foto de capa. */
+.fc-cartao-escolinha__midia {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  overflow: hidden;
+}
+
+.fc-cartao-escolinha__midia-inicial {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--fc-osso);
+}
+
+.fc-cartao-escolinha__corpo {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: clamp(1rem, 3vw, 1.35rem);
+}
+
+/* Faixa 2 — nome: uma linha, corte por reticências. */
 .fc-cartao-escolinha__nome {
+  display: block;
   font-size: 1rem;
   font-weight: 700;
+  line-height: 1.3;
   color: var(--fc-tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Faixa 3 — cidade e UF: uma linha, corte por reticências. */
 .fc-cartao-escolinha__cidade {
+  display: block;
   font-size: 0.8125rem;
   color: var(--fc-tinta-60);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Faixa 4 — números: atletas ativos e, dentre eles, quantos avaliados. */
 .fc-cartao-escolinha__meta {
+  display: block;
   font-size: 0.8125rem;
   color: var(--fc-tinta-60);
 }
 
-.fc-cartao-escolinha__selo {
-  margin-top: 0.2rem;
-  align-self: start;
+/* Faixa 5 — selos: linha própria, sempre presente (mesmo vazia, para
+   reservar a altura), alinhada à esquerda. O selo de credenciada vive
+   aqui, nunca ao lado do nome (faixa 2). */
+.fc-cartao-escolinha__selos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.5rem;
+}
+
+.fc-cartao-escolinha__selos .fc-etiqueta {
   font-size: 0.6875rem;
 }
 
 /* ---------- cartão de profissional (/profissionais) ---------- */
 
-/* `height: 100%` + `align-content: start`: mesma disciplina do cartão de
-   atleta. Diferente do selo de escolinha (último elemento), a credencial
-   aqui é uma faixa NO MEIO do cartão — condicional, ela deslocava a faixa
-   de meta (localidade/laudos) para uma altura diferente cartão a cartão.
-   A faixa de credencial agora é sempre renderizada (ver
-   `/profissionais/page.tsx`), com texto neutro quando não há credencial,
-   em vez de sumir. */
+/* Cartão de profissional — cinco faixas fixas (identidade, nome,
+   credencial, cidade/UF, números), mesma disciplina acima. Ver
+   CartaoProfissional.tsx para a estrutura completa. */
 .fc-cartao-profissional {
   display: grid;
   align-content: start;
-  gap: 0.3rem;
   height: 100%;
+  padding: 0;
+  overflow: hidden;
 }
 
+/* Faixa 1 — identidade: nenhuma coluna de mídia em `profissionais`, então
+   é sempre o grafismo de marca com a inicial do nome. */
+.fc-cartao-profissional__midia {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  overflow: hidden;
+}
+
+.fc-cartao-profissional__midia-inicial {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--fc-osso);
+}
+
+.fc-cartao-profissional__corpo {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: clamp(1rem, 3vw, 1.35rem);
+}
+
+/* Faixa 2 — nome: uma linha, corte por reticências. */
 .fc-cartao-profissional__nome {
+  display: block;
   font-size: 1.0625rem;
   font-weight: 700;
+  line-height: 1.25;
   color: var(--fc-tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Faixa 3 — credencial: até duas linhas, corte, altura reservada mesmo com
+   texto mais curto ou ausente — as credenciais variam bastante de
+   comprimento ("Educação Física — UFC · técnica de categorias de base" ao
+   lado de "Técnico · Futsal Sesc Ceará"), e é essa reserva que faz as
+   faixas de baixo caírem na mesma altura em todo cartão da grade. */
 .fc-cartao-profissional__credencial {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.1rem;
   font-size: 0.8125rem;
+  line-height: 1.4;
   color: var(--fc-gol);
   font-weight: 600;
 }
@@ -1790,7 +1915,23 @@ a.fc-botao--perigo:hover {
   font-weight: 500;
 }
 
+/* Faixa 4 — cidade e UF: uma linha; texto neutro quando não informada. */
+.fc-cartao-profissional__cidade {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-cartao-profissional__cidade[data-vazio] {
+  color: var(--fc-tinta-40);
+}
+
+/* Faixa 5 — números: quantos laudos assinados e desde quando. */
 .fc-cartao-profissional__meta {
+  display: block;
   font-size: 0.8125rem;
   color: var(--fc-tinta-60);
   line-height: 1.4;
@@ -2392,10 +2533,14 @@ a.fc-botao--perigo:hover {
 
 /* ---------- abas ---------- */
 
+/* Gruda logo ABAIXO do cabeçalho fixo (`.fc-cabecalho`, z-index 30), nunca
+   atrás dele: `top` soma a altura do cabeçalho em vez de 0, e `z-index`
+   fica acima do conteúdo da página que rola por baixo, mas continua
+   abaixo do próprio cabeçalho. */
 .fc-abas {
   position: sticky;
-  top: 0;
-  z-index: 10;
+  top: var(--fc-cabecalho-altura);
+  z-index: 20;
   display: flex;
   gap: 0.25rem;
   background: var(--fc-papel);

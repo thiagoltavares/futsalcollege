@@ -18,27 +18,48 @@ export type CartaoEscolinhaProps = {
 };
 
 /**
- * Cartão de escolinha compartilhado por `/escolinhas` e a home: nome,
- * cidade/UF, selo de credenciamento e a densidade nova — quantos atletas
- * ativos e quantos deles já têm avaliação publicada.
+ * Cartão de escolinha compartilhado por `/escolinhas` e a home — mesma
+ * disciplina de FAIXAS FIXAS do cartão de atleta (ver `CartaoAtleta.tsx`
+ * para o diagnóstico completo do problema que essa estrutura resolve):
+ * sempre nesta ordem, sempre com a mesma altura por faixa, para a faixa N
+ * de um cartão alinhar com a faixa N do vizinho na grade.
+ *
+ *   1. identidade — nenhuma coluna de mídia em `escolinhas`, então é sempre
+ *      o grafismo de marca (inicial do nome), nunca um espaço vazio.
+ *   2. nome         — uma linha, corte por reticências.
+ *   3. cidade e UF  — uma linha, corte por reticências.
+ *   4. números      — atletas ativos e, dentre eles, quantos avaliados.
+ *   5. selos        — linha própria, sempre presente: o selo de
+ *      credenciada vive aqui, nunca ao lado do nome (faixa 2).
  */
 export function CartaoEscolinha({ escolinha, ativos, avaliados }: CartaoEscolinhaProps) {
+  const inicial = escolinha.nome.trim().charAt(0).toUpperCase() || "?";
+
   return (
     <Link href={`/escolinha/${escolinha.id}`} className="fc-atletas-item-link">
       <Cartao className="fc-cartao-escolinha">
-        <span className="fc-cartao-escolinha__nome">{escolinha.nome}</span>
-        <span className="fc-cartao-escolinha__cidade">
-          {escolinha.cidade} · {escolinha.estado_uf}
-        </span>
-        <span className="fc-cartao-escolinha__meta">
-          {ativos} {ativos === 1 ? "atleta ativo" : "atletas ativos"}
-          {avaliados > 0 ? ` · ${avaliados} ${avaliados === 1 ? "avaliado" : "avaliados"}` : ""}
-        </span>
-        {escolinha.credenciada && (
-          <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-escolinha__selo">
-            Credenciada
+        <div className="fc-cartao-escolinha__midia">
+          <span className="fc-cartao-escolinha__midia-inicial" aria-hidden="true">
+            {inicial}
           </span>
-        )}
+        </div>
+
+        <div className="fc-cartao-escolinha__corpo">
+          <span className="fc-cartao-escolinha__nome">{escolinha.nome}</span>
+          <span className="fc-cartao-escolinha__cidade">
+            {escolinha.cidade} · {escolinha.estado_uf}
+          </span>
+          <span className="fc-cartao-escolinha__meta">
+            {ativos} {ativos === 1 ? "atleta ativo" : "atletas ativos"}
+            {avaliados > 0 ? ` · ${avaliados} ${avaliados === 1 ? "avaliado" : "avaliados"}` : ""}
+          </span>
+
+          <div className="fc-cartao-escolinha__selos">
+            {escolinha.credenciada && (
+              <span className="fc-etiqueta fc-etiqueta--sucesso">Credenciada</span>
+            )}
+          </div>
+        </div>
       </Cartao>
     </Link>
   );

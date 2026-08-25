@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
-import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoProfissional } from "@/ui";
 import "@/ui/estilos.css";
-import { anoDeData } from "@/ui/formato";
 
 export const revalidate = 60;
 
@@ -123,33 +121,11 @@ export default async function Profissionais() {
             </Cartao>
           ) : (
             <ul className="fc-lista fc-grade-cartoes">
-              {profissionais.map((p) => {
-                const laudos = contagem.get(p.id) ?? 0;
-                const localidade = [p.cidade, p.estado_uf].filter(Boolean).join(" · ");
-                const desde = anoDeData(p.atua_desde);
-
-                return (
-                  <li key={p.id}>
-                    <Link href={`/profissional/${p.slug}`} className="fc-atletas-item-link">
-                      <Cartao className="fc-cartao-profissional">
-                        <span className="fc-cartao-profissional__nome">{p.nome}</span>
-                        <span
-                          className="fc-cartao-profissional__credencial"
-                          data-vazio={!p.credencial || undefined}
-                        >
-                          {p.credencial || "Credencial não informada"}
-                        </span>
-                        <span className="fc-cartao-profissional__meta">
-                          {localidade}
-                          {localidade ? " · " : ""}
-                          {laudos} {laudos === 1 ? "laudo assinado" : "laudos assinados"} · desde{" "}
-                          {desde}
-                        </span>
-                      </Cartao>
-                    </Link>
-                  </li>
-                );
-              })}
+              {profissionais.map((p) => (
+                <li key={p.id}>
+                  <CartaoProfissional profissional={p} laudos={contagem.get(p.id) ?? 0} />
+                </li>
+              ))}
             </ul>
           )}
         </div>

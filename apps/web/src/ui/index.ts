@@ -19,4 +19,6 @@ export { CartaoAtleta } from "./CartaoAtleta";
 export type { AtletaResumoCartao, AvaliacaoResumoCartao, CartaoAtletaProps } from "./CartaoAtleta";
 export { CartaoEscolinha } from "./CartaoEscolinha";
 export type { CartaoEscolinhaProps, EscolinhaResumoCartao } from "./CartaoEscolinha";
+export { CartaoProfissional } from "./CartaoProfissional";
+export type { CartaoProfissionalProps, ProfissionalResumoCartao } from "./CartaoProfissional";
 export { cn } from "./util";
