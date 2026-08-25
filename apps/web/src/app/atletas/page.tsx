@@ -5,7 +5,7 @@ import { CATEGORIAS, POSICOES } from "@futsalcollege/core";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublico, Campo, Cartao, Selecao } from "@/ui";
+import { CabecalhoPublicoAuto, Campo, Cartao, Selecao } from "@/ui";
 import "@/ui/estilos.css";
 import { linhaFisico } from "@/ui/formato";
 
@@ -147,7 +147,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
-      <CabecalhoPublico />
+      <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container">

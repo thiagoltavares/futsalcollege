@@ -792,13 +792,109 @@ a.fc-botao--perigo:hover {
   color: var(--fc-osso);
 }
 
-@media (max-width: 42rem) {
-  /* Nav pública (visitante): só "Entrar" e "Atletas" cabem no recorte
-     móvel, o resto (Escolinhas, Como funciona, Avaliação, Clubes) some.
-     Nav da área logada (`fc-cabecalho-nav__logado`) é bem mais curta e fica
-     inteira visível nos dois recortes — inclui Escolinhas e Painel, que o
-     usuário logado precisa alcançar também no celular. */
-  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar):not(.fc-cabecalho-nav__atletas):not(.fc-cabecalho-nav__logado) {
+/* Itens secundários da nav pública (visitante) — Escolinhas, Como funciona,
+   Avaliação, Clubes — em duas versões: `.fc-cabecalho-nav__desktop` (lista
+   lado a lado, como a nav antiga) e `.fc-cabecalho-menu` (disclosure
+   `<details>`/`<summary>` para o recorte móvel, onde não sobra faixa
+   horizontal para os cinco links de uma vez). O CSS mostra só uma versão
+   por vez — nunca as duas juntas.
+
+   Por que duas listas em vez de uma só reaproveitada via CSS: navegadores
+   atuais escondem o conteúdo de um `<details>` fechado com
+   `content-visibility: hidden` (que aplica contenção de tamanho, tratando a
+   caixa como 0×0), não só `display: none` como a HTML antiga fazia — não dá
+   para forçar esse conteúdo a ficar visível e ocupar espaço normal fora do
+   disclosure só sobrescrevendo `display` de volta para `flex`. */
+.fc-cabecalho-nav__desktop {
+  display: none;
+}
+
+.fc-cabecalho-menu__botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: var(--fc-alvo);
+  min-width: var(--fc-alvo);
+  padding: var(--fc-esp-2) var(--fc-esp-3);
+  margin: 0;
+  color: var(--fc-osso-70);
+  font-size: 0.875rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fc-cabecalho-menu__botao::-webkit-details-marker {
+  display: none;
+}
+
+.fc-cabecalho-menu__botao::marker {
+  content: "";
+}
+
+.fc-cabecalho-menu__botao:hover {
+  color: var(--fc-osso);
+}
+
+.fc-cabecalho-menu__botao:focus-visible {
+  outline: 2px solid var(--fc-gol-forte);
+  outline-offset: 2px;
+  border-radius: var(--fc-raio-sm);
+}
+
+.fc-cabecalho-menu__seta {
+  transition: transform 0.15s ease;
+}
+
+.fc-cabecalho-menu[open] .fc-cabecalho-menu__seta {
+  transform: rotate(180deg);
+}
+
+.fc-cabecalho-menu {
+  position: relative;
+}
+
+.fc-cabecalho-menu__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fc-esp-1);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--fc-esp-2);
+  min-width: 12rem;
+  padding: var(--fc-esp-2);
+  background: var(--fc-ink-2);
+  border: 1px solid rgb(244 240 232 / 0.16);
+  border-radius: var(--fc-raio);
+  box-shadow: var(--fc-sombra);
+  z-index: 20;
+}
+
+.fc-cabecalho-menu__lista a {
+  display: flex;
+  align-items: center;
+  min-height: var(--fc-alvo);
+  padding: var(--fc-esp-2) var(--fc-esp-3);
+  border-radius: var(--fc-raio-sm);
+}
+
+.fc-cabecalho-menu__lista a:hover,
+.fc-cabecalho-menu__lista a:focus-visible {
+  background: rgb(244 240 232 / 0.08);
+  color: var(--fc-osso);
+}
+
+@media (min-width: 42.01rem) {
+  /* Acima do recorte móvel: a lista lado a lado aparece, o disclosure
+     inteiro (botão + painel) some. */
+  .fc-cabecalho-nav__desktop {
+    display: block;
+  }
+
+  .fc-cabecalho-menu {
     display: none;
   }
 }

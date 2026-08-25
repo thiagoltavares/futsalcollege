@@ -7,7 +7,7 @@ import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublico } from "@/ui";
+import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
 import { formatarAltura, formatarPeso } from "@/ui/formato";
 
@@ -155,7 +155,7 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
-      <CabecalhoPublico />
+      <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container fc-container--estreito">

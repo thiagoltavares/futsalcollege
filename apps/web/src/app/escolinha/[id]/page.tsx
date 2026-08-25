@@ -6,7 +6,7 @@ import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublico, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao } from "@/ui";
 import "@/ui/estilos.css";
 import { linhaFisico } from "@/ui/formato";
 
@@ -101,7 +101,7 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
-      <CabecalhoPublico />
+      <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container">
