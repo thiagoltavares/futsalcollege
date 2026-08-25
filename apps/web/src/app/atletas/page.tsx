@@ -7,6 +7,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublico, Campo, Cartao, Selecao } from "@/ui";
 import "@/ui/estilos.css";
+import { linhaFisico } from "@/ui/formato";
 
 export const revalidate = 60;
 
@@ -80,7 +81,7 @@ async function buscarAtletas(
   let consulta = supabase
     .from("atletas")
     .select(
-      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em",
+      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(nome, credenciada)",
     )
     .eq("estado", "ativo");
 
@@ -250,10 +251,9 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
           ) : (
             <ul className="fc-lista">
               {lista.map((a) => {
-                const fisico = [a.altura_cm ? `${a.altura_cm} cm` : null, a.peso_kg ? `${a.peso_kg} kg` : null]
-                  .filter(Boolean)
-                  .join(" · ");
-                const meta = [a.posicao, a.pe_dominante, fisico || null, a.clube_atual, a.estado_uf]
+                const fisico = linhaFisico(a.altura_cm, a.peso_kg) ?? "";
+                const clubeOuEscolinha = a.escolinha?.nome ?? a.clube_atual;
+                const meta = [a.posicao, a.pe_dominante, fisico || null, clubeOuEscolinha, a.estado_uf]
                   .filter(Boolean)
                   .join(" · ");
 

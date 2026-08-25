@@ -3,9 +3,9 @@ import { cn } from "./util";
 
 const NAV = [
   { href: "/atletas", rotulo: "Atletas" },
+  { href: "/escolinhas", rotulo: "Escolinhas" },
   { href: "/#como-funciona", rotulo: "Como funciona" },
   { href: "/#avaliacao", rotulo: "Avaliação" },
-  { href: "/#escolinhas", rotulo: "Escolinhas" },
   { href: "/#clubes", rotulo: "Clubes" },
 ] as const;
 

@@ -106,6 +106,7 @@ export type Database = {
           categoria: string
           clube_atual: string | null
           criado_em: string
+          escolinha_id: string | null
           estado: Database["public"]["Enums"]["estado_perfil"]
           estado_uf: string | null
           id: string
@@ -121,6 +122,7 @@ export type Database = {
           categoria: string
           clube_atual?: string | null
           criado_em?: string
+          escolinha_id?: string | null
           estado?: Database["public"]["Enums"]["estado_perfil"]
           estado_uf?: string | null
           id?: string
@@ -136,6 +138,7 @@ export type Database = {
           categoria?: string
           clube_atual?: string | null
           criado_em?: string
+          escolinha_id?: string | null
           estado?: Database["public"]["Enums"]["estado_perfil"]
           estado_uf?: string | null
           id?: string
@@ -145,6 +148,13 @@ export type Database = {
           responsavel_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "atletas_escolinha_id_fkey"
+            columns: ["escolinha_id"]
+            isOneToOne: false
+            referencedRelation: "escolinhas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "atletas_responsavel_id_fkey"
             columns: ["responsavel_id"]
@@ -204,6 +214,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      escolinhas: {
+        Row: {
+          cidade: string
+          credenciada: boolean
+          credenciada_desde: string | null
+          criado_em: string
+          estado_uf: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          cidade: string
+          credenciada?: boolean
+          credenciada_desde?: string | null
+          criado_em?: string
+          estado_uf: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          cidade?: string
+          credenciada?: boolean
+          credenciada_desde?: string | null
+          criado_em?: string
+          estado_uf?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
       }
       laudos: {
         Row: {

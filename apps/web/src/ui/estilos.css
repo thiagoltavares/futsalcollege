@@ -1046,6 +1046,188 @@ a.fc-botao--perigo:hover {
   margin-top: var(--fc-esp-4);
 }
 
+/* ---------- home: vitrine pública (busca, números, cartões) ---------- */
+
+.fc-vitrine-busca {
+  margin-top: var(--fc-esp-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  max-width: 28rem;
+}
+
+.fc-vitrine-busca .fc-input {
+  flex: 1 1 14rem;
+}
+
+.fc-vitrine-pills {
+  margin-top: var(--fc-esp-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.fc-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fc-tinta-80);
+  background: var(--fc-branco);
+  border: 1.5px solid var(--fc-linha-forte);
+  border-radius: var(--fc-raio-pill);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.fc-pill:hover {
+  border-color: var(--fc-gol);
+  background: var(--fc-gol-suave);
+}
+
+.fc-pill--forte {
+  color: var(--fc-gol);
+  border-color: var(--fc-gol);
+  font-weight: 700;
+}
+
+.fc-vitrine-numeros {
+  margin-top: var(--fc-esp-7);
+  display: grid;
+  gap: var(--fc-esp-5);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  padding-block: var(--fc-esp-6);
+  border-block: 1px solid var(--fc-linha);
+}
+
+.fc-vitrine-numero {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.fc-vitrine-numero__valor {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1;
+  color: var(--fc-gol);
+}
+
+.fc-vitrine-numero__rotulo {
+  font-size: 0.875rem;
+  color: var(--fc-tinta-60);
+}
+
+.fc-vitrine-secao-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--fc-esp-4);
+  margin-bottom: var(--fc-esp-6);
+}
+
+.fc-vitrine-secao-cabecalho .fc-subtitulo {
+  max-width: 34rem;
+}
+
+.fc-cartoes-atletas {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+}
+
+.fc-cartao-atleta {
+  display: grid;
+  gap: 0.3rem;
+  height: 100%;
+}
+
+.fc-cartao-atleta__topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.fc-cartao-atleta__nome {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-cartao-atleta__categoria {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fc-gol);
+}
+
+.fc-cartao-atleta__meta {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+  line-height: 1.4;
+}
+
+.fc-cartao-atleta__data {
+  font-size: 0.75rem;
+  color: var(--fc-tinta-40);
+}
+
+.fc-cartao-atleta__avaliacao,
+.fc-cartao-atleta__selo {
+  margin-top: 0.3rem;
+  align-self: start;
+  font-size: 0.6875rem;
+}
+
+.fc-cartoes-escolinhas {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.fc-cartao-escolinha {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.fc-cartao-escolinha__nome {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-cartao-escolinha__cidade {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+}
+
+.fc-cartao-escolinha__selo {
+  margin-top: 0.2rem;
+  align-self: start;
+  font-size: 0.6875rem;
+}
+
+/* ---------- selo de escolinha credenciada (listagem, ficha, home) ---------- */
+
+.fc-escolinha-selo,
+.fc-escolinha-selo-titulo,
+.fc-ficha-selo-escolinha {
+  margin-left: 0.55rem;
+  font-size: 0.6875rem;
+  vertical-align: middle;
+}
+
+.fc-escolinha-selo-titulo {
+  font-family: var(--font-fc-corpo), ui-sans-serif, sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 /* ---------- tela do avaliador: item + escala de 1 a 5 ---------- */
 
 .fc-item-avaliar {

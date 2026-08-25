@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@futsalcollege/db";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublico, Cartao } from "@/ui";
 import "@/ui/estilos.css";
+import { linhaFisico } from "@/ui/formato";
+
+export const revalidate = 60;
 
 // Fontes carregadas só nesta rota, mesmo padrão de /profissional/flavio,
 // /plan e do grupo (app): cada rota pública traz as fontes que usa em vez
@@ -30,59 +35,232 @@ const corpo = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Futsal College — reconhecimento do futsal de base",
+  title: "Futsal College — vitrine de atletas do futsal de base",
   description:
-    "Cada atleta de 7 a 20 anos ganha uma ficha esportiva verificável, com avaliação técnica assinada por profissional credenciado.",
+    "Cada atleta de 7 a 20 anos ganha uma ficha esportiva verificável, com avaliação técnica assinada por profissional credenciado. Navegue pelos perfis, sem ranking e sem dado que localize a criança.",
   openGraph: {
-    title: "Futsal College — reconhecimento do futsal de base",
+    title: "Futsal College — vitrine de atletas do futsal de base",
     description:
-      "O trabalho do seu filho, registrado por quem entende de futsal: avaliação técnica assinada, física medida com protocolo, evolução no tempo.",
+      "O trabalho de cada atleta, registrado por quem entende de futsal: avaliação técnica assinada, física medida com protocolo, evolução no tempo.",
     locale: "pt_BR",
     type: "website",
   },
 };
 
+/**
+ * Cliente anônimo, mesmo padrão de `/atletas` e `/atleta/[id]`: a home
+ * nunca depende de sessão, então a RLS é a única coisa decidindo o que sai
+ * daqui.
+ */
+function clienteAnonimo() {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
+}
+
+const COLUNAS_ATLETA_PUBLICO =
+  "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(nome, credenciada)";
+
+type AtletaCartao = {
+  id: string;
+  apelido: string;
+  categoria: string;
+  posicao: string | null;
+  pe_dominante: string | null;
+  altura_cm: number | null;
+  peso_kg: number | null;
+  clube_atual: string | null;
+  estado_uf: string | null;
+  criado_em: string;
+  escolinha: { nome: string; credenciada: boolean } | null;
+};
+
+/**
+ * Embaralha em memória (Fisher-Yates) — não é ordenação por nota, atividade
+ * nem qualquer critério que compare atletas entre si; é só a trava de
+ * "nunca ranking" aplicada à vitrine (ver AGENTS/brief: "ordene por
+ * recência, por atividade ou aleatoriamente").
+ */
+function embaralhar<T>(lista: T[]): T[] {
+  const copia = [...lista];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+/**
+ * Pool dos atletas ativos mais recentes (colunas escritas à mão, nunca
+ * `select("*")` — mesma lista pública de `/atletas`), embaralhado para a
+ * grade de destaque. Buscar um pool maior que o exibido e embaralhar no
+ * servidor evita que a vitrine sempre abra com os mesmos 12 primeiros.
+ */
+async function buscarPoolDestaque(supabase: SupabaseClient<Database>) {
+  const { data } = await supabase
+    .from("atletas")
+    .select(COLUNAS_ATLETA_PUBLICO)
+    .eq("estado", "ativo")
+    .order("criado_em", { ascending: false })
+    .limit(60);
+
+  return (data ?? []) as AtletaCartao[];
+}
+
+async function buscarIdsComLaudoPublicado(supabase: SupabaseClient<Database>, atletaIds: string[]) {
+  if (atletaIds.length === 0) return new Set<string>();
+
+  const { data } = await supabase
+    .from("laudos")
+    .select("atleta_id")
+    .in("atleta_id", atletaIds)
+    .not("publicado_em", "is", null);
+
+  return new Set((data ?? []).map((l) => l.atleta_id));
+}
+
+/**
+ * Últimos laudos publicados (só para saber QUAIS atletas e QUANDO — nunca a
+ * nota) e os dados públicos dos atletas correspondentes. A política
+ * `laudos_leitura_publica` (migration 0008) já restringe a leitura anônima
+ * a laudo publicado de atleta ativo.
+ */
+async function buscarAvaliadosRecentemente(supabase: SupabaseClient<Database>) {
+  const { data: laudos } = await supabase
+    .from("laudos")
+    .select("atleta_id, publicado_em")
+    .not("publicado_em", "is", null)
+    .order("publicado_em", { ascending: false })
+    .limit(8);
+
+  const lista = laudos ?? [];
+  if (lista.length === 0) return [];
+
+  const { data: atletas } = await supabase
+    .from("atletas")
+    .select(COLUNAS_ATLETA_PUBLICO)
+    .in(
+      "id",
+      lista.map((l) => l.atleta_id),
+    )
+    .eq("estado", "ativo");
+
+  const porId = new Map((atletas ?? []).map((a) => [a.id, a as AtletaCartao]));
+  const publicadoPorId = new Map(lista.map((l) => [l.atleta_id, l.publicado_em as string]));
+
+  return lista
+    .map((l) => porId.get(l.atleta_id))
+    .filter((a): a is AtletaCartao => Boolean(a))
+    .map((a) => ({ atleta: a, publicadoEm: publicadoPorId.get(a.id)! }));
+}
+
+type EscolinhaCartao = {
+  id: string;
+  nome: string;
+  cidade: string;
+  estado_uf: string;
+  credenciada: boolean;
+};
+
+async function buscarEscolinhasDestaque(supabase: SupabaseClient<Database>) {
+  const { data } = await supabase
+    .from("escolinhas")
+    .select("id, nome, cidade, estado_uf, credenciada")
+    .order("credenciada", { ascending: false })
+    .order("nome", { ascending: true })
+    .limit(8);
+
+  return (data ?? []) as EscolinhaCartao[];
+}
+
+async function buscarNumeros(supabase: SupabaseClient<Database>) {
+  const [atletas, escolinhas, laudos] = await Promise.all([
+    supabase.from("atletas").select("id", { count: "exact", head: true }).eq("estado", "ativo"),
+    supabase.from("escolinhas").select("id", { count: "exact", head: true }),
+    supabase.from("laudos").select("id", { count: "exact", head: true }).not("publicado_em", "is", null),
+  ]);
+
+  return {
+    atletas: atletas.count ?? 0,
+    escolinhas: escolinhas.count ?? 0,
+    laudos: laudos.count ?? 0,
+  };
+}
+
+function metaAtleta(a: AtletaCartao): string {
+  const fisico = linhaFisico(a.altura_cm, a.peso_kg) ?? "";
+  const clubeOuEscolinha = a.escolinha?.nome ?? a.clube_atual;
+  return [a.posicao, fisico || null, clubeOuEscolinha, a.estado_uf].filter(Boolean).join(" · ");
+}
+
+function CartaoAtleta({ atleta, avaliado }: { atleta: AtletaCartao; avaliado: boolean }) {
+  return (
+    <Link href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
+      <Cartao className="fc-cartao-atleta">
+        <div className="fc-cartao-atleta__topo">
+          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
+          {atleta.escolinha?.credenciada && (
+            <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__selo" title="Escolinha credenciada">
+              Escolinha credenciada
+            </span>
+          )}
+        </div>
+        <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
+        <span className="fc-cartao-atleta__meta">{metaAtleta(atleta)}</span>
+        {avaliado && (
+          <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__avaliacao">
+            Avaliação assinada
+          </span>
+        )}
+      </Cartao>
+    </Link>
+  );
+}
+
+const PILLS_CATEGORIA = ["Sub-9", "Sub-11", "Sub-13", "Sub-15", "Sub-17", "Sub-20"] as const;
+
 const EIXOS = [
-  {
-    nome: "Técnico",
-    texto: "Domínio de bola, passe, finalização, 1x1.",
-  },
-  {
-    nome: "Físico",
-    texto: "Velocidade, resistência, coordenação — medidos com protocolo e instrumento, não a olho.",
-  },
-  {
-    nome: "Tático",
-    texto: "Leitura de jogo, posicionamento, decisão sob pressão.",
-  },
-  {
-    nome: "Comportamental",
-    texto: "Liderança, disciplina, reação ao erro, relação com o time.",
-  },
+  { nome: "Técnico", texto: "Domínio de bola, passe, finalização, 1x1." },
+  { nome: "Físico", texto: "Velocidade, resistência, coordenação — medidos com protocolo, não a olho." },
+  { nome: "Tático", texto: "Leitura de jogo, posicionamento, decisão sob pressão." },
+  { nome: "Comportamental", texto: "Liderança, disciplina, reação ao erro, relação com o time." },
 ] as const;
 
 const PASSOS = [
   {
     numero: "01",
     titulo: "Cadastra e autoriza",
-    texto:
-      "Você cria o perfil do seu filho e assina o termo de consentimento. Sem essa autorização, nada fica público.",
+    texto: "O responsável cria o perfil e assina o termo de consentimento. Sem essa autorização, nada fica público.",
   },
   {
     numero: "02",
     titulo: "Avaliação técnica assinada",
-    texto:
-      "Um profissional credenciado aplica a rubrica e assina o laudo — presencial ou por análise de vídeo.",
+    texto: "Um profissional credenciado aplica a rubrica e assina o laudo — presencial ou por análise de vídeo.",
   },
   {
     numero: "03",
     titulo: "Ficha que acompanha a evolução",
-    texto:
-      "O perfil cresce junto com o atleta: cada nova avaliação entra no histórico, ao lado das anteriores.",
+    texto: "Cada nova avaliação entra no histórico, ao lado das anteriores — o perfil cresce junto com o atleta.",
   },
 ] as const;
 
-export default function Home() {
+export default async function Home() {
+  const supabase = clienteAnonimo();
+
+  const [pool, avaliadosRecentemente, escolinhasDestaque, numeros] = await Promise.all([
+    buscarPoolDestaque(supabase),
+    buscarAvaliadosRecentemente(supabase),
+    buscarEscolinhasDestaque(supabase),
+    buscarNumeros(supabase),
+  ]);
+
+  const destaque = embaralhar(pool).slice(0, 12);
+  const idsComLaudo = await buscarIdsComLaudoPublicado(
+    supabase,
+    destaque.map((a) => a.id),
+  );
+
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
       <CabecalhoPublico />
@@ -91,33 +269,161 @@ export default function Home() {
         {/* ============================ HERO ============================ */}
         <section className="fc-container fc-home-hero">
           <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Futsal College</p>
-          <h1 className="fc-home-h1">
-            O trabalho do seu filho, registrado por quem entende de futsal.
-          </h1>
+          <h1 className="fc-home-h1">Atletas do futsal de base, com registro que ninguém contesta.</h1>
           <p className="fc-home-lead">
             Da Sub-7 à Sub-20, cada atleta ganha uma ficha esportiva verificável: avaliação
             técnica assinada por profissional credenciado, física medida com protocolo, e um
             registro que acompanha a evolução dele ao longo do tempo.
           </p>
-          <div className="fc-home-acoes">
-            <Link href="/entrar" className="fc-botao fc-botao--primario">
-              Criar perfil do atleta
+
+          <form action="/atletas" method="GET" className="fc-vitrine-busca">
+            <input
+              type="text"
+              name="busca"
+              maxLength={40}
+              placeholder="Buscar atleta por apelido…"
+              className="fc-input"
+              aria-label="Buscar atleta por apelido"
+            />
+            <button type="submit" className="fc-botao fc-botao--primario">
+              Buscar
+            </button>
+          </form>
+
+          <div className="fc-vitrine-pills">
+            {PILLS_CATEGORIA.map((c) => (
+              <Link key={c} href={`/atletas?categoria=${encodeURIComponent(c)}`} className="fc-pill">
+                {c}
+              </Link>
+            ))}
+            <Link href="/atletas" className="fc-pill fc-pill--forte">
+              Ver todos os atletas →
             </Link>
-            <Link href="/atletas" className="fc-botao fc-botao--secundario">
-              Ver atletas cadastrados
-            </Link>
-            <span className="fc-campo__ajuda">
-              Leva poucos minutos. Nada fica público antes da sua autorização.
-            </span>
           </div>
         </section>
 
-        {/* ======================= COMO FUNCIONA ======================= */}
+        {/* =========================== NÚMEROS =========================== */}
+        <section className="fc-container fc-vitrine-numeros">
+          <div className="fc-vitrine-numero">
+            <span className="fc-vitrine-numero__valor">{numeros.atletas}</span>
+            <span className="fc-vitrine-numero__rotulo">atletas com perfil ativo</span>
+          </div>
+          <div className="fc-vitrine-numero">
+            <span className="fc-vitrine-numero__valor">{numeros.escolinhas}</span>
+            <span className="fc-vitrine-numero__rotulo">escolinhas parceiras</span>
+          </div>
+          <div className="fc-vitrine-numero">
+            <span className="fc-vitrine-numero__valor">{numeros.laudos}</span>
+            <span className="fc-vitrine-numero__rotulo">avaliações técnicas assinadas</span>
+          </div>
+        </section>
+
+        {/* ====================== ATLETAS EM DESTAQUE ===================== */}
+        <section className="fc-home-secao">
+          <div className="fc-container">
+            <div className="fc-vitrine-secao-cabecalho">
+              <div>
+                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Vitrine</p>
+                <h2 className="fc-titulo">Atletas em destaque</h2>
+                <p className="fc-subtitulo">
+                  Uma amostra dos perfis ativos, em ordem aleatória — não existe ranking, nota
+                  comparada nem posição em lista.
+                </p>
+              </div>
+              <Link href="/atletas" className="fc-botao fc-botao--secundario">
+                Ver todos
+              </Link>
+            </div>
+
+            {destaque.length === 0 ? (
+              <Cartao>
+                <p className="fc-estado-vazio">Nenhum atleta ativo ainda.</p>
+              </Cartao>
+            ) : (
+              <div className="fc-cartoes-atletas">
+                {destaque.map((a) => (
+                  <CartaoAtleta key={a.id} atleta={a} avaliado={idsComLaudo.has(a.id)} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ===================== AVALIADOS RECENTEMENTE ==================== */}
+        {avaliadosRecentemente.length > 0 && (
+          <section className="fc-home-secao">
+            <div className="fc-container">
+              <div className="fc-vitrine-secao-cabecalho">
+                <div>
+                  <p className="fc-rotulo-secao fc-etiqueta-rotulo">Acabou de sair</p>
+                  <h2 className="fc-titulo">Avaliados recentemente</h2>
+                  <p className="fc-subtitulo">Laudos publicados nos últimos dias, do mais novo ao mais antigo.</p>
+                </div>
+              </div>
+
+              <div className="fc-cartoes-atletas">
+                {avaliadosRecentemente.map(({ atleta, publicadoEm }) => (
+                  <Link key={atleta.id} href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
+                    <Cartao className="fc-cartao-atleta">
+                      <div className="fc-cartao-atleta__topo">
+                        <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
+                      </div>
+                      <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
+                      <span className="fc-cartao-atleta__meta">{metaAtleta(atleta)}</span>
+                      <span className="fc-cartao-atleta__data">
+                        Avaliado em {new Date(publicadoEm).toLocaleDateString("pt-BR")}
+                      </span>
+                    </Cartao>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ============================ ESCOLINHAS ========================= */}
+        <section id="escolinhas" className="fc-home-secao">
+          <div className="fc-container">
+            <div className="fc-vitrine-secao-cabecalho">
+              <div>
+                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Escolinhas parceiras</p>
+                <h2 className="fc-titulo">De onde vêm os atletas</h2>
+                <p className="fc-subtitulo">
+                  Escolinhas e CTs de Fortaleza, região metropolitana e interior do Ceará. O selo
+                  de credenciada indica escolinha auditada pelo método do Futsal College.
+                </p>
+              </div>
+              <Link href="/escolinhas" className="fc-botao fc-botao--secundario">
+                Ver todas
+              </Link>
+            </div>
+
+            <div className="fc-cartoes-escolinhas">
+              {escolinhasDestaque.map((e) => (
+                <Link key={e.id} href={`/escolinha/${e.id}`} className="fc-atletas-item-link">
+                  <Cartao className="fc-cartao-escolinha">
+                    <span className="fc-cartao-escolinha__nome">{e.nome}</span>
+                    <span className="fc-cartao-escolinha__cidade">
+                      {e.cidade} · {e.estado_uf}
+                    </span>
+                    {e.credenciada && (
+                      <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-escolinha__selo">
+                        Credenciada
+                      </span>
+                    )}
+                  </Cartao>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ======================= COMO FUNCIONA + AVALIAÇÃO =============== */}
         <section id="como-funciona" className="fc-home-secao">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">Como funciona</p>
-              <h2 className="fc-titulo">Três passos, do cadastro à ficha pronta</h2>
+              <h2 className="fc-titulo">Do cadastro à ficha assinada</h2>
             </div>
 
             <div className="fc-home-passos">
@@ -129,65 +435,48 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
 
-        {/* =========================== AVALIAÇÃO ========================= */}
-        <section id="avaliacao" className="fc-home-secao">
-          <div className="fc-container">
-            <div className="fc-home-secao__cabecalho">
+            <div id="avaliacao" className="fc-espaco-topo">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">A avaliação</p>
-              <h2 className="fc-titulo">Avaliação técnica assinada por quem entende</h2>
+              <h2 className="fc-titulo">Um método, não uma opinião solta</h2>
               <p className="fc-subtitulo">
-                Não é opinião solta. É um método com rubrica própria, que todo avaliador
-                credenciado segue — para que a ficha de um atleta signifique a mesma coisa que a
-                de outro.
+                Rubrica própria, que todo avaliador credenciado segue — para a ficha de um atleta
+                significar a mesma coisa que a de outro. Publicado, o laudo não se edita: uma
+                correção gera uma nova versão, com a anterior visível.
               </p>
-            </div>
 
-            <div className="fc-home-eixos">
-              {EIXOS.map((eixo) => (
-                <div key={eixo.nome} className="fc-home-eixo">
-                  <p className="fc-home-eixo__rotulo">{eixo.nome}</p>
-                  <p>{eixo.texto}</p>
-                </div>
-              ))}
+              <div className="fc-home-eixos">
+                {EIXOS.map((eixo) => (
+                  <div key={eixo.nome} className="fc-home-eixo">
+                    <p className="fc-home-eixo__rotulo">{eixo.nome}</p>
+                    <p>{eixo.texto}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-
-            <Cartao className="fc-home-eixo-nota">
-              <p className="fc-subtitulo fc-subtitulo--livre">
-                Cada item da rubrica carrega uma âncora descritiva, não só uma nota — o laudo
-                registra avaliador e credencial, contexto da avaliação e a versão da rubrica
-                usada. Publicado, ele não se edita: uma correção gera uma nova versão, com a
-                anterior visível. É esse rigor que dá peso ao selo.
-              </p>
-            </Cartao>
           </div>
         </section>
 
-        {/* ================= ESCOLINHAS E CLUBES/OLHEIROS ================ */}
+        {/* ================= ESCOLINHAS E CLUBES/OLHEIROS (pitch) ========== */}
         <section className="fc-home-secao">
           <div className="fc-container fc-home-duplo">
-            <div id="escolinhas">
-              <Cartao>
-                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para escolinhas</p>
-                <h3 className="fc-titulo fc-titulo--card">Cadastre a turma, acompanhe os alunos</h3>
-                <p className="fc-subtitulo fc-subtitulo--livre">
-                  O treinador cadastra a turma e acompanha quantos responsáveis já assinaram a
-                  autorização. Cada aluno ganha o registro do próprio trabalho — um argumento de
-                  matrícula que fica de pé sozinho.
-                </p>
-              </Cartao>
-            </div>
+            <Cartao>
+              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para escolinhas</p>
+              <h3 className="fc-titulo fc-titulo--card">Cadastre a turma, acompanhe os alunos</h3>
+              <p className="fc-subtitulo fc-subtitulo--livre">
+                O treinador cadastra a turma e acompanha quantos responsáveis já assinaram a
+                autorização. Cada aluno ganha o registro do próprio trabalho.
+              </p>
+            </Cartao>
 
             <div id="clubes">
               <Cartao>
                 <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para clubes e olheiros</p>
                 <h3 className="fc-titulo fc-titulo--card">Entrada separada, busca por dado verificado</h3>
                 <p className="fc-subtitulo fc-subtitulo--livre">
-                  Clubes e olheiros usam a plataforma para buscar atletas por categoria, posição,
-                  estatística oficial e avaliação técnica assinada. Identificação da criança e
-                  vídeo ficam sempre atrás de verificação própria, separada do acesso público.
+                  Clubes e olheiros usam a plataforma para buscar atletas por categoria, posição e
+                  avaliação técnica assinada. Identificação da criança fica sempre atrás de
+                  verificação própria, separada do acesso público.
                 </p>
               </Cartao>
             </div>
@@ -233,27 +522,18 @@ export default function Home() {
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">Privacidade</p>
-              <h2 className="fc-titulo">
-                O que é público, o que é restrito, o que nunca aparece
-              </h2>
-              <p className="fc-subtitulo">
-                Isso não é letra miúda — é a regra que decide o que fica visível sobre o seu
-                filho, campo por campo.
-              </p>
+              <h2 className="fc-titulo">O que é público, o que é restrito, o que nunca aparece</h2>
             </div>
 
             <div className="fc-home-privacidade">
               <Cartao>
-                <span className="fc-etiqueta fc-etiqueta--sucesso fc-home-privacidade__titulo">
-                  Público
-                </span>
+                <span className="fc-etiqueta fc-etiqueta--sucesso fc-home-privacidade__titulo">Público</span>
                 <ul className="fc-home-privacidade__lista">
                   <li>Apelido esportivo</li>
                   <li>Categoria (ex.: Sub-13)</li>
                   <li>Posição, pé dominante e físico</li>
-                  <li>Estatísticas oficiais de competição</li>
                   <li>Avaliação técnica e quem assinou</li>
-                  <li>Clube atual e estado</li>
+                  <li>Clube ou escolinha e estado</li>
                 </ul>
               </Cartao>
 
@@ -265,29 +545,23 @@ export default function Home() {
                   <li>Nome completo</li>
                   <li>Data de nascimento</li>
                   <li>Cidade</li>
-                  <li>Vídeos</li>
                   <li>Contato do responsável</li>
                 </ul>
               </Cartao>
 
               <Cartao>
-                <span className="fc-etiqueta fc-etiqueta--perigo fc-home-privacidade__titulo">
-                  Nunca aparece
-                </span>
+                <span className="fc-etiqueta fc-etiqueta--perigo fc-home-privacidade__titulo">Nunca aparece</span>
                 <ul className="fc-home-privacidade__lista">
                   <li>Bairro, endereço ou escola</li>
                   <li>Local e horário de treino</li>
-                  <li>
-                    Avaliação física, postural e de saúde — nem para clube verificado; só a
-                    família e o profissional têm acesso
-                  </li>
+                  <li>Avaliação física, postural e de saúde — só a família e o profissional têm acesso</li>
                 </ul>
               </Cartao>
             </div>
 
             <p className="fc-home-privacidade__nota">
-              Consentimento revogado tira o perfil do ar na hora: a ficha para de responder, sai
-              da busca, e nenhum vídeo continua acessível.
+              Consentimento revogado tira o perfil do ar na hora: a ficha para de responder e sai
+              da busca.
             </p>
           </div>
         </section>

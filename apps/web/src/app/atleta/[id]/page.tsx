@@ -3,11 +3,13 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
 import { agruparPorEixo, EIXOS, ROTULO_CONTEXTO, ROTULO_EIXO, type ItemRubrica } from "@futsalcollege/core";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublico } from "@/ui";
 import "@/ui/estilos.css";
+import { formatarAltura, formatarPeso } from "@/ui/formato";
 
 export const revalidate = 300;
 
@@ -71,7 +73,7 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
   const { data } = await supabase
     .from("atletas")
     .select(
-      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf",
+      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha:escolinhas(id, nome, credenciada)",
     )
     .eq("id", id)
     .eq("estado", "ativo")
@@ -149,10 +151,7 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
 
   const laudo = await buscarLaudoPublico(supabase, id);
 
-  const fisico = [
-    ficha.altura_cm ? `${ficha.altura_cm} cm` : null,
-    ficha.peso_kg ? `${ficha.peso_kg} kg` : null,
-  ].filter(Boolean);
+  const fisico = [formatarAltura(ficha.altura_cm), formatarPeso(ficha.peso_kg)].filter(Boolean);
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -190,11 +189,25 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
                 <dd>{fisico.join(" · ")}</dd>
               </div>
             )}
-            {ficha.clube_atual && (
+            {ficha.escolinha ? (
               <div className="fc-ficha-item">
-                <dt>Clube atual</dt>
-                <dd>{ficha.clube_atual}</dd>
+                <dt>Escolinha</dt>
+                <dd>
+                  <Link href={`/escolinha/${ficha.escolinha.id}`}>{ficha.escolinha.nome}</Link>
+                  {ficha.escolinha.credenciada && (
+                    <span className="fc-etiqueta fc-etiqueta--sucesso fc-ficha-selo-escolinha">
+                      Credenciada
+                    </span>
+                  )}
+                </dd>
               </div>
+            ) : (
+              ficha.clube_atual && (
+                <div className="fc-ficha-item">
+                  <dt>Clube atual</dt>
+                  <dd>{ficha.clube_atual}</dd>
+                </div>
+              )
             )}
             {ficha.estado_uf && (
               <div className="fc-ficha-item">
