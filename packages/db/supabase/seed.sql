@@ -1411,3 +1411,21 @@ set profissional_id = p.id
 from profissionais p
 where p.user_id = l.avaliador_id and l.profissional_id is null;
 
+
+-- --------------------------------------------------------------------------
+-- Nome de exibição = nome real
+-- --------------------------------------------------------------------------
+-- Decisão do usuário: as telas devem mostrar nome de pessoa real, não apelido.
+-- "Sapão", "Pipoca" e "Nonatinho" davam ao produto cara de brincadeira numa
+-- demonstração.
+--
+-- O nome completo já existia no seed, em `atleta_identificacao.nome_completo`.
+-- Como essa tabela é restrita por RLS e `atletas.apelido` é o campo público de
+-- exibição, a sincronização acontece aqui: o campo público passa a carregar o
+-- nome real. Nenhuma política de visibilidade foi alterada para isso.
+update atletas a
+   set apelido = i.nome_completo
+  from atleta_identificacao i
+ where i.atleta_id = a.id
+   and i.nome_completo is not null
+   and length(trim(i.nome_completo)) > 0;
