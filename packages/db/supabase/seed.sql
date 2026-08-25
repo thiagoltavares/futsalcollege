@@ -649,7 +649,12 @@ values
    'Técnico · Futsal Sesc Ceará',
    'Fortaleza', 'CE',
    'Flávio Barbosa venceu treze títulos em quatorze anos de futsal cearense — cinco Campeonatos Cearenses adultos e três do Nordeste, por sete clubes. Hoje treina as seleções de base do Sesc Ceará, e é campeão mundial de futebol de salão Sub-13 como técnico.',
-   true, '2006-01-01');
+   -- `atua_desde` aqui é o trabalho de BASE, não a carreira de atleta. A bio
+   -- verificada registra que ele começou a formar o grupo do Sesc em 2021; foi
+   -- esse grupo que venceu a Liga Ceará Sub-20 em 2023. Usar 2006 (primeiro
+   -- título dele COMO ATLETA) faria a listagem de profissionais afirmar que
+   -- ele avalia desde 2006, o que não está escrito em lugar nenhum.
+   true, '2021-01-01');
 
 -- --------------------------------------------------------------------------
 -- Laudos publicados nos atletas nomeados (17) — Manu, Théozinho, Nardinho e
