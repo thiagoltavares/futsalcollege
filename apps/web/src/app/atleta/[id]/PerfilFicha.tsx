@@ -80,7 +80,7 @@ export type PerfilFichaProps = {
     escolinhaCredenciada: boolean;
     avatarUrl: string | null;
   };
-  stats: { avaliacoes: number; temporadas: number };
+  stats: { avaliacoes: number; fotos: number; videos: number };
   destaques: DestaquePublico[];
   midias: MidiaPublica[];
   laudoAtual: LaudoDetalhado | null;
@@ -230,18 +230,21 @@ function CabecalhoPerfil({
           )}
         </span>
 
+        {/* Só contagem real aqui. A escolinha saiu desta linha porque nome
+            de escolinha não cabe em coluna de número — ficava cortado — e
+            porque ela já aparece inteira na linha de tags, logo abaixo. */}
         <dl className="fc-perfil-stats">
           <div>
             <dt>Avaliações</dt>
             <dd>{stats.avaliacoes}</dd>
           </div>
           <div>
-            <dt>Temporadas</dt>
-            <dd>{stats.temporadas}</dd>
+            <dt>Fotos</dt>
+            <dd>{stats.fotos}</dd>
           </div>
           <div>
-            <dt>Escolinha</dt>
-            <dd className="fc-perfil-stats__texto">{atleta.escolinhaNome ?? "Independente"}</dd>
+            <dt>Vídeos</dt>
+            <dd>{stats.videos}</dd>
           </div>
         </dl>
       </div>
@@ -252,6 +255,7 @@ function CabecalhoPerfil({
         <span className="fc-ficha-tag">{atleta.categoria}</span>
         {atleta.posicao && <span className="fc-ficha-tag">{atleta.posicao}</span>}
         {atleta.estadoUf && <span className="fc-ficha-tag">{atleta.estadoUf}</span>}
+        <span className="fc-ficha-tag">{atleta.escolinhaNome ?? "Independente"}</span>
         {atleta.escolinhaCredenciada && (
           <span className="fc-ficha-tag fc-ficha-tag--selo">✓ Escolinha credenciada</span>
         )}

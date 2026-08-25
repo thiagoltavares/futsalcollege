@@ -181,14 +181,6 @@ async function buscarHistoricoAvaliacoes(
   return { atual: resumos[resumos.length - 1] ?? null, historico: resumos };
 }
 
-/** "2025-01-10" com hoje em 2026 → 2 temporadas (2025 e 2026). Metadado estrutural, não dado de identificação. */
-function calcularTemporadas(criadoEm: string): number {
-  const inicio = new Date(criadoEm).getFullYear();
-  const agora = new Date().getFullYear();
-  if (!Number.isFinite(inicio)) return 1;
-  return Math.max(1, agora - inicio + 1);
-}
-
 export async function generateMetadata({
   params,
 }: PageProps<"/atleta/[id]">): Promise<Metadata> {
@@ -272,7 +264,8 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
             }}
             stats={{
               avaliacoes: historico.length,
-              temporadas: calcularTemporadas(ficha.criado_em),
+              fotos: midias.filter((m) => m.tipo === "foto").length,
+              videos: midias.filter((m) => m.tipo === "video").length,
             }}
             destaques={destaques}
             midias={midias}
