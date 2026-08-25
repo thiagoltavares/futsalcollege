@@ -12,4 +12,6 @@ export { Etiqueta } from "./Etiqueta";
 export type { EtiquetaProps } from "./Etiqueta";
 export { Aviso } from "./Aviso";
 export type { AvisoProps } from "./Aviso";
+export { CabecalhoPublico } from "./CabecalhoPublico";
+export type { CabecalhoPublicoProps } from "./CabecalhoPublico";
 export { cn } from "./util";

@@ -751,3 +751,275 @@ a.fc-botao--perigo:hover {
     padding-block: var(--fc-esp-7) calc(var(--fc-esp-7) * 1.5);
   }
 }
+
+/* ---------- cabeçalho público (home, ficha do atleta) ---------- */
+
+.fc-cabecalho-nav__entrar {
+  color: var(--fc-osso);
+}
+
+@media (max-width: 42rem) {
+  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar) {
+    display: none;
+  }
+}
+
+/* ---------- ficha pública (perfil do atleta) ---------- */
+
+.fc-ficha-hero {
+  background: var(--fc-ink);
+  color: var(--fc-osso);
+  border-radius: var(--fc-raio);
+  padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+  border-bottom: 3px solid var(--fc-gol-forte);
+}
+
+.fc-ficha-eyebrow {
+  color: var(--fc-gol-forte);
+}
+
+.fc-ficha-nome {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  text-transform: uppercase;
+  font-size: clamp(2.75rem, 10vw, 5.5rem);
+  margin-top: var(--fc-esp-3);
+  overflow-wrap: anywhere;
+}
+
+.fc-ficha-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--fc-esp-4);
+}
+
+.fc-ficha-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--fc-raio-pill);
+  background: rgb(244 240 232 / 0.12);
+  color: var(--fc-osso-70);
+  border: 1px solid rgb(244 240 232 / 0.18);
+}
+
+.fc-ficha-grid {
+  margin-top: var(--fc-esp-6);
+  display: grid;
+  gap: var(--fc-esp-5);
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.fc-ficha-item dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fc-tinta-40);
+}
+
+.fc-ficha-item dd {
+  margin-top: 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-ficha-rodape {
+  margin-top: var(--fc-esp-7);
+  padding-top: var(--fc-esp-5);
+  border-top: 1px solid var(--fc-linha);
+  color: var(--fc-tinta-40);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  max-width: var(--fc-medida);
+}
+
+/* ---------- home (landing pública) ---------- */
+
+.fc-home-hero {
+  padding-block: clamp(3rem, 9vw, 6rem) clamp(2.5rem, 7vw, 4rem);
+}
+
+.fc-home-eyebrow {
+  color: var(--fc-gol);
+}
+
+.fc-home-h1 {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 0.98;
+  text-transform: uppercase;
+  font-size: clamp(2.25rem, 6.5vw, 4rem);
+  max-width: 46rem;
+  margin-top: var(--fc-esp-3);
+  color: var(--fc-tinta);
+}
+
+.fc-home-lead {
+  margin-top: var(--fc-esp-4);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--fc-tinta-60);
+  max-width: 38rem;
+}
+
+.fc-home-acoes {
+  margin-top: var(--fc-esp-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fc-esp-3);
+  align-items: center;
+}
+
+.fc-home-secao {
+  padding-block: clamp(2.5rem, 7vw, 4.5rem);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc-home-secao__cabecalho {
+  max-width: 40rem;
+  margin-bottom: var(--fc-esp-6);
+}
+
+.fc-home-passos {
+  display: grid;
+  gap: var(--fc-esp-5);
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.fc-home-passo__numero {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: var(--fc-gol);
+  line-height: 1;
+}
+
+.fc-home-passo h3 {
+  margin-top: var(--fc-esp-2);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-home-passo p {
+  margin-top: 0.4rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--fc-tinta-60);
+}
+
+.fc-home-eixos {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  margin-top: var(--fc-esp-5);
+}
+
+.fc-home-eixo__rotulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fc-gol);
+}
+
+.fc-home-eixo p {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--fc-tinta-60);
+  line-height: 1.5;
+}
+
+.fc-home-duplo {
+  display: grid;
+  gap: var(--fc-esp-6);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.fc-home-autoridade {
+  display: grid;
+  gap: var(--fc-esp-6);
+  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.fc-home-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background: var(--fc-ink);
+  color: var(--fc-osso);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  flex: none;
+}
+
+.fc-home-privacidade {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.fc-home-privacidade__titulo {
+  display: inline-flex;
+  margin-bottom: var(--fc-esp-3);
+}
+
+.fc-home-privacidade__lista {
+  display: grid;
+  gap: 0.55rem;
+  font-size: 0.9375rem;
+  color: var(--fc-tinta-80);
+}
+
+.fc-home-privacidade__nota {
+  margin-top: var(--fc-esp-5);
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-40);
+  line-height: 1.55;
+  max-width: var(--fc-medida);
+}
+
+.fc-subtitulo--livre {
+  max-width: none;
+  color: var(--fc-tinta-80);
+}
+
+.fc-titulo--card {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+}
+
+.fc-home-eixo-nota {
+  margin-top: var(--fc-esp-6);
+}
+
+.fc-home-autoridade__cabeca {
+  display: flex;
+  gap: var(--fc-esp-4);
+  align-items: flex-start;
+}
+
+.fc-home-autoridade__nome {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-home-autoridade .fc-botao {
+  margin-top: var(--fc-esp-4);
+}
