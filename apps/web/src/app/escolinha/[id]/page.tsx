@@ -6,9 +6,9 @@ import Link from "next/link";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoAtleta } from "@/ui";
 import "@/ui/estilos.css";
-import { linhaFisico } from "@/ui/formato";
+import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 
 export const revalidate = 60;
 
@@ -98,6 +98,10 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
   if (!escolinha) notFound();
 
   const atletas = await buscarAtletasDaEscolinha(supabase, id);
+  const resumoAvaliacoes = await buscarResumoAvaliacoes(
+    supabase,
+    atletas.map((a) => a.id),
+  );
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -129,6 +133,12 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
                 ? "Nenhum atleta ativo nesta escolinha ainda"
                 : `${atletas.length} ${atletas.length === 1 ? "atleta ativo" : "atletas ativos"}`}
             </h2>
+            {atletas.length > 0 && (
+              <p className="fc-subtitulo">
+                {resumoAvaliacoes.size} {resumoAvaliacoes.size === 1 ? "já avaliado" : "já avaliados"}{" "}
+                com laudo publicado.
+              </p>
+            )}
           </div>
 
           {atletas.length === 0 ? (
@@ -139,29 +149,16 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
               </p>
             </Cartao>
           ) : (
-            <ul className="fc-lista">
-              {atletas.map((a) => {
-                const fisico = linhaFisico(a.altura_cm, a.peso_kg) ?? "";
-                const meta = [a.posicao, a.pe_dominante, fisico || null, a.estado_uf]
-                  .filter(Boolean)
-                  .join(" · ");
-
-                return (
-                  <li key={a.id}>
-                    <Link href={`/atleta/${a.id}`} className="fc-atletas-item-link">
-                      <Cartao className="fc-item-atleta">
-                        <div className="fc-item-atleta__info">
-                          <span className="fc-item-atleta__nome">{a.apelido}</span>
-                          <span className="fc-item-atleta__meta">
-                            {a.categoria}
-                            {meta ? ` · ${meta}` : ""}
-                          </span>
-                        </div>
-                      </Cartao>
-                    </Link>
-                  </li>
-                );
-              })}
+            <ul className="fc-lista fc-grade-cartoes">
+              {atletas.map((a) => (
+                <li key={a.id}>
+                  <CartaoAtleta
+                    atleta={a}
+                    avaliacao={resumoAvaliacoes.get(a.id) ?? null}
+                    ocultarClube
+                  />
+                </li>
+              ))}
             </ul>
           )}
         </div>

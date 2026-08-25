@@ -81,6 +81,12 @@ select setseed(0.4231);
 --   avaliador.everton@exemplo.test        — Prof. Everton Aragão Filho
 --   avaliadora.larissa@exemplo.test       — Profa. Larissa Monteiro Cid
 --
+-- PROFISSIONAIS (5 — migration 0010, tabela `profissionais`, página
+-- pública /profissionais e /profissional/[slug]): os 4 acima, mais Flávio
+-- Barbosa (slug `flavio`, sem conta de login, sem laudo no seed — página
+-- especial já existente em /profissional/flavio, que o Next.js resolve no
+-- lugar da rota genérica para esse slug).
+--
 -- RESPONSÁVEIS EM MASSA (14 — só para dar volume aos 60-80 atletas da
 -- vitrine; não valem a pena documentar um a um, e o seletor de login de dev
 -- lista TODOS os usuários do banco, então não são o foco de nenhum roteiro
@@ -92,9 +98,10 @@ select setseed(0.4231);
 -- NÚMEROS DESTE SEED (conferir após alterar isto): 13 escolinhas (7
 -- credenciadas), 23 responsáveis (9 nomeados + 14 em massa), 72 atletas
 -- (26 nomeados + 46 em massa) — maioria ativo, alguns em cada um dos outros
--- quatro estados —, 4 avaliadores, e por volta de 32 laudos publicados
--- (17 nos atletas nomeados + 15 nos atletas em massa), cobrindo atletas com
--- mais de um laudo em datas diferentes.
+-- quatro estados —, 4 avaliadores (+ 1 profissional sem laudo, Flávio
+-- Barbosa — 5 linhas em `profissionais`), e por volta de 32 laudos
+-- publicados (17 nos atletas nomeados + 15 nos atletas em massa), cobrindo
+-- atletas com mais de um laudo em datas diferentes.
 -- ==========================================================================
 
 -- --------------------------------------------------------------------------
@@ -596,6 +603,53 @@ where id in (
   'e0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000002',
   'e0000000-0000-0000-0000-000000000003', 'e0000000-0000-0000-0000-000000000004'
 );
+
+-- --------------------------------------------------------------------------
+-- Profissionais (5) — a página pública de quem assina (migration 0010).
+-- Os 4 primeiros são as contas de avaliador acima, com credencial e bio
+-- plausíveis (professor de educação física, ex-atleta, técnico de base —
+-- todos fictícios). O quinto, Flávio Barbosa, é a autoridade citada na
+-- home ("Quem assina"): não tem conta de login nesta rodada
+-- (`user_id` nulo) e nenhum laudo assinado no seed — a página dele já
+-- existe, cuidada à mão, em `/profissional/flavio` (rota estática, que o
+-- Next.js resolve antes da rota dinâmica `/profissional/[slug]` para o
+-- mesmo caminho — ver AGENTS/brief da rodada e o relatório desta tarefa).
+-- Dados só do que já está escrito em docs/flavio-barbosa-bio.md e em
+-- app/profissional/flavio/data.ts — nada inventado.
+-- --------------------------------------------------------------------------
+
+insert into profissionais (id, user_id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde)
+values
+  ('d0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000001',
+   'Ricardo Bezerra', 'ricardo-bezerra',
+   'Educação Física — UECE · ex-atleta de futsal',
+   'Fortaleza', 'CE',
+   'Professor de Educação Física formado pela UECE, jogou futsal de base e adulto em clubes de Fortaleza antes de migrar para a avaliação técnica. Aplica a rubrica do Futsal College desde 2018, presencial e por vídeo.',
+   true, '2018-03-01'),
+  ('d0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000002',
+   'Camila Studart', 'camila-studart',
+   'Educação Física — UFC · técnica de categorias de base',
+   'Fortaleza', 'CE',
+   'Técnica de categorias de base há mais de dez anos, com passagem por escolinhas da região metropolitana de Fortaleza. Formada em Educação Física pela UFC, com foco em desenvolvimento tático de Sub-9 a Sub-15.',
+   true, '2019-08-15'),
+  ('d0000000-0000-0000-0000-000000000003', 'e0000000-0000-0000-0000-000000000003',
+   'Everton Aragão Filho', 'everton-aragao-filho',
+   'Ex-atleta profissional de futsal · técnico de base',
+   'Maracanaú', 'CE',
+   'Ex-atleta profissional de futsal no Ceará e no Nordeste, hoje técnico de categorias de base em Maracanaú. Traz para a avaliação técnica a régua de quem viveu o jogo adulto de alto nível.',
+   true, '2016-02-10'),
+  ('d0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000004',
+   'Larissa Monteiro Cid', 'larissa-monteiro-cid',
+   'Educação Física — Unifor · avaliação física e postural',
+   'Fortaleza', 'CE',
+   'Professora de Educação Física pela Unifor, especializada em avaliação física e postural de atletas em formação. Entrou na plataforma em 2020 e concentra boa parte das avaliações por análise de vídeo.',
+   true, '2020-05-04'),
+  ('d0000000-0000-0000-0000-000000000005', null,
+   'Flávio Barbosa', 'flavio',
+   'Técnico · Futsal Sesc Ceará',
+   'Fortaleza', 'CE',
+   'Flávio Barbosa venceu treze títulos em quatorze anos de futsal cearense — cinco Campeonatos Cearenses adultos e três do Nordeste, por sete clubes. Hoje treina as seleções de base do Sesc Ceará, e é campeão mundial de futebol de salão Sub-13 como técnico.',
+   true, '2006-01-01');
 
 -- --------------------------------------------------------------------------
 -- Laudos publicados nos atletas nomeados (17) — Manu, Théozinho, Nardinho e
@@ -1138,3 +1192,15 @@ begin
     end loop;
   end if;
 end $$;
+
+-- --------------------------------------------------------------------------
+-- Liga todo laudo (nomeado e em massa) ao profissional correspondente —
+-- um único update no fim, em vez de repetir `profissional_id` em cada uma
+-- das dezenas de linhas de laudo acima. `avaliador_id` (conta de login) e
+-- `profissionais.user_id` apontam para a mesma pessoa nos 4 avaliadores
+-- deste seed, então o casamento é direto.
+update laudos l
+set profissional_id = p.id
+from profissionais p
+where p.user_id = l.avaliador_id and l.profissional_id is null;
+

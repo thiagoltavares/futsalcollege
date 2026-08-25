@@ -1297,6 +1297,25 @@ a.fc-botao--perigo:hover {
   font-size: 0.6875rem;
 }
 
+/* Resumo de avaliação dentro do cartão denso (/atletas, /escolinha/[id],
+   home): quantidade, data da última, quem assinou — texto simples, nunca
+   link (o cartão inteiro já é um link para a ficha; ver CartaoAtleta.tsx). */
+.fc-cartao-atleta__avaliacoes {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--fc-tinta-40);
+}
+
+/* Grade densa reaproveitada pelas listagens que hoje usam `.fc-lista`
+   (empilhada, uma coluna) mas precisam de mais itens por tela em telas
+   largas: /atletas, /escolinhas, /escolinha/[id] e /profissionais. Mesmo
+   `minmax` de `.fc-cartoes-atletas`, para os cartões não ficarem espremidos
+   nem esticados de mais num grid de 2-3 colunas. */
+.fc-grade-cartoes {
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+}
+
 .fc-cartoes-escolinhas {
   display: grid;
   gap: var(--fc-esp-4);
@@ -1319,10 +1338,40 @@ a.fc-botao--perigo:hover {
   color: var(--fc-tinta-60);
 }
 
+.fc-cartao-escolinha__meta {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+}
+
 .fc-cartao-escolinha__selo {
   margin-top: 0.2rem;
   align-self: start;
   font-size: 0.6875rem;
+}
+
+/* ---------- cartão de profissional (/profissionais) ---------- */
+
+.fc-cartao-profissional {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.fc-cartao-profissional__nome {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-cartao-profissional__credencial {
+  font-size: 0.8125rem;
+  color: var(--fc-gol);
+  font-weight: 600;
+}
+
+.fc-cartao-profissional__meta {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+  line-height: 1.4;
 }
 
 /* ---------- selo de escolinha credenciada (listagem, ficha, home) ---------- */

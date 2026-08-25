@@ -13,6 +13,7 @@ const NAV_VISITANTE_ATLETAS = { href: "/atletas", rotulo: "Atletas" } as const;
 // e Clubes tanto quanto alguém no desktop.
 const NAV_VISITANTE_MENU = [
   { href: "/escolinhas", rotulo: "Escolinhas" },
+  { href: "/profissionais", rotulo: "Profissionais" },
   { href: "/#como-funciona", rotulo: "Como funciona" },
   { href: "/#avaliacao", rotulo: "Avaliação" },
   { href: "/#clubes", rotulo: "Clubes" },
@@ -25,6 +26,7 @@ const NAV_VISITANTE_MENU = [
 const NAV_AUTENTICADO = [
   { href: "/atletas", rotulo: "Atletas" },
   { href: "/escolinhas", rotulo: "Escolinhas" },
+  { href: "/profissionais", rotulo: "Profissionais" },
   { href: "/painel", rotulo: "Painel" },
 ] as const;
 

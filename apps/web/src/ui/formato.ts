@@ -35,3 +35,30 @@ export function linhaFisico(
   const partes = [formatarAltura(cm), formatarPeso(kg)].filter(Boolean);
   return partes.length ? partes.join(" · ") : null;
 }
+
+/**
+ * "2018-03-01" vira "há 8 anos" (ou "há 1 ano", "há menos de 1 ano") — usado
+ * na página do profissional (`atua_desde`), nunca em dado de atleta.
+ */
+export function formatarTempoDesde(dataIso: string | null | undefined): string | null {
+  if (!dataIso) return null;
+  const data = new Date(dataIso);
+  if (Number.isNaN(data.getTime())) return null;
+
+  const anos = Math.floor((Date.now() - data.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+  if (anos <= 0) return "há menos de 1 ano";
+  return `há ${anos} ${anos === 1 ? "ano" : "anos"}`;
+}
+
+/**
+ * Ano de uma coluna `date` (formato "AAAA-MM-DD", sem hora) — pega os 4
+ * primeiros caracteres da string em vez de `new Date(str).getFullYear()`.
+ * `new Date("2006-01-01")` é meia-noite UTC; num fuso atrás de UTC (Brasil,
+ * por exemplo) `getFullYear()` local devolve 2005 — um dia 1º de janeiro
+ * "voltando" pro ano anterior. Extrair o ano direto da string evita
+ * qualquer conversão de fuso.
+ */
+export function anoDeData(dataIso: string | null | undefined): string | null {
+  if (!dataIso || dataIso.length < 4) return null;
+  return dataIso.slice(0, 4);
+}

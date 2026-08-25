@@ -254,6 +254,7 @@ export type Database = {
           criado_em: string
           id: string
           notas: Json
+          profissional_id: string | null
           publicado_em: string | null
           rubrica_versao: string
           substitui_laudo_id: string | null
@@ -267,6 +268,7 @@ export type Database = {
           criado_em?: string
           id?: string
           notas: Json
+          profissional_id?: string | null
           publicado_em?: string | null
           rubrica_versao: string
           substitui_laudo_id?: string | null
@@ -280,6 +282,7 @@ export type Database = {
           criado_em?: string
           id?: string
           notas?: Json
+          profissional_id?: string | null
           publicado_em?: string | null
           rubrica_versao?: string
           substitui_laudo_id?: string | null
@@ -291,6 +294,13 @@ export type Database = {
             columns: ["atleta_id"]
             isOneToOne: false
             referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laudos_profissional_id_fkey"
+            columns: ["profissional_id"]
+            isOneToOne: false
+            referencedRelation: "profissionais"
             referencedColumns: ["id"]
           },
           {
@@ -308,6 +318,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profissionais: {
+        Row: {
+          ativo: boolean
+          atua_desde: string
+          bio: string | null
+          cidade: string | null
+          credencial: string | null
+          criado_em: string
+          estado_uf: string | null
+          id: string
+          nome: string
+          slug: string
+          user_id: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          atua_desde?: string
+          bio?: string | null
+          cidade?: string | null
+          credencial?: string | null
+          criado_em?: string
+          estado_uf?: string | null
+          id?: string
+          nome: string
+          slug: string
+          user_id?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          atua_desde?: string
+          bio?: string | null
+          cidade?: string | null
+          credencial?: string | null
+          criado_em?: string
+          estado_uf?: string | null
+          id?: string
+          nome?: string
+          slug?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       responsaveis: {
         Row: {

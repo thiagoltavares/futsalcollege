@@ -5,9 +5,9 @@ import { CATEGORIAS, POSICOES } from "@futsalcollege/core";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Campo, Cartao, Selecao } from "@/ui";
+import { CabecalhoPublicoAuto, Campo, Cartao, CartaoAtleta, Selecao } from "@/ui";
 import "@/ui/estilos.css";
-import { linhaFisico } from "@/ui/formato";
+import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 
 export const revalidate = 60;
 
@@ -102,28 +102,6 @@ async function buscarAtletas(
   return data ?? [];
 }
 
-/**
- * IDs de atletas (dentre os já filtrados acima) que têm laudo publicado —
- * só para o selo "Avaliação publicada" e para o filtro "só com avaliação
- * publicada". A política `laudos_leitura_publica` (migration 0008) já
- * restringe a leitura anônima a `publicado_em is not null` de atleta ativo;
- * o filtro por `publicado_em` abaixo é redundante com a RLS de propósito —
- * não é o único guarda-costas do dado, é clareza de intenção no código.
- * Nunca devolve nota, nem ordena por nota: só o par (atleta_id, existe ou
- * não laudo).
- */
-async function buscarIdsComLaudoPublicado(supabase: SupabaseClient<Database>, atletaIds: string[]) {
-  if (atletaIds.length === 0) return new Set<string>();
-
-  const { data } = await supabase
-    .from("laudos")
-    .select("atleta_id")
-    .in("atleta_id", atletaIds)
-    .not("publicado_em", "is", null);
-
-  return new Set((data ?? []).map((l) => l.atleta_id));
-}
-
 export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
   const parametros = await searchParams;
 
@@ -138,12 +116,12 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
 
   const supabase = clienteAnonimo();
   const atletas = await buscarAtletas(supabase, filtros);
-  const idsComLaudo = await buscarIdsComLaudoPublicado(
+  const resumoAvaliacoes = await buscarResumoAvaliacoes(
     supabase,
     atletas.map((a) => a.id),
   );
 
-  const lista = somenteAvaliados ? atletas.filter((a) => idsComLaudo.has(a.id)) : atletas;
+  const lista = somenteAvaliados ? atletas.filter((a) => resumoAvaliacoes.has(a.id)) : atletas;
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -249,38 +227,12 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
               </p>
             </Cartao>
           ) : (
-            <ul className="fc-lista">
-              {lista.map((a) => {
-                const fisico = linhaFisico(a.altura_cm, a.peso_kg) ?? "";
-                const clubeOuEscolinha = a.escolinha?.nome ?? a.clube_atual;
-                const meta = [a.posicao, a.pe_dominante, fisico || null, clubeOuEscolinha, a.estado_uf]
-                  .filter(Boolean)
-                  .join(" · ");
-
-                return (
-                  <li key={a.id}>
-                    <Link href={`/atleta/${a.id}`} className="fc-atletas-item-link">
-                      <Cartao className="fc-item-atleta">
-                        <div className="fc-item-atleta__info">
-                          <span className="fc-item-atleta__nome">{a.apelido}</span>
-                          <span className="fc-item-atleta__meta">
-                            {a.categoria}
-                            {meta ? ` · ${meta}` : ""}
-                          </span>
-                        </div>
-
-                        <div className="fc-item-atleta__acoes">
-                          {idsComLaudo.has(a.id) && (
-                            <span className="fc-etiqueta fc-etiqueta--sucesso">
-                              Avaliação publicada
-                            </span>
-                          )}
-                        </div>
-                      </Cartao>
-                    </Link>
-                  </li>
-                );
-              })}
+            <ul className="fc-lista fc-grade-cartoes">
+              {lista.map((a) => (
+                <li key={a.id}>
+                  <CartaoAtleta atleta={a} avaliacao={resumoAvaliacoes.get(a.id) ?? null} />
+                </li>
+              ))}
             </ul>
           )}
         </div>

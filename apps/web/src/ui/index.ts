@@ -15,4 +15,8 @@ export type { AvisoProps } from "./Aviso";
 export { CabecalhoPublico } from "./CabecalhoPublico";
 export type { CabecalhoPublicoProps } from "./CabecalhoPublico";
 export { CabecalhoPublicoAuto } from "./CabecalhoPublicoAuto";
+export { CartaoAtleta } from "./CartaoAtleta";
+export type { AtletaResumoCartao, AvaliacaoResumoCartao, CartaoAtletaProps } from "./CartaoAtleta";
+export { CartaoEscolinha } from "./CartaoEscolinha";
+export type { CartaoEscolinhaProps, EscolinhaResumoCartao } from "./CartaoEscolinha";
 export { cn } from "./util";

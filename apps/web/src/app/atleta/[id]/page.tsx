@@ -92,7 +92,9 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
 async function buscarLaudoPublico(supabase: SupabaseClient<Database>, atletaId: string) {
   const { data: laudo } = await supabase
     .from("laudos")
-    .select("id, contexto, avaliador_nome, rubrica_versao, texto, notas, publicado_em")
+    .select(
+      "id, contexto, avaliador_nome, rubrica_versao, texto, notas, publicado_em, profissional:profissionais(slug, nome)",
+    )
     .eq("atleta_id", atletaId)
     .not("publicado_em", "is", null)
     .order("publicado_em", { ascending: false })
@@ -227,8 +229,15 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
                   </h2>
                 </div>
                 <p className="fc-laudo__meta">
-                  Assinado por {laudo.avaliador_nome} · {ROTULO_CONTEXTO[laudo.contexto]} · rubrica{" "}
-                  {laudo.rubrica_versao}
+                  Assinado por{" "}
+                  {laudo.profissional ? (
+                    <Link href={`/profissional/${laudo.profissional.slug}`}>
+                      {laudo.avaliador_nome}
+                    </Link>
+                  ) : (
+                    laudo.avaliador_nome
+                  )}{" "}
+                  · {ROTULO_CONTEXTO[laudo.contexto]} · rubrica {laudo.rubrica_versao}
                   <br />
                   Publicado em {new Date(laudo.publicado_em!).toLocaleDateString("pt-BR")}
                 </p>

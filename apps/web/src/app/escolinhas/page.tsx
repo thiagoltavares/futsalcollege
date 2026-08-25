@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
-import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
 
 export const revalidate = 60;
@@ -61,33 +60,61 @@ async function buscarEscolinhas(supabase: SupabaseClient<Database>) {
 }
 
 /**
- * Contagem de atletas ATIVOS por escolinha, calculada no servidor a partir
- * da mesma política pública de `atletas` (`atletas_leitura_publica`,
- * migration 0002) — só `estado = 'ativo'` sai daqui de qualquer forma. Não
- * é ranking: a lista de escolinhas não ordena por essa contagem, só exibe
- * o número ao lado do nome.
+ * Atletas ATIVOS por escolinha (id do atleta + id da escolinha), calculado
+ * no servidor a partir da mesma política pública de `atletas`
+ * (`atletas_leitura_publica`, migration 0002) — só `estado = 'ativo'` sai
+ * daqui de qualquer forma. Base para duas contagens (ativos e avaliados);
+ * não é ranking: a lista de escolinhas não ordena por nenhuma delas, só
+ * exibe os números ao lado do nome.
  */
-async function buscarContagemAtivos(supabase: SupabaseClient<Database>) {
+async function buscarAtivosPorEscolinha(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("atletas")
-    .select("escolinha_id")
+    .select("id, escolinha_id")
     .eq("estado", "ativo")
     .not("escolinha_id", "is", null);
 
-  const contagem = new Map<string, number>();
-  for (const linha of data ?? []) {
-    if (!linha.escolinha_id) continue;
-    contagem.set(linha.escolinha_id, (contagem.get(linha.escolinha_id) ?? 0) + 1);
-  }
-  return contagem;
+  return data ?? [];
+}
+
+/**
+ * Dentre os atletas ativos já levantados acima, quais têm laudo publicado —
+ * mesma régua de `laudos_leitura_publica` (migration 0008). Nunca devolve
+ * nem ordena por nota, só existência.
+ */
+async function buscarIdsComLaudoPublicado(supabase: SupabaseClient<Database>, atletaIds: string[]) {
+  if (atletaIds.length === 0) return new Set<string>();
+
+  const { data } = await supabase
+    .from("laudos")
+    .select("atleta_id")
+    .in("atleta_id", atletaIds)
+    .not("publicado_em", "is", null);
+
+  return new Set((data ?? []).map((l) => l.atleta_id));
 }
 
 export default async function Escolinhas() {
   const supabase = clienteAnonimo();
-  const [escolinhas, contagem] = await Promise.all([
+  const [escolinhas, ativosPorEscolinha] = await Promise.all([
     buscarEscolinhas(supabase),
-    buscarContagemAtivos(supabase),
+    buscarAtivosPorEscolinha(supabase),
   ]);
+
+  const idsComLaudo = await buscarIdsComLaudoPublicado(
+    supabase,
+    ativosPorEscolinha.map((a) => a.id),
+  );
+
+  const contagemAtivos = new Map<string, number>();
+  const contagemAvaliados = new Map<string, number>();
+  for (const a of ativosPorEscolinha) {
+    if (!a.escolinha_id) continue;
+    contagemAtivos.set(a.escolinha_id, (contagemAtivos.get(a.escolinha_id) ?? 0) + 1);
+    if (idsComLaudo.has(a.id)) {
+      contagemAvaliados.set(a.escolinha_id, (contagemAvaliados.get(a.escolinha_id) ?? 0) + 1);
+    }
+  }
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -110,34 +137,16 @@ export default async function Escolinhas() {
               <p className="fc-estado-vazio">Nenhuma escolinha cadastrada ainda.</p>
             </Cartao>
           ) : (
-            <ul className="fc-lista">
-              {escolinhas.map((e) => {
-                const ativos = contagem.get(e.id) ?? 0;
-                return (
-                  <li key={e.id}>
-                    <Link href={`/escolinha/${e.id}`} className="fc-atletas-item-link">
-                      <Cartao className="fc-item-atleta">
-                        <div className="fc-item-atleta__info">
-                          <span className="fc-item-atleta__nome">
-                            {e.nome}
-                            {e.credenciada && (
-                              <span className="fc-etiqueta fc-etiqueta--sucesso fc-escolinha-selo">
-                                Credenciada
-                              </span>
-                            )}
-                          </span>
-                          <span className="fc-item-atleta__meta">
-                            {e.cidade} · {e.estado_uf}
-                            {ativos > 0
-                              ? ` · ${ativos} ${ativos === 1 ? "atleta ativo" : "atletas ativos"}`
-                              : ""}
-                          </span>
-                        </div>
-                      </Cartao>
-                    </Link>
-                  </li>
-                );
-              })}
+            <ul className="fc-lista fc-grade-cartoes">
+              {escolinhas.map((e) => (
+                <li key={e.id}>
+                  <CartaoEscolinha
+                    escolinha={e}
+                    ativos={contagemAtivos.get(e.id) ?? 0}
+                    avaliados={contagemAvaliados.get(e.id) ?? 0}
+                  />
+                </li>
+              ))}
             </ul>
           )}
         </div>

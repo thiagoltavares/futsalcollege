@@ -4,9 +4,10 @@ import type { Database } from "@futsalcollege/db";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
 import { linhaFisico } from "@/ui/formato";
+import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 
 export const revalidate = 60;
 
@@ -108,28 +109,16 @@ async function buscarPoolDestaque(supabase: SupabaseClient<Database>) {
   return (data ?? []) as AtletaCartao[];
 }
 
-async function buscarIdsComLaudoPublicado(supabase: SupabaseClient<Database>, atletaIds: string[]) {
-  if (atletaIds.length === 0) return new Set<string>();
-
-  const { data } = await supabase
-    .from("laudos")
-    .select("atleta_id")
-    .in("atleta_id", atletaIds)
-    .not("publicado_em", "is", null);
-
-  return new Set((data ?? []).map((l) => l.atleta_id));
-}
-
 /**
- * Últimos laudos publicados (só para saber QUAIS atletas e QUANDO — nunca a
- * nota) e os dados públicos dos atletas correspondentes. A política
+ * Últimos laudos publicados (atleta, data e quem assinou — nunca a nota) e
+ * os dados públicos dos atletas correspondentes. A política
  * `laudos_leitura_publica` (migration 0008) já restringe a leitura anônima
  * a laudo publicado de atleta ativo.
  */
 async function buscarAvaliadosRecentemente(supabase: SupabaseClient<Database>) {
   const { data: laudos } = await supabase
     .from("laudos")
-    .select("atleta_id, publicado_em")
+    .select("atleta_id, publicado_em, avaliador_nome")
     .not("publicado_em", "is", null)
     .order("publicado_em", { ascending: false })
     .limit(8);
@@ -147,12 +136,16 @@ async function buscarAvaliadosRecentemente(supabase: SupabaseClient<Database>) {
     .eq("estado", "ativo");
 
   const porId = new Map((atletas ?? []).map((a) => [a.id, a as AtletaCartao]));
-  const publicadoPorId = new Map(lista.map((l) => [l.atleta_id, l.publicado_em as string]));
 
   return lista
-    .map((l) => porId.get(l.atleta_id))
-    .filter((a): a is AtletaCartao => Boolean(a))
-    .map((a) => ({ atleta: a, publicadoEm: publicadoPorId.get(a.id)! }));
+    .map((l) => {
+      const atleta = porId.get(l.atleta_id);
+      if (!atleta) return null;
+      return { atleta, publicadoEm: l.publicado_em!, avaliadorNome: l.avaliador_nome };
+    })
+    .filter((item): item is { atleta: AtletaCartao; publicadoEm: string; avaliadorNome: string } =>
+      Boolean(item),
+    );
 }
 
 type EscolinhaCartao = {
@@ -174,6 +167,47 @@ async function buscarEscolinhasDestaque(supabase: SupabaseClient<Database>) {
   return (data ?? []) as EscolinhaCartao[];
 }
 
+/**
+ * Quantos atletas ativos, e dentre eles quantos avaliados, para cada uma
+ * das escolinhas em destaque — mesma régua de `/escolinhas`, só que restrita
+ * às 8 que aparecem aqui (evita puxar a tabela de atletas inteira pra
+ * home). Não é ranking: os cartões não ordenam por esses números.
+ */
+async function buscarContagensEscolinhas(
+  supabase: SupabaseClient<Database>,
+  escolinhaIds: string[],
+) {
+  if (escolinhaIds.length === 0) return { ativos: new Map<string, number>(), avaliados: new Map<string, number>() };
+
+  const { data } = await supabase
+    .from("atletas")
+    .select("id, escolinha_id")
+    .eq("estado", "ativo")
+    .in("escolinha_id", escolinhaIds);
+
+  const ativosList = data ?? [];
+  const { data: laudos } = await supabase
+    .from("laudos")
+    .select("atleta_id")
+    .in(
+      "atleta_id",
+      ativosList.map((a) => a.id),
+    )
+    .not("publicado_em", "is", null);
+  const idsComLaudo = new Set((laudos ?? []).map((l) => l.atleta_id));
+
+  const ativos = new Map<string, number>();
+  const avaliados = new Map<string, number>();
+  for (const a of ativosList) {
+    if (!a.escolinha_id) continue;
+    ativos.set(a.escolinha_id, (ativos.get(a.escolinha_id) ?? 0) + 1);
+    if (idsComLaudo.has(a.id)) {
+      avaliados.set(a.escolinha_id, (avaliados.get(a.escolinha_id) ?? 0) + 1);
+    }
+  }
+  return { ativos, avaliados };
+}
+
 async function buscarNumeros(supabase: SupabaseClient<Database>) {
   const [atletas, escolinhas, laudos] = await Promise.all([
     supabase.from("atletas").select("id", { count: "exact", head: true }).eq("estado", "ativo"),
@@ -186,36 +220,6 @@ async function buscarNumeros(supabase: SupabaseClient<Database>) {
     escolinhas: escolinhas.count ?? 0,
     laudos: laudos.count ?? 0,
   };
-}
-
-function metaAtleta(a: AtletaCartao): string {
-  const fisico = linhaFisico(a.altura_cm, a.peso_kg) ?? "";
-  const clubeOuEscolinha = a.escolinha?.nome ?? a.clube_atual;
-  return [a.posicao, fisico || null, clubeOuEscolinha, a.estado_uf].filter(Boolean).join(" · ");
-}
-
-function CartaoAtleta({ atleta, avaliado }: { atleta: AtletaCartao; avaliado: boolean }) {
-  return (
-    <Link href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
-      <Cartao className="fc-cartao-atleta">
-        <div className="fc-cartao-atleta__topo">
-          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
-          {atleta.escolinha?.credenciada && (
-            <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__selo" title="Escolinha credenciada">
-              Escolinha credenciada
-            </span>
-          )}
-        </div>
-        <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
-        <span className="fc-cartao-atleta__meta">{metaAtleta(atleta)}</span>
-        {avaliado && (
-          <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-atleta__avaliacao">
-            Avaliação assinada
-          </span>
-        )}
-      </Cartao>
-    </Link>
-  );
 }
 
 const PILLS_CATEGORIA = ["Sub-9", "Sub-11", "Sub-13", "Sub-15", "Sub-17", "Sub-20"] as const;
@@ -256,10 +260,16 @@ export default async function Home() {
   ]);
 
   const destaque = embaralhar(pool).slice(0, 12);
-  const idsComLaudo = await buscarIdsComLaudoPublicado(
-    supabase,
-    destaque.map((a) => a.id),
-  );
+  const [resumoAvaliacoes, contagensEscolinhas] = await Promise.all([
+    buscarResumoAvaliacoes(
+      supabase,
+      destaque.map((a) => a.id),
+    ),
+    buscarContagensEscolinhas(
+      supabase,
+      escolinhasDestaque.map((e) => e.id),
+    ),
+  ]);
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -342,7 +352,7 @@ export default async function Home() {
             ) : (
               <div className="fc-cartoes-atletas">
                 {destaque.map((a) => (
-                  <CartaoAtleta key={a.id} atleta={a} avaliado={idsComLaudo.has(a.id)} />
+                  <CartaoAtleta key={a.id} atleta={a} avaliacao={resumoAvaliacoes.get(a.id) ?? null} />
                 ))}
               </div>
             )}
@@ -362,20 +372,35 @@ export default async function Home() {
               </div>
 
               <div className="fc-cartoes-atletas">
-                {avaliadosRecentemente.map(({ atleta, publicadoEm }) => (
-                  <Link key={atleta.id} href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
-                    <Cartao className="fc-cartao-atleta">
-                      <div className="fc-cartao-atleta__topo">
-                        <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
-                      </div>
-                      <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
-                      <span className="fc-cartao-atleta__meta">{metaAtleta(atleta)}</span>
-                      <span className="fc-cartao-atleta__data">
-                        Avaliado em {new Date(publicadoEm).toLocaleDateString("pt-BR")}
-                      </span>
-                    </Cartao>
-                  </Link>
-                ))}
+                {avaliadosRecentemente.map(({ atleta, publicadoEm, avaliadorNome }) => {
+                  const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg) ?? "";
+                  const clubeOuEscolinha = atleta.escolinha?.nome ?? atleta.clube_atual;
+                  const meta = [atleta.posicao, fisico || null, clubeOuEscolinha, atleta.estado_uf]
+                    .filter(Boolean)
+                    .join(" · ");
+
+                  return (
+                    <Link
+                      key={atleta.id}
+                      href={`/atleta/${atleta.id}`}
+                      className="fc-atletas-item-link"
+                    >
+                      <Cartao className="fc-cartao-atleta">
+                        <div className="fc-cartao-atleta__topo">
+                          <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
+                        </div>
+                        <span className="fc-cartao-atleta__categoria">{atleta.categoria}</span>
+                        {meta && <span className="fc-cartao-atleta__meta">{meta}</span>}
+                        <span className="fc-cartao-atleta__data">
+                          Avaliado em {new Date(publicadoEm).toLocaleDateString("pt-BR")}
+                        </span>
+                        <span className="fc-cartao-atleta__avaliacoes">
+                          assinado por {avaliadorNome}
+                        </span>
+                      </Cartao>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -400,19 +425,12 @@ export default async function Home() {
 
             <div className="fc-cartoes-escolinhas">
               {escolinhasDestaque.map((e) => (
-                <Link key={e.id} href={`/escolinha/${e.id}`} className="fc-atletas-item-link">
-                  <Cartao className="fc-cartao-escolinha">
-                    <span className="fc-cartao-escolinha__nome">{e.nome}</span>
-                    <span className="fc-cartao-escolinha__cidade">
-                      {e.cidade} · {e.estado_uf}
-                    </span>
-                    {e.credenciada && (
-                      <span className="fc-etiqueta fc-etiqueta--sucesso fc-cartao-escolinha__selo">
-                        Credenciada
-                      </span>
-                    )}
-                  </Cartao>
-                </Link>
+                <CartaoEscolinha
+                  key={e.id}
+                  escolinha={e}
+                  ativos={contagensEscolinhas.ativos.get(e.id) ?? 0}
+                  avaliados={contagensEscolinhas.avaliados.get(e.id) ?? 0}
+                />
               ))}
             </div>
           </div>
