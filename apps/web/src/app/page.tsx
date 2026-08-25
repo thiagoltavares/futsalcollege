@@ -103,6 +103,9 @@ export default function Home() {
             <Link href="/entrar" className="fc-botao fc-botao--primario">
               Criar perfil do atleta
             </Link>
+            <Link href="/atletas" className="fc-botao fc-botao--secundario">
+              Ver atletas cadastrados
+            </Link>
             <span className="fc-campo__ajuda">
               Leva poucos minutos. Nada fica público antes da sua autorização.
             </span>

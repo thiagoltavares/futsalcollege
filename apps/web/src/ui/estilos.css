@@ -590,6 +590,13 @@ a.fc-botao--perigo:hover {
   box-shadow: none;
 }
 
+/* Bloco do atalho de login de desenvolvimento (/entrar) — precisa ser
+   inconfundível, nunca discreto: borda tracejada na cor de alerta em vez da
+   borda fina padrão do cartão. */
+.fc-cartao--dev {
+  border: 2px dashed var(--fc-alerta);
+}
+
 /* ---------- etiqueta de estado ---------- */
 
 .fc-etiqueta {
@@ -679,6 +686,17 @@ a.fc-botao--perigo:hover {
   color: var(--fc-branco);
 }
 
+.fc-aviso--aviso {
+  background: var(--fc-alerta-suave);
+  border-color: rgb(154 91 0 / 0.3);
+  color: var(--fc-alerta);
+}
+
+.fc-aviso--aviso .fc-aviso__icone {
+  background: var(--fc-alerta);
+  color: var(--fc-branco);
+}
+
 /* ---------- lista de atletas (painel) ---------- */
 
 .fc-lista {
@@ -731,6 +749,10 @@ a.fc-botao--perigo:hover {
   height: var(--fc-esp-6);
 }
 
+.fc-espaco-topo {
+  margin-top: var(--fc-esp-5);
+}
+
 .fc-termo {
   max-height: 22rem;
   overflow-y: auto;
@@ -759,7 +781,7 @@ a.fc-botao--perigo:hover {
 }
 
 @media (max-width: 42rem) {
-  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar) {
+  .fc-cabecalho-nav a:not(.fc-cabecalho-nav__entrar):not(.fc-cabecalho-nav__atletas) {
     display: none;
   }
 }
@@ -1184,4 +1206,44 @@ a.fc-botao--perigo:hover {
 
 .fc-laudo__acoes {
   margin-top: var(--fc-esp-5);
+}
+
+/* ---------- listagem pública de atletas (/atletas) ---------- */
+
+.fc-atletas-filtros {
+  display: grid;
+  gap: var(--fc-esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  align-items: end;
+}
+
+.fc-atletas-filtro-checkbox {
+  align-self: center;
+  grid-column: span 1;
+}
+
+.fc-atletas-filtro-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  grid-column: 1 / -1;
+  padding-top: var(--fc-esp-2);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc-atletas-item-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s ease;
+}
+
+.fc-atletas-item-link:hover .fc-item-atleta,
+.fc-atletas-item-link:focus-visible .fc-item-atleta {
+  border-color: var(--fc-gol);
+}
+
+.fc-atletas-item-link:active {
+  transform: translateY(1px);
 }

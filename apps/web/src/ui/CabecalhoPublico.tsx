@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "./util";
 
 const NAV = [
+  { href: "/atletas", rotulo: "Atletas" },
   { href: "/#como-funciona", rotulo: "Como funciona" },
   { href: "/#avaliacao", rotulo: "Avaliação" },
   { href: "/#escolinhas", rotulo: "Escolinhas" },
@@ -31,7 +32,11 @@ export function CabecalhoPublico({ className }: CabecalhoPublicoProps) {
         </Link>
         <nav className="fc-cabecalho-nav">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={item.href === "/atletas" ? "fc-cabecalho-nav__atletas" : undefined}
+            >
               {item.rotulo}
             </Link>
           ))}

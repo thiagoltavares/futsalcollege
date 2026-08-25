@@ -1,30 +1,25 @@
-"use client";
+import { Aviso, Cartao } from "@/ui";
+import { FormularioEntrar } from "./FormularioEntrar";
+import { SeletorLoginDev } from "./SeletorLoginDev";
+import { listarUsuariosLoginDev, loginDevHabilitado } from "./loginDev.servidor";
 
-import { useState } from "react";
-import { criarClienteNavegador } from "@/lib/supabase/cliente";
-import { Aviso, Botao, Campo, Cartao } from "@/ui";
+const MENSAGEM_ERRO: Record<string, string> = {
+  "sem-codigo": "Link incompleto. Peça um novo link de acesso.",
+  "link-invalido": "Esse link não é mais válido. Peça um novo link de acesso.",
+  "login-dev-desligado": "O atalho de desenvolvimento está desligado neste ambiente.",
+  "login-dev-invalido": "Escolha um usuário da lista para entrar.",
+  "login-dev-falhou": "Não consegui entrar com esse usuário. Tente de novo.",
+};
 
-export default function Entrar() {
-  const [email, setEmail] = useState("");
-  const [enviado, setEnviado] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
-  const [enviando, setEnviando] = useState(false);
+export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
+  const { erro } = await searchParams;
+  const mensagemErro = typeof erro === "string" ? MENSAGEM_ERRO[erro] : undefined;
 
-  async function enviar(evento: React.FormEvent) {
-    evento.preventDefault();
-    setErro(null);
-    setEnviando(true);
-
-    const supabase = criarClienteNavegador();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${location.origin}/auth/confirmar` },
-    });
-
-    setEnviando(false);
-    if (error) setErro("Não consegui enviar o link. Confira o e-mail e tente de novo.");
-    else setEnviado(true);
-  }
+  // A checagem mora no servidor: só quando ela devolve `true` é que a lista
+  // de usuários (que exige a chave secreta) chega a ser buscada. Em
+  // produção — ou com NEXT_PUBLIC_LOGIN_DEV desligado — `usuariosDev` fica
+  // `null` e `SeletorLoginDev` nunca é desenhado.
+  const usuariosDev = loginDevHabilitado() ? await listarUsuariosLoginDev() : null;
 
   return (
     <div className="fc-container fc-container--estreito">
@@ -37,34 +32,21 @@ export default function Entrar() {
       </div>
 
       <Cartao>
-        {enviado ? (
-          <Aviso tipo="sucesso">
-            Link enviado para <strong>{email}</strong>. Abra o e-mail para entrar.
-          </Aviso>
-        ) : (
-          <form onSubmit={enviar} className="fc-form">
-            <Campo id="email" rotulo="E-mail do responsável">
-              {(campo) => (
-                <input
-                  {...campo}
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="voce@exemplo.com"
-                  autoComplete="email"
-                />
-              )}
-            </Campo>
-
-            <Botao type="submit" carregando={enviando}>
-              Receber link de acesso
-            </Botao>
-
-            {erro && <Aviso tipo="erro">{erro}</Aviso>}
-          </form>
-        )}
+        <FormularioEntrar />
       </Cartao>
+
+      {mensagemErro && (
+        <Aviso tipo="erro" className="fc-espaco-topo">
+          {mensagemErro}
+        </Aviso>
+      )}
+
+      {usuariosDev && (
+        <>
+          <div className="fc-espaco" />
+          <SeletorLoginDev usuarios={usuariosDev} />
+        </>
+      )}
     </div>
   );
 }
