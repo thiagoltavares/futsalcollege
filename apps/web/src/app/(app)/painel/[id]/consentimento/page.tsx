@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { TERMO, VERSAO_TERMO } from "@/conteudo/termo-2026-08-v1";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { Cartao } from "@/ui";
 import { FormularioConsentimento } from "./Formulario";
 
 export default async function Consentimento({
@@ -31,15 +32,20 @@ export default async function Consentimento({
     .maybeSingle();
 
   return (
-    <main>
-      <h1>Autorização do responsável</h1>
-      <p>
-        Atleta: {atleta.apelido} · Versão {VERSAO_TERMO}
-      </p>
+    <div className="fc-container fc-container--estreito">
+      <div className="fc-cabecalho-pagina">
+        <p className="fc-rotulo-secao fc-etiqueta-rotulo">Autorização do responsável</p>
+        <h1 className="fc-titulo">{atleta.apelido}</h1>
+        <p className="fc-subtitulo">Versão {VERSAO_TERMO} do termo de consentimento.</p>
+      </div>
 
-      <pre>{TERMO}</pre>
+      <div className="fc-termo fc-serif">{TERMO}</div>
 
-      <FormularioConsentimento atletaId={id} nomeInicial={responsavel?.nome ?? ""} />
-    </main>
+      <div className="fc-espaco" aria-hidden="true" />
+
+      <Cartao>
+        <FormularioConsentimento atletaId={id} nomeInicial={responsavel?.nome ?? ""} />
+      </Cartao>
+    </div>
   );
 }

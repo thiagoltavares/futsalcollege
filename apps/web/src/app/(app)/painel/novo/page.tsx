@@ -3,59 +3,81 @@
 import { CATEGORIAS, POSICOES } from "@futsalcollege/core";
 import { useActionState } from "react";
 import { criarAtleta } from "./acoes";
+import { Aviso, Botao, Campo, Cartao, Selecao } from "@/ui";
 
 export default function NovoAtleta() {
   const [estado, acao, pendente] = useActionState(criarAtleta, null);
 
   return (
-    <main>
-      <h1>Cadastrar atleta</h1>
+    <div className="fc-container fc-container--estreito">
+      <div className="fc-cabecalho-pagina">
+        <p className="fc-rotulo-secao fc-etiqueta-rotulo">Novo cadastro</p>
+        <h1 className="fc-titulo">Cadastrar atleta</h1>
+        <p className="fc-subtitulo">
+          Os dados abaixo formam a ficha pública. Nome completo, data de nascimento
+          e cidade só ficam visíveis para olheiro verificado.
+        </p>
+      </div>
 
-      <form action={acao}>
-        <label htmlFor="apelido">Como ele é chamado</label>
-        <input id="apelido" name="apelido" required maxLength={40} />
+      <Cartao>
+        <form action={acao} className="fc-form">
+          <Campo id="apelido" rotulo="Como ele é chamado">
+            {(campo) => <input {...campo} name="apelido" required maxLength={40} />}
+          </Campo>
 
-        <label htmlFor="categoria">Categoria</label>
-        <select id="categoria" name="categoria" required defaultValue="">
-          <option value="" disabled>
-            Escolha
-          </option>
-          {CATEGORIAS.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+          <Campo id="categoria" rotulo="Categoria">
+            {(campo) => (
+              <Selecao {...campo} name="categoria" required defaultValue="">
+                <option value="" disabled>
+                  Escolha
+                </option>
+                {CATEGORIAS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </Selecao>
+            )}
+          </Campo>
 
-        <label htmlFor="posicao">Posição</label>
-        <select id="posicao" name="posicao" defaultValue="">
-          <option value="">Não informada</option>
-          {POSICOES.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
+          <Campo id="posicao" rotulo="Posição" opcional>
+            {(campo) => (
+              <Selecao {...campo} name="posicao" defaultValue="">
+                <option value="">Não informada</option>
+                {POSICOES.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </Selecao>
+            )}
+          </Campo>
 
-        <fieldset>
-          <legend>Dados que só olheiro verificado enxerga</legend>
+          <fieldset className="fc-fieldset fc-form">
+            <legend className="fc-fieldset__legenda">
+              Dados que só olheiro verificado enxerga
+            </legend>
 
-          <label htmlFor="nome_completo">Nome completo</label>
-          <input id="nome_completo" name="nome_completo" required maxLength={120} />
+            <Campo id="nome_completo" rotulo="Nome completo">
+              {(campo) => <input {...campo} name="nome_completo" required maxLength={120} />}
+            </Campo>
 
-          <label htmlFor="data_nascimento">Data de nascimento</label>
-          <input id="data_nascimento" name="data_nascimento" type="date" required />
+            <Campo id="data_nascimento" rotulo="Data de nascimento">
+              {(campo) => <input {...campo} name="data_nascimento" type="date" required />}
+            </Campo>
 
-          <label htmlFor="cidade">Cidade</label>
-          <input id="cidade" name="cidade" maxLength={80} />
-        </fieldset>
+            <Campo id="cidade" rotulo="Cidade" opcional>
+              {(campo) => <input {...campo} name="cidade" maxLength={80} />}
+            </Campo>
+          </fieldset>
 
-        <button type="submit" disabled={pendente}>
-          {pendente ? "Salvando..." : "Continuar para a autorização"}
-        </button>
+          <Botao type="submit" carregando={pendente}>
+            Continuar para a autorização
+          </Botao>
 
-        {estado?.erro && <p role="alert">{estado.erro}</p>}
-      </form>
-    </main>
+          {estado?.erro && <Aviso tipo="erro">{estado.erro}</Aviso>}
+        </form>
+      </Cartao>
+    </div>
   );
 }

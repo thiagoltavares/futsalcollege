@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { Botao, Cartao, Etiqueta } from "@/ui";
 import { revogarConsentimento } from "./[id]/consentimento/acoes";
 
 // A Tarefa 11 cria @futsalcollege/api com listarAtletasDoResponsavel; até lá,
@@ -37,35 +38,63 @@ export default async function Painel() {
     .order("criado_em", { ascending: false });
 
   return (
-    <main>
-      <h1>Seus atletas</h1>
-      <Link href="/painel/novo">Cadastrar atleta</Link>
+    <div className="fc-container">
+      <div className="fc-cabecalho-pagina">
+        <p className="fc-rotulo-secao fc-etiqueta-rotulo">Painel do responsável</p>
+        <div className="fc-item-atleta">
+          <h1 className="fc-titulo">Seus atletas</h1>
+          <Link href="/painel/novo" className="fc-botao fc-botao--primario">
+            Cadastrar atleta
+          </Link>
+        </div>
+      </div>
 
       {!atletas || atletas.length === 0 ? (
-        <p>Nenhum atleta cadastrado ainda.</p>
+        <Cartao>
+          <p className="fc-estado-vazio">
+            Nenhum atleta cadastrado ainda. Comece pelo botão &ldquo;Cadastrar
+            atleta&rdquo; acima.
+          </p>
+        </Cartao>
       ) : (
-        <ul>
+        <ul className="fc-lista">
           {atletas.map((a) => (
             <li key={a.id}>
-              <span>
-                {a.apelido} · {a.categoria}
-              </span>
-              <span>{ROTULO_ESTADO[a.estado] ?? a.estado}</span>
-              {(a.estado === "aguardando_consentimento" || a.estado === "suspenso") && (
-                <Link href={`/painel/${a.id}/consentimento`}>Assinar autorização</Link>
-              )}
-              {a.estado === "ativo" && (
-                <>
-                  <Link href={`/atleta/${a.id}`}>Ver ficha pública</Link>
-                  <form action={revogar.bind(null, a.id)}>
-                    <button type="submit">Revogar autorização</button>
-                  </form>
-                </>
-              )}
+              <Cartao className="fc-item-atleta">
+                <div className="fc-item-atleta__info">
+                  <span className="fc-item-atleta__nome">{a.apelido}</span>
+                  <span className="fc-item-atleta__meta">{a.categoria}</span>
+                </div>
+
+                <div className="fc-item-atleta__acoes">
+                  <Etiqueta estado={a.estado}>{ROTULO_ESTADO[a.estado] ?? a.estado}</Etiqueta>
+
+                  {(a.estado === "aguardando_consentimento" || a.estado === "suspenso") && (
+                    <Link
+                      href={`/painel/${a.id}/consentimento`}
+                      className="fc-botao fc-botao--secundario"
+                    >
+                      Assinar autorização
+                    </Link>
+                  )}
+                  {a.estado === "ativo" && (
+                    <>
+                      <Link href={`/atleta/${a.id}`} className="fc-botao fc-botao--secundario">
+                        Ver ficha pública
+                      </Link>
+                      <form action={revogar.bind(null, a.id)}>
+                        <Botao type="submit" variante="perigo">
+                          Revogar autorização
+                        </Botao>
+                      </form>
+                    </>
+                  )}
+                </div>
+              </Cartao>
             </li>
           ))}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

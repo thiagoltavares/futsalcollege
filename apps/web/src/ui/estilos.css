@@ -1,0 +1,753 @@
+/* ------------------------------------------------------------------
+   apps/web/src/ui — folha de estilo do design system das telas
+   autenticadas (entrar, painel, cadastro, consentimento).
+
+   Escopada sob .fc, no mesmo padrão de .flv (/profissional/flavio) e
+   .plan (/plan): tokens e componentes não vazam para fora da rota que
+   os usa.
+
+   Decisão de fundo: aqui é PRODUTO, não landing nem documento de
+   leitura. A landing do Flávio é tinta escura porque é drama editorial;
+   o /plan é papel claro porque é para ler nove mil palavras. Este app é
+   formulário — um pai preenchendo dados do filho pelo celular, muitas
+   vezes ao sol, muitas vezes com pressa. Fundo claro (a mesma família
+   "papel" do /plan) dá mais contraste para texto de input, rótulo e
+   erro do que tinta escura seria capaz com a mesma legibilidade em
+   telas de baixo brilho — e áreas de erro/aviso em vermelho sobre
+   branco leem melhor que em vermelho sobre quase-preto.
+   A identidade de marca entra pelo cabeçalho (tinta escura, acento
+   "gol") e pelas cores/tipografia — não pelo fundo da tela inteira.
+------------------------------------------------------------------- */
+
+.fc {
+  /* tinta / papel — mesma família do /plan */
+  --fc-tinta: #14171a;
+  --fc-tinta-80: rgb(20 23 26 / 0.82);
+  --fc-tinta-60: rgb(20 23 26 / 0.6);
+  --fc-tinta-40: rgb(20 23 26 / 0.4);
+  --fc-papel: #f6f2ea;
+  --fc-papel-2: #efe9de;
+  --fc-papel-3: #e7e0d2;
+  --fc-branco: #fffdf9;
+
+  /* tinta escura de marca, para o cabeçalho */
+  --fc-ink: #0b0d0e;
+  --fc-ink-2: #15181a;
+  --fc-osso: #f4f0e8;
+  --fc-osso-70: rgb(244 240 232 / 0.7);
+  --fc-osso-45: rgb(244 240 232 / 0.45);
+
+  /* acento "gol" — versão escurecida para leitura em fundo claro
+     (mesmo raciocínio já usado em /plan: branco sobre #ff3b14 fica
+     abaixo de AA para texto; #c62f0d passa). O tom vivo original fica
+     reservado para o cabeçalho escuro, onde o contraste é outro. */
+  --fc-gol: #c62f0d;
+  --fc-gol-forte: #ff3b14;
+  --fc-gol-suave: rgb(198 47 13 / 0.08);
+  --fc-gol-hover: #a8280b;
+
+  --fc-linha: rgb(20 23 26 / 0.14);
+  --fc-linha-forte: rgb(20 23 26 / 0.28);
+
+  --fc-sucesso: #1f7a4d;
+  --fc-sucesso-suave: rgb(31 122 77 / 0.09);
+  --fc-alerta: #9a5b00;
+  --fc-alerta-suave: rgb(154 91 0 / 0.1);
+  --fc-perigo: #c62f0d;
+  --fc-perigo-suave: rgb(198 47 13 / 0.08);
+  --fc-neutro-suave: rgb(20 23 26 / 0.06);
+
+  /* espaçamento */
+  --fc-esp-1: 0.25rem;
+  --fc-esp-2: 0.5rem;
+  --fc-esp-3: 0.75rem;
+  --fc-esp-4: 1rem;
+  --fc-esp-5: 1.5rem;
+  --fc-esp-6: 2rem;
+  --fc-esp-7: 3rem;
+
+  /* raio, sombra, alvo de toque */
+  --fc-raio: 10px;
+  --fc-raio-sm: 6px;
+  --fc-raio-pill: 999px;
+  --fc-sombra: 0 1px 2px rgb(20 23 26 / 0.05), 0 10px 28px -14px rgb(20 23 26 / 0.22);
+  --fc-alvo: 2.75rem; /* ~44px — alvo de toque mínimo confortável */
+
+  --fc-medida: 40rem;
+  --fc-margem: clamp(1.1rem, 5vw, 2.5rem);
+
+  background: var(--fc-papel);
+  color: var(--fc-tinta);
+  font-family: var(--font-fc-corpo), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.fc ::selection {
+  background: var(--fc-gol);
+  color: var(--fc-branco);
+}
+
+.fc a {
+  color: var(--fc-gol);
+}
+
+.fc a:focus-visible,
+.fc button:focus-visible,
+.fc input:focus-visible,
+.fc select:focus-visible,
+.fc [tabindex]:focus-visible {
+  outline: 2px solid var(--fc-gol);
+  outline-offset: 2px;
+  border-radius: var(--fc-raio-sm);
+}
+
+/* ---------- tipografia de apoio ---------- */
+
+.fc-display {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.fc-serif {
+  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
+}
+
+.fc-etiqueta-rotulo {
+  font-family: var(--font-fc-corpo), ui-sans-serif, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- estrutura de página ---------- */
+
+.fc-pagina {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-cabecalho {
+  background: var(--fc-ink);
+  color: var(--fc-osso);
+  border-bottom: 3px solid var(--fc-gol-forte);
+}
+
+.fc-cabecalho-conteudo {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: var(--fc-esp-4) var(--fc-margem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fc-esp-4);
+}
+
+.fc-marca {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--fc-osso);
+}
+
+.fc-marca:focus-visible {
+  outline: 2px solid var(--fc-gol-forte);
+  outline-offset: 3px;
+}
+
+.fc-marca-nome {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
+  line-height: 1;
+}
+
+.fc-marca-nome em {
+  font-style: normal;
+  color: var(--fc-gol-forte);
+}
+
+.fc-cabecalho-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--fc-esp-4);
+}
+
+.fc-cabecalho-nav a {
+  color: var(--fc-osso-70);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: var(--fc-esp-2) 0;
+}
+
+.fc-cabecalho-nav a:hover {
+  color: var(--fc-osso);
+}
+
+.fc-corpo {
+  flex: 1;
+  padding-block: var(--fc-esp-7) var(--fc-esp-7);
+  padding-inline: var(--fc-margem);
+}
+
+.fc-container {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.fc-container--estreito {
+  max-width: var(--fc-medida);
+}
+
+.fc-cabecalho-pagina {
+  margin-bottom: var(--fc-esp-6);
+}
+
+.fc-rotulo-secao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fc-gol);
+  margin-bottom: var(--fc-esp-2);
+}
+
+.fc-rotulo-secao .fc-etiqueta-rotulo {
+  color: var(--fc-gol);
+}
+
+.fc-titulo {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 0.98;
+  text-transform: uppercase;
+  font-size: clamp(1.9rem, 5.5vw, 2.75rem);
+  color: var(--fc-tinta);
+}
+
+.fc-subtitulo {
+  margin-top: var(--fc-esp-2);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--fc-tinta-60);
+  max-width: 42rem;
+}
+
+/* ---------- formulário / campo ---------- */
+
+.fc-form {
+  display: grid;
+  gap: var(--fc-esp-5);
+}
+
+.fc-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  padding-top: var(--fc-esp-5);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc-fieldset__legenda {
+  /* <legend> por padrão fica "encaixado" na borda superior do fieldset,
+     interrompendo a linha — mas sem fundo próprio a régua atravessa o
+     texto. Fundo igual ao do cartão mascara a régua embaixo do texto,
+     como um rótulo de seção. */
+  padding: 0 var(--fc-esp-2) 0 0;
+  margin-bottom: var(--fc-esp-2);
+  margin-left: -0.1rem;
+  background: var(--fc-branco);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-tinta);
+}
+
+.fc-campo {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.fc-campo__rotulo {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-tinta);
+}
+
+.fc-campo__opcional {
+  font-weight: 400;
+  color: var(--fc-tinta-40);
+}
+
+.fc-campo__ajuda {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--fc-tinta-40);
+}
+
+.fc-campo__erro {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--fc-perigo);
+}
+
+.fc-campo__erro::before {
+  content: "!";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 999px;
+  background: var(--fc-perigo);
+  color: var(--fc-branco);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: 0.05rem;
+}
+
+.fc-input {
+  appearance: none;
+  width: 100%;
+  min-height: var(--fc-alvo);
+  padding: 0.6rem 0.85rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--fc-tinta);
+  background: var(--fc-branco);
+  border: 1.5px solid var(--fc-linha-forte);
+  border-radius: var(--fc-raio-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fc-input::placeholder {
+  color: var(--fc-tinta-40);
+}
+
+.fc-input:hover {
+  border-color: var(--fc-tinta-40);
+}
+
+.fc-input:focus {
+  border-color: var(--fc-gol);
+  box-shadow: 0 0 0 3px var(--fc-gol-suave);
+  outline: none;
+}
+
+.fc-input--erro,
+.fc-input--erro:hover {
+  border-color: var(--fc-perigo);
+}
+
+.fc-input--erro:focus {
+  box-shadow: 0 0 0 3px var(--fc-perigo-suave);
+}
+
+.fc-input:disabled {
+  background: var(--fc-papel-2);
+  color: var(--fc-tinta-40);
+  cursor: not-allowed;
+}
+
+textarea.fc-input {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+/* ---------- seleção (select) ---------- */
+
+.fc-select-envolucro {
+  position: relative;
+}
+
+select.fc-input.fc-select {
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.fc-select-envolucro::after {
+  content: "";
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 2px solid var(--fc-tinta-60);
+  border-bottom: 2px solid var(--fc-tinta-60);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* ---------- checkbox ---------- */
+
+.fc-checkbox-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--fc-tinta-80);
+}
+
+.fc-checkbox-linha input[type="checkbox"] {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.1rem;
+  accent-color: var(--fc-gol);
+}
+
+/* ---------- envio de arquivo ---------- */
+
+.fc-arquivo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  min-height: var(--fc-alvo);
+  cursor: pointer;
+}
+
+.fc-arquivo:has(input:focus-visible) .fc-arquivo__botao {
+  outline: 2px solid var(--fc-gol);
+  outline-offset: 2px;
+}
+
+.fc-arquivo__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fc-arquivo__botao {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--fc-alvo);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+  background: var(--fc-papel-2);
+  border: 1.5px solid var(--fc-linha-forte);
+  border-radius: var(--fc-raio-sm);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fc-arquivo:hover .fc-arquivo__botao {
+  border-color: var(--fc-tinta-40);
+  background: var(--fc-papel-3);
+}
+
+.fc-arquivo__nome {
+  font-size: 0.875rem;
+  color: var(--fc-tinta-60);
+  overflow-wrap: anywhere;
+}
+
+.fc-arquivo__nome[data-escolhido="true"] {
+  color: var(--fc-tinta);
+  font-weight: 600;
+}
+
+/* ---------- botão ---------- */
+
+.fc-botao {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--fc-alvo);
+  padding: 0.6rem 1.4rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: var(--fc-raio-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+
+.fc-botao:active {
+  transform: translateY(1px);
+}
+
+/* `a.fc-botao--x` (não só `.fc-botao--x`) porque um botão renderizado como
+   link (ex.: "Cadastrar atleta") é uma tag <a>, e a regra global `.fc a`
+   mais acima tem a mesma especificidade que `.fc-botao--primario` sozinha
+   — como `.fc a` vem primeiro no arquivo, ela venceria por ordem de
+   cascata e pintaria o texto do botão primário com a cor "gol" por cima
+   de um fundo também "gol", apagando o texto. Igualar a especificidade
+   (classe + tag, como `.fc a`) e manter a declaração depois no arquivo
+   resolve isso para as três variantes. */
+.fc-botao--primario,
+a.fc-botao--primario {
+  background: var(--fc-gol);
+  color: var(--fc-branco);
+  border-color: var(--fc-gol);
+}
+
+.fc-botao--primario:hover,
+a.fc-botao--primario:hover {
+  background: var(--fc-gol-hover);
+  border-color: var(--fc-gol-hover);
+}
+
+.fc-botao--secundario,
+a.fc-botao--secundario {
+  background: transparent;
+  color: var(--fc-tinta);
+  border-color: var(--fc-linha-forte);
+}
+
+.fc-botao--secundario:hover,
+a.fc-botao--secundario:hover {
+  border-color: var(--fc-tinta);
+  background: var(--fc-neutro-suave);
+}
+
+.fc-botao--perigo,
+a.fc-botao--perigo {
+  background: var(--fc-branco);
+  color: var(--fc-perigo);
+  border-color: var(--fc-perigo);
+}
+
+.fc-botao--perigo:hover,
+a.fc-botao--perigo:hover {
+  background: var(--fc-perigo-suave);
+}
+
+.fc-botao:disabled,
+.fc-botao[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.fc-botao--carregando {
+  color: transparent;
+}
+
+.fc-botao__spinner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.fc-botao__spinner svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  animation: fc-girar 0.8s linear infinite;
+}
+
+@keyframes fc-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-botao__spinner svg {
+    animation-duration: 2.4s;
+  }
+}
+
+/* ---------- cartão ---------- */
+
+.fc-cartao {
+  background: var(--fc-branco);
+  border: 1px solid var(--fc-linha);
+  border-radius: var(--fc-raio);
+  box-shadow: var(--fc-sombra);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.fc-cartao--plana {
+  box-shadow: none;
+}
+
+/* ---------- etiqueta de estado ---------- */
+
+.fc-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: var(--fc-raio-pill);
+  white-space: nowrap;
+}
+
+.fc-etiqueta::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.fc-etiqueta--neutro {
+  background: var(--fc-neutro-suave);
+  color: var(--fc-tinta-60);
+}
+
+.fc-etiqueta--alerta {
+  background: var(--fc-alerta-suave);
+  color: var(--fc-alerta);
+}
+
+.fc-etiqueta--sucesso {
+  background: var(--fc-sucesso-suave);
+  color: var(--fc-sucesso);
+}
+
+.fc-etiqueta--perigo {
+  background: var(--fc-perigo-suave);
+  color: var(--fc-perigo);
+}
+
+/* ---------- aviso (banner) ---------- */
+
+.fc-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.9rem 1.05rem;
+  border-radius: var(--fc-raio-sm);
+  border: 1.5px solid transparent;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.fc-aviso__icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  margin-top: 0.05rem;
+}
+
+.fc-aviso--erro {
+  background: var(--fc-perigo-suave);
+  border-color: rgb(198 47 13 / 0.25);
+  color: var(--fc-perigo);
+}
+
+.fc-aviso--erro .fc-aviso__icone {
+  background: var(--fc-perigo);
+  color: var(--fc-branco);
+}
+
+.fc-aviso--sucesso {
+  background: var(--fc-sucesso-suave);
+  border-color: rgb(31 122 77 / 0.25);
+  color: var(--fc-sucesso);
+}
+
+.fc-aviso--sucesso .fc-aviso__icone {
+  background: var(--fc-sucesso);
+  color: var(--fc-branco);
+}
+
+/* ---------- lista de atletas (painel) ---------- */
+
+.fc-lista {
+  display: grid;
+  gap: var(--fc-esp-4);
+}
+
+.fc-item-atleta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fc-esp-3) var(--fc-esp-5);
+}
+
+.fc-item-atleta__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 12rem;
+}
+
+.fc-item-atleta__nome {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-item-atleta__meta {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-60);
+}
+
+.fc-item-atleta__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fc-estado-vazio {
+  text-align: center;
+  padding: var(--fc-esp-7) var(--fc-esp-4);
+  color: var(--fc-tinta-60);
+}
+
+/* ---------- termo (bloco de leitura dentro do app) ---------- */
+
+.fc-espaco {
+  height: var(--fc-esp-6);
+}
+
+.fc-termo {
+  max-height: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--fc-esp-5);
+  background: var(--fc-papel-2);
+  border: 1px solid var(--fc-linha);
+  border-radius: var(--fc-raio);
+  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--fc-tinta-80);
+  white-space: pre-wrap;
+}
+
+@media (min-width: 40rem) {
+  .fc-corpo {
+    padding-block: var(--fc-esp-7) calc(var(--fc-esp-7) * 1.5);
+  }
+}

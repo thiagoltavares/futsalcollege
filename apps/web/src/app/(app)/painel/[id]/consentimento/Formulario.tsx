@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { assinarConsentimento } from "./acoes";
+import { Aviso, Botao, Campo, EnvioArquivo } from "@/ui";
 
 export function FormularioConsentimento({
   atletaId,
@@ -14,35 +15,40 @@ export function FormularioConsentimento({
   const [estado, disparar, pendente] = useActionState(acao, null);
 
   return (
-    <form action={disparar}>
-      <label htmlFor="nome_responsavel">Seu nome completo (responsável legal)</label>
-      <input
-        id="nome_responsavel"
-        name="nome_responsavel"
-        required
-        maxLength={120}
-        defaultValue={nomeInicial}
-      />
+    <form action={disparar} className="fc-form">
+      <Campo id="nome_responsavel" rotulo="Seu nome completo (responsável legal)">
+        {(campo) => (
+          <input {...campo} name="nome_responsavel" required maxLength={120} defaultValue={nomeInicial} />
+        )}
+      </Campo>
 
-      <label htmlFor="documento">Documento de identidade do responsável</label>
-      <input
+      <Campo
         id="documento"
-        name="documento"
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
-        required
-      />
+        rotulo="Documento de identidade do responsável"
+        ajuda="JPEG, PNG, WEBP, HEIC ou PDF."
+      >
+        {({ id, "aria-describedby": descritoPor, "aria-invalid": invalido }) => (
+          <EnvioArquivo
+            id={id}
+            aria-describedby={descritoPor}
+            aria-invalid={invalido}
+            name="documento"
+            accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
+            required
+          />
+        )}
+      </Campo>
 
-      <label>
+      <label className="fc-checkbox-linha">
         <input type="checkbox" name="aceite" required />
         Li e autorizo o tratamento dos dados do atleta nos termos acima.
       </label>
 
-      <button type="submit" disabled={pendente}>
-        {pendente ? "Enviando..." : "Assinar e ativar o perfil"}
-      </button>
+      <Botao type="submit" carregando={pendente}>
+        Assinar e ativar o perfil
+      </Botao>
 
-      {estado?.erro && <p role="alert">{estado.erro}</p>}
+      {estado?.erro && <Aviso tipo="erro">{estado.erro}</Aviso>}
     </form>
   );
 }
