@@ -1023,3 +1023,165 @@ a.fc-botao--perigo:hover {
 .fc-home-autoridade .fc-botao {
   margin-top: var(--fc-esp-4);
 }
+
+/* ---------- tela do avaliador: item + escala de 1 a 5 ---------- */
+
+.fc-item-avaliar {
+  border: 0;
+  padding: 0 0 var(--fc-esp-5);
+  margin: 0 0 var(--fc-esp-5);
+  border-bottom: 1px solid var(--fc-linha);
+}
+
+.fc-item-avaliar:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.fc-item-avaliar__legenda {
+  padding: 0;
+  margin-bottom: var(--fc-esp-3);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-tinta);
+}
+
+.fc-escala {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.fc-escala__opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--fc-linha);
+  border-radius: var(--fc-raio-sm);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.fc-escala__opcao:hover {
+  border-color: var(--fc-linha-forte);
+}
+
+.fc-escala__opcao:has(input:checked) {
+  border-color: var(--fc-gol);
+  background: var(--fc-gol-suave);
+}
+
+.fc-escala__opcao input[type="radio"] {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: var(--fc-gol);
+}
+
+.fc-escala__numero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--fc-neutro-suave);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--fc-tinta-80);
+}
+
+.fc-escala__opcao:has(input:checked) .fc-escala__numero {
+  background: var(--fc-gol);
+  color: var(--fc-branco);
+}
+
+.fc-escala__ancora {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--fc-tinta-80);
+}
+
+/* ---------- ficha pública: avaliação técnica publicada ---------- */
+
+.fc-laudo {
+  margin-top: var(--fc-esp-7);
+  padding-top: var(--fc-esp-6);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc-laudo__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  margin-bottom: var(--fc-esp-5);
+}
+
+.fc-laudo__meta {
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-40);
+}
+
+.fc-laudo-eixos {
+  display: grid;
+  gap: var(--fc-esp-5);
+}
+
+.fc-laudo-eixo__rotulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fc-gol);
+  margin-bottom: var(--fc-esp-2);
+}
+
+.fc-laudo-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--fc-linha);
+  font-size: 0.9375rem;
+}
+
+.fc-laudo-item:last-child {
+  border-bottom: 0;
+}
+
+.fc-laudo-item__rotulo {
+  color: var(--fc-tinta-80);
+}
+
+.fc-laudo-item__nota {
+  flex: none;
+  font-weight: 700;
+  color: var(--fc-tinta);
+  text-align: right;
+}
+
+.fc-laudo__texto {
+  margin-top: var(--fc-esp-6);
+  padding-top: var(--fc-esp-5);
+  border-top: 1px solid var(--fc-linha);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--fc-tinta-80);
+}
+
+.fc-laudo__rodape {
+  margin-top: var(--fc-esp-5);
+  font-size: 0.8125rem;
+  color: var(--fc-tinta-40);
+}
+
+.fc-laudo__acoes {
+  margin-top: var(--fc-esp-5);
+}

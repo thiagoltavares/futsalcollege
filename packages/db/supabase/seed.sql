@@ -258,3 +258,222 @@ where atleta_id in (
   'b0000000-0000-0000-0000-000000000013'
 )
 and revogado_em is null;
+
+-- ==========================================================================
+-- RUBRICA v1 (ESBOÇO) — o conteúdo real (itens, escala, âncoras) é trabalho
+-- do Flávio e ainda não existe. Os 12 itens abaixo (3 por eixo) são um
+-- esboço plausível só para dar o que avaliar durante o smoke test manual —
+-- não é o método final do produto.
+-- ==========================================================================
+
+insert into rubricas (versao, itens, ativa)
+values (
+  'v1',
+  '[
+    {
+      "eixo": "tecnico", "chave": "passe_recepcao", "rotulo": "Passe e recepção",
+      "ancoras": {
+        "1": "Erra passes simples e perde a bola na recepção com frequência",
+        "2": "Executa passe e recepção parado, sem pressão de marcação",
+        "3": "Executa passe e recepção sob marcação leve, em ritmo de jogo",
+        "4": "Executa com precisão sob pressão, em velocidade e com os dois pés",
+        "5": "Executa sob pressão e ainda cria vantagem para quem recebe (passe que rompe linha)"
+      }
+    },
+    {
+      "eixo": "tecnico", "chave": "drible_protecao_bola", "rotulo": "Drible e proteção de bola",
+      "ancoras": {
+        "1": "Perde a bola no primeiro contato do adversário",
+        "2": "Protege a bola parado, de costas para a marcação",
+        "3": "Protege a bola e sai jogando sob marcação em ritmo baixo",
+        "4": "Dribla e protege a bola em velocidade, trocando de perna",
+        "5": "Dribla sob pressão e desequilibra a defesa adversária"
+      }
+    },
+    {
+      "eixo": "tecnico", "chave": "finalizacao", "rotulo": "Finalização",
+      "ancoras": {
+        "1": "Não ameaça o gol — finalização sem direção ou força",
+        "2": "Finaliza parado, com pouca variação de perna ou ângulo",
+        "3": "Finaliza em movimento, com noção de canto",
+        "4": "Finaliza em velocidade, com as duas pernas, em situações variadas",
+        "5": "Finaliza com eficiência mesmo sob pressão e em ângulos difíceis"
+      }
+    },
+    {
+      "eixo": "fisico", "chave": "velocidade_deslocamento", "rotulo": "Velocidade de deslocamento",
+      "ancoras": {
+        "1": "Chega atrasado nas disputas por lentidão de deslocamento",
+        "2": "Acompanha o ritmo do jogo em trechos curtos",
+        "3": "Mantém boa velocidade em transições ofensivas e defensivas",
+        "4": "Destaca-se em corridas de recuperação e apoio ofensivo",
+        "5": "Velocidade acima da média para a categoria, decide jogadas sozinho"
+      }
+    },
+    {
+      "eixo": "fisico", "chave": "resistencia", "rotulo": "Resistência",
+      "ancoras": {
+        "1": "Cai de rendimento visivelmente antes da metade do jogo ou treino",
+        "2": "Mantém o rendimento em blocos curtos, com quedas frequentes",
+        "3": "Sustenta o ritmo por boa parte do jogo, com queda no fim",
+        "4": "Sustenta intensidade alta do início ao fim da partida",
+        "5": "Mantém alta intensidade mesmo em prorrogação ou sequência de jogos"
+      }
+    },
+    {
+      "eixo": "fisico", "chave": "agilidade_mudanca_direcao", "rotulo": "Agilidade e mudança de direção",
+      "ancoras": {
+        "1": "Movimentos rígidos, demora para mudar de direção",
+        "2": "Muda de direção em ritmo baixo, sem perder o equilíbrio",
+        "3": "Muda de direção em ritmo de jogo, com equilíbrio",
+        "4": "Muda de direção em alta velocidade sem perder controle de bola",
+        "5": "Agilidade referência na categoria — decide em espaços curtos"
+      }
+    },
+    {
+      "eixo": "tatico", "chave": "leitura_jogo", "rotulo": "Leitura de jogo",
+      "ancoras": {
+        "1": "Não antecipa jogadas, reage tarde às situações",
+        "2": "Entende situações simples, mas erra em momentos de pressão",
+        "3": "Lê o jogo e toma decisões corretas na maior parte do tempo",
+        "4": "Antecipa jogadas e ajusta posicionamento antes do lance acontecer",
+        "5": "Referência tática em quadra — organiza os colegas em tempo real"
+      }
+    },
+    {
+      "eixo": "tatico", "chave": "posicionamento_sem_bola", "rotulo": "Posicionamento sem a bola",
+      "ancoras": {
+        "1": "Fica estático, sem procurar espaço ou linha de passe",
+        "2": "Movimenta-se pouco, ocupa espaço de forma previsível",
+        "3": "Procura espaço e se oferece como opção de passe",
+        "4": "Movimenta-se para criar linhas de passe e desmarcar companheiros",
+        "5": "Cria superioridade numérica com movimentação constante e inteligente"
+      }
+    },
+    {
+      "eixo": "tatico", "chave": "transicao_ataque_defesa", "rotulo": "Transição ataque-defesa",
+      "ancoras": {
+        "1": "Demora a voltar para a marcação depois de perder a bola",
+        "2": "Volta para a defesa, mas em ritmo lento",
+        "3": "Transita em ritmo adequado entre ataque e defesa",
+        "4": "Transita rapidamente e já chega posicionado taticamente",
+        "5": "Lidera a transição, orienta companheiros na troca de fase"
+      }
+    },
+    {
+      "eixo": "comportamental", "chave": "atitude_competitiva", "rotulo": "Atitude competitiva",
+      "ancoras": {
+        "1": "Desiste de disputas e demonstra pouco empenho",
+        "2": "Compete de forma irregular, varia conforme o placar",
+        "3": "Compete com empenho constante durante o jogo ou treino",
+        "4": "Mantém intensidade e postura competitiva mesmo em desvantagem",
+        "5": "Referência de postura competitiva — contagia o time"
+      }
+    },
+    {
+      "eixo": "comportamental", "chave": "trabalho_em_equipe", "rotulo": "Trabalho em equipe",
+      "ancoras": {
+        "1": "Joga isolado, não busca combinações com companheiros",
+        "2": "Colabora quando solicitado, com pouca iniciativa",
+        "3": "Busca combinações e ajuda companheiros nas duas fases",
+        "4": "Prioriza o coletivo e facilita o jogo dos companheiros",
+        "5": "Articula o time — os companheiros rendem mais perto dele"
+      }
+    },
+    {
+      "eixo": "comportamental", "chave": "disciplina_tatica_escuta", "rotulo": "Disciplina tática e escuta",
+      "ancoras": {
+        "1": "Ignora orientações e repete os mesmos erros",
+        "2": "Segue orientações simples, mas esquece sob pressão",
+        "3": "Segue as orientações combinadas na maior parte do jogo",
+        "4": "Aplica orientações com consistência, mesmo sob pressão",
+        "5": "Corrige-se sozinho e ajuda a manter o combinado entre os colegas"
+      }
+    }
+  ]'::jsonb,
+  true
+);
+
+-- --------------------------------------------------------------------------
+-- Avaliador — usuário autenticado que assina os laudos abaixo. Nesta rodada
+-- não existe credenciamento (ver AGENTS/brief da rodada): qualquer usuário
+-- autenticado pode avaliar, então este é só um exemplo de conta que
+-- entraria pelo mesmo link mágico. Mesmo padrão dos três responsáveis
+-- acima, para não colidir com o comportamento da GoTrue local.
+-- --------------------------------------------------------------------------
+
+insert into auth.users (
+  id, instance_id, email, encrypted_password, email_confirmed_at, role, aud,
+  confirmation_token, recovery_token, email_change_token_new, email_change,
+  email_change_token_current, reauthentication_token, created_at, updated_at
+)
+values
+  ('a4444444-4444-4444-4444-444444444444', '00000000-0000-0000-0000-000000000000',
+   'avaliador.tecnico@exemplo.test',
+   crypt('senha-de-teste-123', gen_salt('bf')), now(), 'authenticated', 'authenticated',
+   '', '', '', '', '', '', now(), now());
+
+insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+select id::text, id, jsonb_build_object('sub', id::text, 'email', email), 'email', now(), now(), now()
+from auth.users
+where id = 'a4444444-4444-4444-4444-444444444444';
+
+-- --------------------------------------------------------------------------
+-- Laudos publicados — 4 avaliações em atletas ativos diferentes (Manu, DL,
+-- Nardinho, JP), para a ficha pública e o PDF terem o que mostrar sem
+-- precisar preencher o formulário primeiro. Gabigol Cearense fica ativo e
+-- SEM laudo de propósito, para exercitar o estado "ainda sem avaliação
+-- publicada" na ficha pública.
+-- --------------------------------------------------------------------------
+
+insert into laudos
+  (atleta_id, avaliador_id, avaliador_nome, rubrica_versao, contexto, notas, texto, publicado_em)
+values
+  (
+    'b0000000-0000-0000-0000-000000000003', -- Manu, Sub-13, ativo
+    'a4444444-4444-4444-4444-444444444444', 'Prof. Ricardo Bezerra', 'v1', 'presencial',
+    '{
+      "passe_recepcao": 4, "drible_protecao_bola": 3, "finalizacao": 3,
+      "velocidade_deslocamento": 4, "resistencia": 3, "agilidade_mudanca_direcao": 4,
+      "leitura_jogo": 3, "posicionamento_sem_bola": 4, "transicao_ataque_defesa": 3,
+      "atitude_competitiva": 5, "trabalho_em_equipe": 4, "disciplina_tatica_escuta": 4
+    }'::jsonb,
+    'Manu se destaca pela intensidade e pela movimentação sem bola. O passe sob pressão já é ponto forte; a finalização ainda varia bastante entre treino e jogo — vale trabalhar repertório de conclusão nas próximas semanas.',
+    now() - interval '12 days'
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000004', -- DL, Sub-15, ativo (goleiro)
+    'a4444444-4444-4444-4444-444444444444', 'Prof. Ricardo Bezerra', 'v1', 'presencial',
+    '{
+      "passe_recepcao": 4, "drible_protecao_bola": 2, "finalizacao": 2,
+      "velocidade_deslocamento": 3, "resistencia": 4, "agilidade_mudanca_direcao": 5,
+      "leitura_jogo": 5, "posicionamento_sem_bola": 4, "transicao_ataque_defesa": 4,
+      "atitude_competitiva": 4, "trabalho_em_equipe": 4, "disciplina_tatica_escuta": 5
+    }'::jsonb,
+    'Leitura de jogo muito acima da categoria — organiza a linha defensiva com clareza e antecipa cruzamentos com segurança. Itens de drible e finalização pesam pouco na função de goleiro; ainda assim, valem para o histórico completo do atleta.',
+    now() - interval '7 days'
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000008', -- Nardinho, Sub-20, ativo
+    'a4444444-4444-4444-4444-444444444444', 'Prof. Ricardo Bezerra', 'v1', 'analise_video',
+    '{
+      "passe_recepcao": 5, "drible_protecao_bola": 4, "finalizacao": 5,
+      "velocidade_deslocamento": 4, "resistencia": 4, "agilidade_mudanca_direcao": 4,
+      "leitura_jogo": 5, "posicionamento_sem_bola": 5, "transicao_ataque_defesa": 4,
+      "atitude_competitiva": 5, "trabalho_em_equipe": 5, "disciplina_tatica_escuta": 4
+    }'::jsonb,
+    'Avaliação feita a partir de três vídeos de jogo enviados pelo clube. Nardinho finaliza com as duas pernas e decide bem em situação de superioridade numérica — perfil pronto para observação mais próxima em categoria de transição.',
+    now() - interval '3 days'
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000010', -- JP, Sub-14, ativo (goleiro)
+    'a4444444-4444-4444-4444-444444444444', 'Prof. Ricardo Bezerra', 'v1', 'presencial',
+    '{
+      "passe_recepcao": 3, "drible_protecao_bola": 2, "finalizacao": 2,
+      "velocidade_deslocamento": 3, "resistencia": 3, "agilidade_mudanca_direcao": 4,
+      "leitura_jogo": 3, "posicionamento_sem_bola": 3, "transicao_ataque_defesa": 3,
+      "atitude_competitiva": 4, "trabalho_em_equipe": 3, "disciplina_tatica_escuta": 3
+    }'::jsonb,
+    'Primeira avaliação de JP na plataforma. Boa base de agilidade; ainda em desenvolvimento na saída jogando sob pressão. Reavaliar em 3 a 4 meses para acompanhar evolução.',
+    now() - interval '1 day'
+  );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
+import { agruparPorEixo, EIXOS, ROTULO_CONTEXTO, ROTULO_EIXO, type ItemRubrica } from "@futsalcollege/core";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
@@ -79,6 +80,39 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
   return data;
 });
 
+/**
+ * Último laudo publicado do atleta. A política `laudos_leitura_publica`
+ * (migration 0008) já é quem decide se alguma linha volta aqui — publicado
+ * e atleta ativo, exatamente a mesma condição de `buscarFichaPublica`. Esta
+ * função não ordena nem compara atletas entre si: devolve no máximo UM
+ * laudo, do atleta já identificado por `id` — nunca uma lista.
+ */
+async function buscarLaudoPublico(supabase: SupabaseClient<Database>, atletaId: string) {
+  const { data: laudo } = await supabase
+    .from("laudos")
+    .select("id, contexto, avaliador_nome, rubrica_versao, texto, notas, publicado_em")
+    .eq("atleta_id", atletaId)
+    .not("publicado_em", "is", null)
+    .order("publicado_em", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!laudo) return null;
+
+  const { data: rubrica } = await supabase
+    .from("rubricas")
+    .select("itens")
+    .eq("versao", laudo.rubrica_versao)
+    .maybeSingle();
+
+  if (!rubrica) return null;
+
+  const itens = rubrica.itens as unknown as ItemRubrica[];
+  const notas = laudo.notas as Record<string, number>;
+
+  return { ...laudo, grupos: agruparPorEixo(itens), notas };
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/atleta/[id]">): Promise<Metadata> {
@@ -108,9 +142,12 @@ export async function generateMetadata({
 
 export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">) {
   const { id } = await params;
-  const ficha = await buscarFichaPublica(clienteAnonimo(), id);
+  const supabase = clienteAnonimo();
+  const ficha = await buscarFichaPublica(supabase, id);
 
   if (!ficha) notFound();
+
+  const laudo = await buscarLaudoPublico(supabase, id);
 
   const fisico = [
     ficha.altura_cm ? `${ficha.altura_cm} cm` : null,
@@ -166,6 +203,68 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
               </div>
             )}
           </dl>
+
+          {laudo ? (
+            <section className="fc-laudo" aria-labelledby="fc-laudo-titulo">
+              <div className="fc-laudo__cabecalho">
+                <div>
+                  <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Avaliação técnica</p>
+                  <h2 id="fc-laudo-titulo" className="fc-titulo fc-titulo--card">
+                    Notas por eixo
+                  </h2>
+                </div>
+                <p className="fc-laudo__meta">
+                  Assinado por {laudo.avaliador_nome} · {ROTULO_CONTEXTO[laudo.contexto]} · rubrica{" "}
+                  {laudo.rubrica_versao}
+                  <br />
+                  Publicado em {new Date(laudo.publicado_em!).toLocaleDateString("pt-BR")}
+                </p>
+              </div>
+
+              <div className="fc-laudo-eixos">
+                {EIXOS.filter((eixo) => laudo.grupos[eixo].length > 0).map((eixo) => (
+                  <div key={eixo}>
+                    <p className="fc-laudo-eixo__rotulo">{ROTULO_EIXO[eixo]}</p>
+                    {laudo.grupos[eixo].map((item) => {
+                      const nota = laudo.notas[item.chave];
+                      return (
+                        <div key={item.chave} className="fc-laudo-item">
+                          <span className="fc-laudo-item__rotulo">{item.rotulo}</span>
+                          <span className="fc-laudo-item__nota">
+                            {nota ?? "—"} —{" "}
+                            {nota ? item.ancoras[String(nota) as "1"] : "não avaliado"}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+
+              {laudo.texto && <p className="fc-laudo__texto">{laudo.texto}</p>}
+
+              <p className="fc-laudo__rodape">
+                A avaliação compara {ficha.apelido} com o critério da categoria {ficha.categoria}{" "}
+                — nunca com outro atleta.
+              </p>
+
+              <div className="fc-laudo__acoes">
+                <a
+                  href={`/api/laudo/${laudo.id}/pdf`}
+                  className="fc-botao fc-botao--secundario"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Baixar PDF da avaliação
+                </a>
+              </div>
+            </section>
+          ) : (
+            <section className="fc-laudo">
+              <p className="fc-etiqueta-rotulo fc-ficha-eyebrow">Avaliação técnica</p>
+              <p className="fc-estado-vazio">Ainda sem avaliação técnica publicada.</p>
+            </section>
+          )}
 
           <p className="fc-ficha-rodape">
             Ficha pública do Futsal College. Estatísticas e avaliação são conferidas por quem

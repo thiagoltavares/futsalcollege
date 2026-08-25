@@ -37,6 +37,29 @@ export default async function Painel() {
     .eq("responsavel_id", sessao.user.id)
     .order("criado_em", { ascending: false });
 
+  // Laudo publicado mais recente de cada atleta ativo, só para montar o
+  // link do PDF aqui no painel. A política `laudos_leitura_publica`
+  // (migration 0008) já alcança essas linhas para qualquer usuário
+  // autenticado — é a mesma regra que decide o que aparece na ficha
+  // pública, não um acesso especial do painel.
+  const idsAtivos = (atletas ?? []).filter((a) => a.estado === "ativo").map((a) => a.id);
+
+  const laudoIdPorAtleta = new Map<string, string>();
+  if (idsAtivos.length > 0) {
+    const { data: laudos } = await supabase
+      .from("laudos")
+      .select("id, atleta_id, publicado_em")
+      .in("atleta_id", idsAtivos)
+      .not("publicado_em", "is", null)
+      .order("publicado_em", { ascending: false });
+
+    for (const laudo of laudos ?? []) {
+      if (!laudoIdPorAtleta.has(laudo.atleta_id)) {
+        laudoIdPorAtleta.set(laudo.atleta_id, laudo.id);
+      }
+    }
+  }
+
   return (
     <div className="fc-container">
       <div className="fc-cabecalho-pagina">
@@ -82,6 +105,19 @@ export default async function Painel() {
                       <Link href={`/atleta/${a.id}`} className="fc-botao fc-botao--secundario">
                         Ver ficha pública
                       </Link>
+                      <Link href={`/avaliar/${a.id}`} className="fc-botao fc-botao--secundario">
+                        Avaliar
+                      </Link>
+                      {laudoIdPorAtleta.has(a.id) && (
+                        <a
+                          href={`/api/laudo/${laudoIdPorAtleta.get(a.id)}/pdf`}
+                          className="fc-botao fc-botao--secundario"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          PDF da avaliação
+                        </a>
+                      )}
                       <form action={revogar.bind(null, a.id)}>
                         <Botao type="submit" variante="perigo">
                           Revogar autorização

@@ -205,6 +205,70 @@ export type Database = {
           },
         ]
       }
+      laudos: {
+        Row: {
+          atleta_id: string
+          avaliador_id: string
+          avaliador_nome: string
+          contexto: Database["public"]["Enums"]["contexto_avaliacao"]
+          criado_em: string
+          id: string
+          notas: Json
+          publicado_em: string | null
+          rubrica_versao: string
+          substitui_laudo_id: string | null
+          texto: string | null
+        }
+        Insert: {
+          atleta_id: string
+          avaliador_id: string
+          avaliador_nome: string
+          contexto: Database["public"]["Enums"]["contexto_avaliacao"]
+          criado_em?: string
+          id?: string
+          notas: Json
+          publicado_em?: string | null
+          rubrica_versao: string
+          substitui_laudo_id?: string | null
+          texto?: string | null
+        }
+        Update: {
+          atleta_id?: string
+          avaliador_id?: string
+          avaliador_nome?: string
+          contexto?: Database["public"]["Enums"]["contexto_avaliacao"]
+          criado_em?: string
+          id?: string
+          notas?: Json
+          publicado_em?: string | null
+          rubrica_versao?: string
+          substitui_laudo_id?: string | null
+          texto?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laudos_atleta_id_fkey"
+            columns: ["atleta_id"]
+            isOneToOne: false
+            referencedRelation: "atletas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laudos_rubrica_versao_fkey"
+            columns: ["rubrica_versao"]
+            isOneToOne: false
+            referencedRelation: "rubricas"
+            referencedColumns: ["versao"]
+          },
+          {
+            foreignKeyName: "laudos_substitui_laudo_id_fkey"
+            columns: ["substitui_laudo_id"]
+            isOneToOne: false
+            referencedRelation: "laudos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       responsaveis: {
         Row: {
           criado_em: string
@@ -223,6 +287,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rubricas: {
+        Row: {
+          ativa: boolean
+          itens: Json
+          publicada_em: string
+          versao: string
+        }
+        Insert: {
+          ativa?: boolean
+          itens: Json
+          publicada_em?: string
+          versao: string
+        }
+        Update: {
+          ativa?: boolean
+          itens?: Json
+          publicada_em?: string
+          versao?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -237,6 +322,7 @@ export type Database = {
       consentimento_vigente: { Args: { p_atleta: string }; Returns: boolean }
     }
     Enums: {
+      contexto_avaliacao: "presencial" | "analise_video"
       estado_perfil:
         | "rascunho"
         | "aguardando_consentimento"
@@ -373,6 +459,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      contexto_avaliacao: ["presencial", "analise_video"],
       estado_perfil: [
         "rascunho",
         "aguardando_consentimento",
