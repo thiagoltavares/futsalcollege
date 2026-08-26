@@ -7,6 +7,10 @@ export const CATEGORIAS = [
 
 export const POSICOES = ["Goleiro", "Fixo", "Ala", "Pivô"] as const;
 
+// Não faz parte de `esquemaAtleta` (cadastro não coleta isto ainda, ver
+// migration 0015) — só o valor de referência para o filtro de `/atletas`.
+export const GENEROS = ["Masculino", "Feminino"] as const;
+
 /**
  * Um `<select>` HTML nunca envia `undefined` — na opção padrão ("Não
  * informada", "Escolha depois" etc.) ele envia `value=""`. Todo `FormData`

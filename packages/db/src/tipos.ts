@@ -192,6 +192,7 @@ export type Database = {
           escolinha_id: string | null
           estado: Database["public"]["Enums"]["estado_perfil"]
           estado_uf: string | null
+          genero: string | null
           id: string
           pe_dominante: string | null
           peso_kg: number | null
@@ -208,6 +209,7 @@ export type Database = {
           escolinha_id?: string | null
           estado?: Database["public"]["Enums"]["estado_perfil"]
           estado_uf?: string | null
+          genero?: string | null
           id?: string
           pe_dominante?: string | null
           peso_kg?: number | null
@@ -224,6 +226,7 @@ export type Database = {
           escolinha_id?: string | null
           estado?: Database["public"]["Enums"]["estado_perfil"]
           estado_uf?: string | null
+          genero?: string | null
           id?: string
           pe_dominante?: string | null
           peso_kg?: number | null

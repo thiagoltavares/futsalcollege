@@ -1240,7 +1240,34 @@ a.fc-botao--perigo:hover {
 /* ---------- home (landing pública) ---------- */
 
 .fc-home-hero {
+  position: relative;
+  overflow: hidden;
   padding-block: clamp(3rem, 9vw, 6rem) clamp(2.5rem, 7vw, 4rem);
+}
+
+/* Grafismo de quadra (`<Quadra />`, `ui/Quadra.tsx`) atrás do conteúdo do
+   hero. Cor recalculada para o fundo claro deste hero (`--fc-papel`, ver
+   topo do arquivo): o original tinha traço osso a 14% sobre tinta escura;
+   aqui é tinta a 8% sobre osso/papel claro — mesma família de "linha quase
+   invisível" de `--fc-linha` (tinta a 14%, usada em divisórias), só mais
+   fraca ainda porque este traço cobre a área inteira atrás do título, não
+   uma borda fina isolada. */
+.fc-quadra {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  color: rgb(11 13 14 / 0.08);
+}
+
+/* Conteúdo do hero por cima do grafismo — sem isto ele nasceria atrás do
+   `<svg>` seguinte na ordem do DOM só por causa do `z-index: 0` daquele
+   (que já basta para ficar atrás de um irmão sem z-index/posicionamento,
+   mas um contexto de empilhamento explícito aqui deixa a intenção clara
+   e é resiliente a qualquer filho futuro que ganhe posicionamento próprio). */
+.fc-home-hero__conteudo {
+  position: relative;
+  z-index: 1;
 }
 
 .fc-home-eyebrow {

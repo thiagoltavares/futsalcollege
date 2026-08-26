@@ -21,4 +21,6 @@ export { CartaoEscolinha } from "./CartaoEscolinha";
 export type { CartaoEscolinhaProps, EscolinhaResumoCartao } from "./CartaoEscolinha";
 export { CartaoProfissional } from "./CartaoProfissional";
 export type { CartaoProfissionalProps, ProfissionalResumoCartao } from "./CartaoProfissional";
+export { Quadra } from "./Quadra";
+export type { QuadraProps } from "./Quadra";
 export { cn } from "./util";

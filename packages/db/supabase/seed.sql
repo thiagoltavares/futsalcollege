@@ -231,100 +231,100 @@ where id in (
 
 -- Família de Erivan Costa Lima (responsavel.multiplos@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001',
-   'Kadu', 'Sub-9', 'Ala', 'Destro', null, null, null, 'CE', null, 'rascunho'),
+   'Kadu', 'Sub-9', 'Ala', 'Destro', null, null, null, 'CE', null, 'rascunho', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001',
-   'Bira', 'Sub-11', 'Pivô', 'Canhoto', 141, 33.40, null, 'CE', 'c0000000-0000-0000-0000-000000000001', 'aguardando_consentimento'),
+   'Bira', 'Sub-11', 'Pivô', 'Canhoto', 141, 33.40, null, 'CE', 'c0000000-0000-0000-0000-000000000001', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001',
-   'Manu', 'Sub-13', 'Fixo', 'Destro', 153, 43.20, null, 'CE', null, 'aguardando_consentimento'),
+   'Manu', 'Sub-13', 'Fixo', 'Destro', 153, 43.20, null, 'CE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000001',
-   'DL', 'Sub-15', 'Goleiro', 'Ambos', 168, 55.00, null, 'CE', 'c0000000-0000-0000-0000-000000000002', 'aguardando_consentimento'),
+   'DL', 'Sub-15', 'Goleiro', 'Ambos', 168, 55.00, null, 'CE', 'c0000000-0000-0000-0000-000000000002', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000001',
-   'Miguelzinho', 'Sub-7', null, null, null, null, null, 'CE', null, 'removido');
+   'Miguelzinho', 'Sub-7', null, null, null, null, null, 'CE', null, 'removido', 'Masculino');
 
 -- Família de Adriana Nascimento Freire (responsavel.dois@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000002',
-   'Yaya', 'Sub-10', 'Ala', 'Destro', null, null, null, 'CE', null, 'rascunho'),
+   'Yaya', 'Sub-10', 'Ala', 'Destro', null, null, null, 'CE', null, 'rascunho', 'Feminino'),
   ('b0000000-0000-0000-0000-000000000007', 'a0000000-0000-0000-0000-000000000002',
-   'JP', 'Sub-14', 'Goleiro', 'Ambos', 161, 48.60, null, 'CE', null, 'aguardando_consentimento'),
+   'JP', 'Sub-14', 'Goleiro', 'Ambos', 161, 48.60, null, 'CE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000008', 'a0000000-0000-0000-0000-000000000002',
-   'Lica', 'Sub-16', 'Pivô', 'Destro', null, null, null, 'CE', 'c0000000-0000-0000-0000-000000000005', 'aguardando_consentimento');
+   'Lica', 'Sub-16', 'Pivô', 'Destro', null, null, null, 'CE', 'c0000000-0000-0000-0000-000000000005', 'aguardando_consentimento', 'Feminino');
 
 -- Família de Cícero Wagner Pontes (responsavel.solo@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000009', 'a0000000-0000-0000-0000-000000000003',
-   'Gabigol Cearense', 'Sub-12', 'Fixo', 'Canhoto', 148, 39.50, null, 'CE', null, 'aguardando_consentimento'),
+   'Gabigol Cearense', 'Sub-12', 'Fixo', 'Canhoto', 148, 39.50, null, 'CE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000010', 'a0000000-0000-0000-0000-000000000003',
-   'Rafinha', 'Sub-18', 'Ala', 'Destro', 174, 66.00, null, 'CE', 'c0000000-0000-0000-0000-000000000006', 'aguardando_consentimento');
+   'Rafinha', 'Sub-18', 'Ala', 'Destro', 174, 66.00, null, 'CE', 'c0000000-0000-0000-0000-000000000006', 'aguardando_consentimento', 'Masculino');
 
 -- Família de Fabiana Melo Rocha (responsavel.gemeos@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000011', 'a0000000-0000-0000-0000-000000000004',
-   'Bibi', 'Sub-11', 'Ala', 'Destro', 139, 31.00, null, 'CE', 'c0000000-0000-0000-0000-000000000008', 'aguardando_consentimento'),
+   'Bibi', 'Sub-11', 'Ala', 'Destro', 139, 31.00, null, 'CE', 'c0000000-0000-0000-0000-000000000008', 'aguardando_consentimento', 'Feminino'),
   ('b0000000-0000-0000-0000-000000000012', 'a0000000-0000-0000-0000-000000000004',
-   'Duda', 'Sub-11', 'Fixo', 'Canhoto', 137, 30.20, null, 'CE', 'c0000000-0000-0000-0000-000000000008', 'aguardando_consentimento');
+   'Duda', 'Sub-11', 'Fixo', 'Canhoto', 137, 30.20, null, 'CE', 'c0000000-0000-0000-0000-000000000008', 'aguardando_consentimento', 'Feminino');
 
 -- Família de Marcos Aurélio Nunes (responsavel.avaliacoes@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000013', 'a0000000-0000-0000-0000-000000000005',
-   'Théozinho', 'Sub-19', 'Fixo', 'Destro', 179, 71.00, null, 'CE', 'c0000000-0000-0000-0000-000000000003', 'aguardando_consentimento'),
+   'Théozinho', 'Sub-19', 'Fixo', 'Destro', 179, 71.00, null, 'CE', 'c0000000-0000-0000-0000-000000000003', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000014', 'a0000000-0000-0000-0000-000000000005',
-   'Nardinho', 'Sub-20', 'Pivô', 'Canhoto', 181, 75.50, null, 'CE', 'c0000000-0000-0000-0000-000000000004', 'aguardando_consentimento'),
+   'Nardinho', 'Sub-20', 'Pivô', 'Canhoto', 181, 75.50, null, 'CE', 'c0000000-0000-0000-0000-000000000004', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000015', 'a0000000-0000-0000-0000-000000000005',
-   'Bebeto', 'Sub-16', 'Ala', 'Destro', 163, 52.00, null, 'CE', 'c0000000-0000-0000-0000-000000000007', 'aguardando_consentimento'),
+   'Bebeto', 'Sub-16', 'Ala', 'Destro', 163, 52.00, null, 'CE', 'c0000000-0000-0000-0000-000000000007', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000016', 'a0000000-0000-0000-0000-000000000005',
-   'Coió', 'Sub-8', 'Pivô', 'Destro', null, null, null, 'CE', null, 'aguardando_consentimento');
+   'Coió', 'Sub-8', 'Pivô', 'Destro', null, null, null, 'CE', null, 'aguardando_consentimento', 'Masculino');
 
 -- Família de Socorro Helena Bezerra (responsavel.interior@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000017', 'a0000000-0000-0000-0000-000000000006',
-   'Vaqueirinho', 'Sub-17', 'Ala', 'Destro', 172, 64.00, null, 'CE', 'c0000000-0000-0000-0000-000000000011', 'aguardando_consentimento'),
+   'Vaqueirinho', 'Sub-17', 'Ala', 'Destro', 172, 64.00, null, 'CE', 'c0000000-0000-0000-0000-000000000011', 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000018', 'a0000000-0000-0000-0000-000000000006',
-   'Estrelinha', 'Sub-13', 'Pivô', 'Canhoto', 150, 40.50, null, 'CE', 'c0000000-0000-0000-0000-000000000012', 'aguardando_consentimento');
+   'Estrelinha', 'Sub-13', 'Pivô', 'Canhoto', 150, 40.50, null, 'CE', 'c0000000-0000-0000-0000-000000000012', 'aguardando_consentimento', 'Feminino');
 
 -- Família de Antônio Carlos Rego (responsavel.fora_ceara@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000019', 'a0000000-0000-0000-0000-000000000007',
-   'Rego Jr', 'Sub-15', 'Fixo', 'Destro', 166, 56.00, null, 'PE', null, 'aguardando_consentimento'),
+   'Rego Jr', 'Sub-15', 'Fixo', 'Destro', 166, 56.00, null, 'PE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000020', 'a0000000-0000-0000-0000-000000000007',
-   'Carlinhos', 'Sub-9', 'Ala', 'Destro', null, null, null, 'RN', null, 'aguardando_consentimento');
+   'Carlinhos', 'Sub-9', 'Ala', 'Destro', null, null, null, 'RN', null, 'aguardando_consentimento', 'Masculino');
 
 -- Família de Patrícia Gurgel Aragão (responsavel.feminino@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000021', 'a0000000-0000-0000-0000-000000000008',
-   'Guerreira', 'Sub-14', 'Ala', 'Destro', 158, 46.00, null, 'CE', 'c0000000-0000-0000-0000-000000000010', 'aguardando_consentimento'),
+   'Guerreira', 'Sub-14', 'Ala', 'Destro', 158, 46.00, null, 'CE', 'c0000000-0000-0000-0000-000000000010', 'aguardando_consentimento', 'Feminino'),
   ('b0000000-0000-0000-0000-000000000022', 'a0000000-0000-0000-0000-000000000008',
-   'Sereia', 'Sub-12', 'Pivô', 'Canhoto', 146, 38.00, null, 'CE', 'c0000000-0000-0000-0000-000000000010', 'aguardando_consentimento'),
+   'Sereia', 'Sub-12', 'Pivô', 'Canhoto', 146, 38.00, null, 'CE', 'c0000000-0000-0000-0000-000000000010', 'aguardando_consentimento', 'Feminino'),
   ('b0000000-0000-0000-0000-000000000023', 'a0000000-0000-0000-0000-000000000008',
-   'Furacão', 'Sub-18', 'Fixo', 'Destro', null, null, null, 'CE', null, 'rascunho');
+   'Furacão', 'Sub-18', 'Fixo', 'Destro', null, null, null, 'CE', null, 'rascunho', 'Masculino');
 
 -- Família de Raimundo Nonato Filho (responsavel.sem_escolinha@exemplo.test)
 insert into atletas
-  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+  (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
 values
   ('b0000000-0000-0000-0000-000000000024', 'a0000000-0000-0000-0000-000000000009',
-   'Nonatinho', 'Sub-10', 'Ala', 'Destro', 128, 26.00, null, 'CE', null, 'aguardando_consentimento'),
+   'Nonatinho', 'Sub-10', 'Ala', 'Destro', 128, 26.00, null, 'CE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000025', 'a0000000-0000-0000-0000-000000000009',
-   'Painho Jr', 'Sub-19', 'Goleiro', 'Ambos', 182, 74.00, null, 'CE', null, 'aguardando_consentimento'),
+   'Painho Jr', 'Sub-19', 'Goleiro', 'Ambos', 182, 74.00, null, 'CE', null, 'aguardando_consentimento', 'Masculino'),
   ('b0000000-0000-0000-0000-000000000026', 'a0000000-0000-0000-0000-000000000009',
-   'Buiu', 'Sub-7', null, null, null, null, null, 'CE', null, 'removido');
+   'Buiu', 'Sub-7', null, null, null, null, null, 'CE', null, 'removido', 'Masculino');
 
 -- --------------------------------------------------------------------------
 -- Identificação — nome completo e data de nascimento para os 26 nomeados,
@@ -1246,6 +1246,8 @@ declare
   dia int;
   v_nome_completo text;
   v_apelido text;
+  idx_primeiro_nome int;
+  v_genero text;
 
   ativos_bulk uuid[] := array[]::uuid[];
   laudos_alvo uuid[];
@@ -1338,17 +1340,26 @@ begin
       dia := 1 + floor(random() * 28)::int;
 
       v_apelido := apelidos[global_i];
-      v_nome_completo := primeiros_nomes[1 + floor(random() * array_length(primeiros_nomes, 1))::int]
+
+      -- Nome e gênero saem do MESMO sorteio (`idx_primeiro_nome`): os 25
+      -- primeiros nomes do array são masculinos, os 20 seguintes são
+      -- femininos (ver `primeiros_nomes` acima) — sortear o índice uma vez
+      -- só e derivar os dois evita nome e gênero saírem descasados (ex.:
+      -- "Alice" com genero Masculino).
+      idx_primeiro_nome := 1 + floor(random() * array_length(primeiros_nomes, 1))::int;
+      v_nome_completo := primeiros_nomes[idx_primeiro_nome]
         || ' ' || sobrenomes[1 + floor(random() * array_length(sobrenomes, 1))::int]
         || ' ' || sobrenomes[1 + floor(random() * array_length(sobrenomes, 1))::int];
+      v_genero := case when idx_primeiro_nome <= 25 then 'Masculino' else 'Feminino' end;
 
       v_atleta_id := gen_random_uuid();
 
       insert into atletas
-        (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado)
+        (id, responsavel_id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, escolinha_id, estado, genero)
       values
         (v_atleta_id, resp_id, v_apelido, v_categoria, v_posicao, pe, altura, peso, clube, uf, escolinha,
-         case when estado_final in ('ativo', 'suspenso') then 'aguardando_consentimento'::estado_perfil else estado_final end);
+         case when estado_final in ('ativo', 'suspenso') then 'aguardando_consentimento'::estado_perfil else estado_final end,
+         v_genero);
 
       insert into atleta_identificacao (atleta_id, nome_completo, data_nascimento, cidade, contato_responsavel)
       values (v_atleta_id, v_nome_completo, make_date(ano, mes, dia), v_cidade, pg_temp.telefone(ddd));

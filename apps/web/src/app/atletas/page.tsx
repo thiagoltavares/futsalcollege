@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@futsalcollege/db";
-import { CATEGORIAS, POSICOES } from "@futsalcollege/core";
+import { CATEGORIAS, GENEROS, POSICOES } from "@futsalcollege/core";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Campo, Cartao, CartaoAtleta, Selecao } from "@/ui";
 import "@/ui/estilos.css";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
+import { buscarCapasAtletas } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -79,7 +80,7 @@ const TAMANHO_PAGINA = 24;
 const MAX_CANDIDATOS = 480;
 
 function hrefComPagina(
-  filtros: { categoria: string; posicao: string; uf: string; busca: string; ordenar: string },
+  filtros: { categoria: string; posicao: string; genero: string; uf: string; busca: string; ordenar: string },
   somenteAvaliados: boolean,
   pagina: number,
 ): string {
@@ -87,6 +88,7 @@ function hrefComPagina(
   if (filtros.busca) params.set("busca", filtros.busca);
   if (filtros.categoria) params.set("categoria", filtros.categoria);
   if (filtros.posicao) params.set("posicao", filtros.posicao);
+  if (filtros.genero) params.set("genero", filtros.genero);
   if (filtros.uf) params.set("uf", filtros.uf);
   if (filtros.ordenar === "apelido") params.set("ordenar", filtros.ordenar);
   if (somenteAvaliados) params.set("avaliados", "1");
@@ -104,7 +106,7 @@ function hrefComPagina(
  */
 async function buscarAtletas(
   supabase: SupabaseClient<Database>,
-  filtros: { categoria: string; posicao: string; uf: string; busca: string; ordenar: string },
+  filtros: { categoria: string; posicao: string; genero: string; uf: string; busca: string; ordenar: string },
 ) {
   let consulta = supabase
     .from("atletas")
@@ -115,6 +117,7 @@ async function buscarAtletas(
 
   if (filtros.categoria) consulta = consulta.eq("categoria", filtros.categoria);
   if (filtros.posicao) consulta = consulta.eq("posicao", filtros.posicao);
+  if (filtros.genero) consulta = consulta.eq("genero", filtros.genero);
   if (filtros.uf) consulta = consulta.eq("estado_uf", filtros.uf);
   if (filtros.busca) consulta = consulta.ilike("apelido", `%${filtros.busca}%`);
 
@@ -136,6 +139,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
   const filtros = {
     categoria: primeiroValor(parametros.categoria),
     posicao: primeiroValor(parametros.posicao),
+    genero: primeiroValor(parametros.genero),
     uf: primeiroValor(parametros.uf),
     busca: primeiroValor(parametros.busca).trim(),
     ordenar: primeiroValor(parametros.ordenar) === "apelido" ? "apelido" : "recentes",
@@ -144,6 +148,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
   const filtrosAtivos = [
     filtros.categoria,
     filtros.posicao,
+    filtros.genero,
     filtros.uf,
     filtros.busca,
     somenteAvaliados,
@@ -163,6 +168,14 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
   const pagina = Math.min(Math.max(1, paginaPedida), totalPaginas);
   const inicio = (pagina - 1) * TAMANHO_PAGINA;
   const lista = listaFiltrada.slice(inicio, inicio + TAMANHO_PAGINA);
+
+  // Só os 24 cartões desta página, não os até 480 candidatos — mesma
+  // exceção de escopo de `buscarResumoAvaliacoes` acima não se aplica aqui
+  // porque a foto nunca decide filtro/ordenação, só é exibida.
+  const capasAtletas = await buscarCapasAtletas(
+    supabase,
+    lista.map((a) => a.id),
+  );
 
   return (
     <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
@@ -228,6 +241,19 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
                 )}
               </Campo>
 
+              <Campo id="genero" rotulo="Gênero" className="fc-atletas-filtro">
+                {(campo) => (
+                  <Selecao {...campo} name="genero" defaultValue={filtros.genero}>
+                    <option value="">Todos</option>
+                    {GENEROS.map((g) => (
+                      <option key={g} value={g}>
+                        {g}
+                      </option>
+                    ))}
+                  </Selecao>
+                )}
+              </Campo>
+
               <Campo id="uf" rotulo="Estado" className="fc-atletas-filtro">
                 {(campo) => (
                   <Selecao {...campo} name="uf" defaultValue={filtros.uf}>
@@ -280,7 +306,10 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
             <ul className="fc-lista fc-grade-cartoes">
               {lista.map((a) => (
                 <li key={a.id}>
-                  <CartaoAtleta atleta={a} avaliacao={resumoAvaliacoes.get(a.id) ?? null} />
+                  <CartaoAtleta
+                    atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
+                    avaliacao={resumoAvaliacoes.get(a.id) ?? null}
+                  />
                 </li>
               ))}
             </ul>

@@ -4,7 +4,7 @@ import type { Database } from "@futsalcollege/db";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
-import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha, Quadra } from "@/ui";
 import "@/ui/estilos.css";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 import { buscarCapasAtletas, urlPublicaMidia } from "@/lib/midias";
@@ -322,37 +322,41 @@ export default async function Home() {
       <main className="fc-corpo">
         {/* ============================ HERO ============================ */}
         <section className="fc-container fc-home-hero">
-          <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Futsal College</p>
-          <h1 className="fc-home-h1">Atletas do futsal de base, com registro que ninguém contesta.</h1>
-          <p className="fc-home-lead">
-            Da Sub-7 à Sub-20, cada atleta ganha uma ficha esportiva verificável: avaliação
-            técnica assinada por profissional credenciado, física medida com protocolo, e um
-            registro que acompanha a evolução dele ao longo do tempo.
-          </p>
+          <Quadra />
 
-          <form action="/atletas" method="GET" className="fc-vitrine-busca">
-            <input
-              type="text"
-              name="busca"
-              maxLength={40}
-              placeholder="Buscar atleta por apelido…"
-              className="fc-input"
-              aria-label="Buscar atleta por apelido"
-            />
-            <button type="submit" className="fc-botao fc-botao--primario">
-              Buscar
-            </button>
-          </form>
+          <div className="fc-home-hero__conteudo">
+            <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Futsal College</p>
+            <h1 className="fc-home-h1">Atletas do futsal de base, com registro que ninguém contesta.</h1>
+            <p className="fc-home-lead">
+              Da Sub-7 à Sub-20, cada atleta ganha uma ficha esportiva verificável: avaliação
+              técnica assinada por profissional credenciado, física medida com protocolo, e um
+              registro que acompanha a evolução dele ao longo do tempo.
+            </p>
 
-          <div className="fc-vitrine-pills">
-            {PILLS_CATEGORIA.map((c) => (
-              <Link key={c} href={`/atletas?categoria=${encodeURIComponent(c)}`} className="fc-pill">
-                {c}
+            <form action="/atletas" method="GET" className="fc-vitrine-busca">
+              <input
+                type="text"
+                name="busca"
+                maxLength={40}
+                placeholder="Buscar atleta por apelido…"
+                className="fc-input"
+                aria-label="Buscar atleta por apelido"
+              />
+              <button type="submit" className="fc-botao fc-botao--primario">
+                Buscar
+              </button>
+            </form>
+
+            <div className="fc-vitrine-pills">
+              {PILLS_CATEGORIA.map((c) => (
+                <Link key={c} href={`/atletas?categoria=${encodeURIComponent(c)}`} className="fc-pill">
+                  {c}
+                </Link>
+              ))}
+              <Link href="/atletas" className="fc-pill fc-pill--forte">
+                Ver todos os atletas →
               </Link>
-            ))}
-            <Link href="/atletas" className="fc-pill fc-pill--forte">
-              Ver todos os atletas →
-            </Link>
+            </div>
           </div>
         </section>
 
