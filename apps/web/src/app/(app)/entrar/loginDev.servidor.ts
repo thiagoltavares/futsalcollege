@@ -1,28 +1,30 @@
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
 /**
- * As duas travas do atalho de desenvolvimento (ver AGENTS/brief da rodada):
- * "porta dos fundos para dado de criança", então nenhuma delas basta
- * sozinha.
+ * Trava do atalho de demonstração.
  *
- * 1. `process.env.NODE_ENV !== "production"` — escrito como comparação
- *    direta (não uma função importada de outro módulo) de propósito: o
- *    Next.js troca `process.env.NODE_ENV` por uma string literal em tempo de
- *    build, e o minificador de produção elimina como código morto qualquer
- *    ramo que dependa de `"production" !== "production"`. Este arquivo,
- *    porém, só é importado por componentes de servidor (a página `/entrar` e
- *    a Server Action de login) — nunca entra no bundle do navegador de
- *    qualquer forma, faça o build o que fizer com este `if`.
- * 2. `NEXT_PUBLIC_LOGIN_DEV === "1"` — segunda trava explícita, independente
- *    da primeira. Documentada (desligada por padrão) em
- *    `apps/web/.env.local.example`.
+ * Este atalho loga como qualquer responsável SEM SENHA. Enquanto ligado, é
+ * porta aberta para tudo que um responsável enxerga — inclusive
+ * `atleta_identificacao` e `atleta_saude`, que a RLS esconde do público.
  *
- * Chamada tanto pela página (decide se busca a lista e desenha o seletor)
- * quanto pela Server Action (decide se aceita o login) — nunca confie só na
- * tela esconder o formulário.
+ * Decisão do dono do produto (fase de testes, base sintética, avaliação com
+ * o sócio): fica ligado também em produção, comandado por uma única
+ * variável. Era `NODE_ENV !== "production" && NEXT_PUBLIC_LOGIN_DEV === "1"`;
+ * a checagem de ambiente saiu, a variável ficou.
+ *
+ * PARA FECHAR: remova `NEXT_PUBLIC_LOGIN_DEV` do ambiente (na Vercel:
+ * Project Settings → Environment Variables). Sem ela o atalho some, e não há
+ * mais nada a desfazer em código.
+ *
+ * ANTES DE ENTRAR QUALQUER CRIANÇA REAL: além de remover a variável, troque
+ * a senha compartilhada do seed (`senha-de-teste-123`, versionada no
+ * repositório) e reveja se as contas do seed devem continuar existindo.
+ *
+ * Chamada tanto pela página (decide se desenha o seletor) quanto pela Server
+ * Action (decide se aceita o login) — nunca confie só na tela esconder.
  */
 export function loginDevHabilitado(): boolean {
-  return process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_LOGIN_DEV === "1";
+  return process.env.NEXT_PUBLIC_LOGIN_DEV === "1";
 }
 
 export type UsuarioLoginDev = {

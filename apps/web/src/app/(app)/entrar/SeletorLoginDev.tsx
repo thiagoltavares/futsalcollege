@@ -23,9 +23,10 @@ export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
   return (
     <Cartao className="fc-cartao--dev">
       <Aviso tipo="aviso">
-        <strong>Atalho de desenvolvimento.</strong> Entra direto como um usuário do banco local,
-        sem passar pelo link mágico. Só existe fora de produção, com{" "}
-        <code>NEXT_PUBLIC_LOGIN_DEV</code> ligado — nunca aparece para um responsável de verdade.
+        <strong>Ambiente de demonstração.</strong> Entra direto como qualquer usuário da base, sem
+        senha e sem link mágico. Está ligado por <code>NEXT_PUBLIC_LOGIN_DEV</code> — inclusive
+        aqui. Os perfis desta base são fictícios, criados para avaliação do produto; nenhuma
+        criança real tem cadastro.
       </Aviso>
 
       {usuarios.length === 0 ? (
