@@ -24,7 +24,14 @@ import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 
 const URL_PROJETO = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54521";
-const CHAVE_SECRETA = process.env.SUPABASE_SECRET_KEY ?? "sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz";
+const CHAVE_SECRETA = process.env.SUPABASE_SECRET_KEY;
+if (!CHAVE_SECRETA) {
+  throw new Error(
+    "SUPABASE_SECRET_KEY não definida. Este script escreve no Storage e precisa " +
+      "da chave secreta do projeto — exporte a variável antes de rodar. Não existe " +
+      "valor padrão de propósito: a chave embutida no código vazava para o Git.",
+  );
+}
 
 const supabase = createClient(URL_PROJETO, CHAVE_SECRETA, {
   auth: { autoRefreshToken: false, persistSession: false },
