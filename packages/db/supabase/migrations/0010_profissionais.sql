@@ -12,6 +12,9 @@
 -- conhecido, e é a migração de dados abaixo que preenche o que dá.
 
 create extension if not exists unaccent with schema extensions;
+-- A chamada abaixo é qualificada como `extensions.unaccent`, e não `unaccent`:
+-- o Supabase local traz `extensions` no search_path e o remoto não, então a
+-- versão sem schema aplicava aqui e quebrava no projeto de produção.
 
 create table profissionais (
   id uuid primary key default gen_random_uuid(),
@@ -111,7 +114,7 @@ gerados as (
   insert into profissionais (nome, slug, ativo, atua_desde)
   select
     d.nome,
-    trim(both '-' from regexp_replace(lower(unaccent(d.nome)), '[^a-z0-9]+', '-', 'g'))
+    trim(both '-' from regexp_replace(lower(extensions.unaccent(d.nome)), '[^a-z0-9]+', '-', 'g'))
       || '-' || substr(md5(d.nome), 1, 6),
     true,
     current_date
