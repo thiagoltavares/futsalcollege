@@ -43,3 +43,19 @@ export async function buscarCapasAtletas(
   }
   return capas;
 }
+
+/**
+ * Resolve um `storage_path` do bucket `midias` para URL pública — mesma
+ * conta feita acima e nas fichas de atleta/escolinha/profissional, só que
+ * para uma linha só (avatar de `escolinhas.foto_storage_path` ou
+ * `profissionais.foto_storage_path`, migration 0013, em vez da galeria de
+ * `atleta_midias`). `null` sem caminho: sem avatar, o cartão/ficha cai para
+ * a inicial, nunca um espaço vazio.
+ */
+export function urlPublicaMidia(
+  supabase: SupabaseClient<Database>,
+  storagePath: string | null,
+): string | null {
+  if (!storagePath) return null;
+  return supabase.storage.from("midias").getPublicUrl(storagePath).data.publicUrl;
+}

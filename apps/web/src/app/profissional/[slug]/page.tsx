@@ -8,6 +8,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
 import { anoDeData } from "@/ui/formato";
+import { urlPublicaMidia } from "@/lib/midias";
 import { PerfilProfissional } from "./PerfilProfissional";
 
 export const revalidate = 60;
@@ -59,7 +60,7 @@ const buscarProfissional = cache(async function buscarProfissional(
   const { data } = await supabase
     .from("profissionais")
     .select(
-      "id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde, citacao_texto, citacao_fonte",
+      "id, nome, slug, credencial, cidade, estado_uf, bio, ativo, atua_desde, citacao_texto, citacao_fonte, foto_storage_path",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -183,6 +184,7 @@ export default async function ProfissionalDetalhe({
               desde: anoDeData(profissional.atua_desde),
               citacaoTexto: profissional.citacao_texto,
               citacaoFonte: profissional.citacao_fonte,
+              fotoUrl: urlPublicaMidia(supabase, profissional.foto_storage_path),
             }}
             stats={{ laudos: laudos.length, marcos: marcos.length }}
             conquistas={conquistas.map((c) => ({

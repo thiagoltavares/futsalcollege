@@ -41,6 +41,7 @@ export type PerfilProfissionalProps = {
     desde: string | null;
     citacaoTexto: string | null;
     citacaoFonte: string | null;
+    fotoUrl: string | null;
   };
   stats: { laudos: number; marcos: number };
   conquistas: ConquistaPublica[];
@@ -56,8 +57,8 @@ const ROTULO_FASE: Record<MarcoPublico["fase"], string> = {
 };
 
 /** Duas primeiras iniciais do nome — mesmo raciocínio do avatar do atleta
- * (que cai para a primeira letra do apelido quando não há foto): aqui nunca
- * há foto nenhuma, então a inicial é sempre o que aparece no avatar. */
+ * (que cai para a primeira letra do apelido quando não há foto): sem
+ * `fotoUrl`, a inicial é o que aparece no avatar. */
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/);
   const primeira = partes[0]?.[0] ?? "";
@@ -95,8 +96,13 @@ export function PerfilProfissional({
     <>
       <section className="fc-perfil-header fc-perfil-header--capa">
         <div className="fc-perfil-header__topo">
-          <span className="fc-perfil-avatar" aria-hidden="true">
-            <span>{iniciais(profissional.nome)}</span>
+          <span className="fc-perfil-avatar">
+            {profissional.fotoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente.
+              <img src={profissional.fotoUrl} alt="" />
+            ) : (
+              <span aria-hidden="true">{iniciais(profissional.nome)}</span>
+            )}
           </span>
 
           <dl className="fc-perfil-stats">

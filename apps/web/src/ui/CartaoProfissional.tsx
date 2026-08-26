@@ -10,6 +10,13 @@ export type ProfissionalResumoCartao = {
   cidade: string | null;
   estado_uf: string | null;
   atua_desde: string;
+  /**
+   * URL pública já resolvida do avatar (`profissionais.foto_storage_path`,
+   * migration 0013) — `undefined`/`null` quando o profissional não tem
+   * avatar; o cartão cai para o grafismo de marca (inicial do nome) nesse
+   * caso, mesmo raciocínio de `AtletaResumoCartao.capaUrl`.
+   */
+  fotoUrl?: string | null;
 };
 
 export type CartaoProfissionalProps = {
@@ -28,8 +35,9 @@ export type CartaoProfissionalProps = {
  * longa que a do vizinho ("Educação Física — UFC · técnica de categorias
  * de base" ao lado de "Técnico · Futsal Sesc Ceará").
  *
- *   1. identidade  — nenhuma coluna de mídia em `profissionais`, então é
- *      sempre o grafismo de marca (inicial do nome), nunca um espaço vazio.
+ *   1. identidade  — avatar (`profissionais.foto_storage_path`, migration
+ *      0013); sem avatar, o grafismo de marca (inicial do nome), nunca um
+ *      espaço vazio.
  *   2. nome         — uma linha, corte por reticências.
  *   3. credencial   — até duas linhas, corte por reticências; texto neutro
  *      quando não informada, para a faixa nunca sumir e deslocar as de
@@ -51,9 +59,13 @@ export function CartaoProfissional({ profissional, laudos }: CartaoProfissionalP
     <Link href={`/profissional/${profissional.slug}`} className="fc-atletas-item-link">
       <Cartao className="fc-cartao-profissional">
         <div className="fc-cartao-profissional__midia">
-          <span className="fc-cartao-profissional__midia-inicial" aria-hidden="true">
-            {inicial}
-          </span>
+          {profissional.fotoUrl ? (
+            <img src={profissional.fotoUrl} alt="" loading="lazy" />
+          ) : (
+            <span className="fc-cartao-profissional__midia-inicial" aria-hidden="true">
+              {inicial}
+            </span>
+          )}
         </div>
 
         <div className="fc-cartao-profissional__corpo">

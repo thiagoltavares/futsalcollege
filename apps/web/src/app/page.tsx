@@ -7,7 +7,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
-import { buscarCapasAtletas } from "@/lib/midias";
+import { buscarCapasAtletas, urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -162,12 +162,13 @@ type EscolinhaCartao = {
   cidade: string;
   estado_uf: string;
   credenciada: boolean;
+  foto_storage_path: string | null;
 };
 
 async function buscarEscolinhasDestaque(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("escolinhas")
-    .select("id, nome, cidade, estado_uf, credenciada")
+    .select("id, nome, cidade, estado_uf, credenciada, foto_storage_path")
     .order("credenciada", { ascending: false })
     .order("nome", { ascending: true })
     .limit(8);
@@ -228,7 +229,7 @@ async function buscarContagensEscolinhas(
 async function buscarProfissionalDestaque(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("profissionais")
-    .select("nome, slug, credencial, bio")
+    .select("nome, slug, credencial, bio, foto_storage_path")
     .eq("slug", "flavio")
     .eq("ativo", true)
     .maybeSingle();
@@ -454,7 +455,7 @@ export default async function Home() {
               {escolinhasDestaque.map((e) => (
                 <CartaoEscolinha
                   key={e.id}
-                  escolinha={e}
+                  escolinha={{ ...e, fotoUrl: urlPublicaMidia(supabase, e.foto_storage_path) }}
                   ativos={contagensEscolinhas.ativos.get(e.id) ?? 0}
                   avaliados={contagensEscolinhas.avaliados.get(e.id) ?? 0}
                 />
@@ -537,8 +538,16 @@ export default async function Home() {
 
               <Cartao className="fc-home-autoridade fc-home-eixo-nota">
                 <div className="fc-home-autoridade__cabeca">
-                  <span className="fc-home-avatar" aria-hidden="true">
-                    {iniciais(profissionalDestaque.nome)}
+                  <span className="fc-home-avatar">
+                    {profissionalDestaque.foto_storage_path ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente.
+                      <img
+                        src={urlPublicaMidia(supabase, profissionalDestaque.foto_storage_path)!}
+                        alt=""
+                      />
+                    ) : (
+                      <span aria-hidden="true">{iniciais(profissionalDestaque.nome)}</span>
+                    )}
                   </span>
                   <div>
                     <p className="fc-home-autoridade__nome">{profissionalDestaque.nome}</p>

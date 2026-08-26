@@ -9,6 +9,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 import { CabecalhoPublicoAuto, Cartao, CartaoAtleta } from "@/ui";
 import "@/ui/estilos.css";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
+import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -48,7 +49,7 @@ const buscarEscolinha = cache(async function buscarEscolinha(
 ) {
   const { data } = await supabase
     .from("escolinhas")
-    .select("id, nome, cidade, estado_uf, credenciada, credenciada_desde")
+    .select("id, nome, cidade, estado_uf, credenciada, credenciada_desde, foto_storage_path")
     .eq("id", id)
     .maybeSingle();
 
@@ -73,8 +74,8 @@ async function buscarAtletasDaEscolinha(supabase: SupabaseClient<Database>, esco
 }
 
 /** Duas primeiras iniciais do nome da escolinha — mesmo raciocínio do
- * avatar do atleta e do profissional: não há foto própria, então a
- * identidade visual do cabeçalho cai para as iniciais. */
+ * avatar do atleta e do profissional: sem `foto_storage_path` (migration
+ * 0013), a identidade visual do cabeçalho cai para as iniciais. */
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/).filter(Boolean);
   const primeira = partes[0]?.[0] ?? "";
@@ -126,8 +127,13 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
 
           <section className="fc-perfil-header fc-perfil-header--capa">
             <div className="fc-perfil-header__topo">
-              <span className="fc-perfil-avatar" aria-hidden="true">
-                <span>{iniciais(escolinha.nome)}</span>
+              <span className="fc-perfil-avatar">
+                {escolinha.foto_storage_path ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente.
+                  <img src={urlPublicaMidia(supabase, escolinha.foto_storage_path)!} alt="" />
+                ) : (
+                  <span aria-hidden="true">{iniciais(escolinha.nome)}</span>
+                )}
               </span>
 
               <dl className="fc-perfil-stats">

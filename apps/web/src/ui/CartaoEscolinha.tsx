@@ -7,6 +7,13 @@ export type EscolinhaResumoCartao = {
   cidade: string;
   estado_uf: string;
   credenciada: boolean;
+  /**
+   * URL pública já resolvida do avatar (`escolinhas.foto_storage_path`,
+   * migration 0013) — `undefined`/`null` quando a escolinha não tem
+   * avatar; o cartão cai para o grafismo de marca (inicial do nome) nesse
+   * caso, mesmo raciocínio de `AtletaResumoCartao.capaUrl`.
+   */
+  fotoUrl?: string | null;
 };
 
 export type CartaoEscolinhaProps = {
@@ -24,8 +31,9 @@ export type CartaoEscolinhaProps = {
  * sempre nesta ordem, sempre com a mesma altura por faixa, para a faixa N
  * de um cartão alinhar com a faixa N do vizinho na grade.
  *
- *   1. identidade — nenhuma coluna de mídia em `escolinhas`, então é sempre
- *      o grafismo de marca (inicial do nome), nunca um espaço vazio.
+ *   1. identidade — avatar (`escolinhas.foto_storage_path`, migration
+ *      0013); sem avatar, o grafismo de marca (inicial do nome), nunca um
+ *      espaço vazio.
  *   2. nome         — uma linha, corte por reticências.
  *   3. cidade e UF  — uma linha, corte por reticências.
  *   4. números      — atletas ativos e, dentre eles, quantos avaliados.
@@ -39,9 +47,13 @@ export function CartaoEscolinha({ escolinha, ativos, avaliados }: CartaoEscolinh
     <Link href={`/escolinha/${escolinha.id}`} className="fc-atletas-item-link">
       <Cartao className="fc-cartao-escolinha">
         <div className="fc-cartao-escolinha__midia">
-          <span className="fc-cartao-escolinha__midia-inicial" aria-hidden="true">
-            {inicial}
-          </span>
+          {escolinha.fotoUrl ? (
+            <img src={escolinha.fotoUrl} alt="" loading="lazy" />
+          ) : (
+            <span className="fc-cartao-escolinha__midia-inicial" aria-hidden="true">
+              {inicial}
+            </span>
+          )}
         </div>
 
         <div className="fc-cartao-escolinha__corpo">

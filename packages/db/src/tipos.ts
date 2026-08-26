@@ -305,6 +305,7 @@ export type Database = {
           credenciada_desde: string | null
           criado_em: string
           estado_uf: string
+          foto_storage_path: string | null
           id: string
           nome: string
         }
@@ -314,6 +315,7 @@ export type Database = {
           credenciada_desde?: string | null
           criado_em?: string
           estado_uf: string
+          foto_storage_path?: string | null
           id?: string
           nome: string
         }
@@ -323,6 +325,7 @@ export type Database = {
           credenciada_desde?: string | null
           criado_em?: string
           estado_uf?: string
+          foto_storage_path?: string | null
           id?: string
           nome?: string
         }
@@ -413,6 +416,7 @@ export type Database = {
           credencial: string | null
           criado_em: string
           estado_uf: string | null
+          foto_storage_path: string | null
           id: string
           nome: string
           slug: string
@@ -428,6 +432,7 @@ export type Database = {
           credencial?: string | null
           criado_em?: string
           estado_uf?: string | null
+          foto_storage_path?: string | null
           id?: string
           nome: string
           slug: string
@@ -443,6 +448,7 @@ export type Database = {
           credencial?: string | null
           criado_em?: string
           estado_uf?: string | null
+          foto_storage_path?: string | null
           id?: string
           nome?: string
           slug?: string

@@ -5,6 +5,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
+import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -52,7 +53,7 @@ function clienteAnonimo() {
 async function buscarEscolinhas(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("escolinhas")
-    .select("id, nome, cidade, estado_uf, credenciada, credenciada_desde")
+    .select("id, nome, cidade, estado_uf, credenciada, credenciada_desde, foto_storage_path")
     .order("credenciada", { ascending: false })
     .order("nome", { ascending: true });
 
@@ -141,7 +142,7 @@ export default async function Escolinhas() {
               {escolinhas.map((e) => (
                 <li key={e.id}>
                   <CartaoEscolinha
-                    escolinha={e}
+                    escolinha={{ ...e, fotoUrl: urlPublicaMidia(supabase, e.foto_storage_path) }}
                     ativos={contagemAtivos.get(e.id) ?? 0}
                     avaliados={contagemAvaliados.get(e.id) ?? 0}
                   />

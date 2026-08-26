@@ -5,6 +5,7 @@ import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoProfissional } from "@/ui";
 import "@/ui/estilos.css";
+import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -57,7 +58,7 @@ function clienteAnonimo() {
 async function buscarProfissionais(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("profissionais")
-    .select("id, nome, slug, credencial, cidade, estado_uf, atua_desde")
+    .select("id, nome, slug, credencial, cidade, estado_uf, atua_desde, foto_storage_path")
     .eq("ativo", true)
     .order("nome", { ascending: true });
 
@@ -123,7 +124,10 @@ export default async function Profissionais() {
             <ul className="fc-lista fc-grade-cartoes">
               {profissionais.map((p) => (
                 <li key={p.id}>
-                  <CartaoProfissional profissional={p} laudos={contagem.get(p.id) ?? 0} />
+                  <CartaoProfissional
+                    profissional={{ ...p, fotoUrl: urlPublicaMidia(supabase, p.foto_storage_path) }}
+                    laudos={contagem.get(p.id) ?? 0}
+                  />
                 </li>
               ))}
             </ul>

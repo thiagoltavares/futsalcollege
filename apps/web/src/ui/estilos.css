@@ -1447,6 +1447,13 @@ a.fc-botao--perigo:hover {
   font-weight: 800;
   font-size: 1.25rem;
   flex: none;
+  overflow: hidden;
+}
+
+.fc-home-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .fc-home-privacidade {
@@ -1784,6 +1791,13 @@ a.fc-botao--perigo:hover {
   overflow: hidden;
 }
 
+.fc-cartao-escolinha__midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .fc-cartao-escolinha__midia-inicial {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
@@ -1864,6 +1878,13 @@ a.fc-botao--perigo:hover {
   place-items: center;
   background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
   overflow: hidden;
+}
+
+.fc-cartao-profissional__midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .fc-cartao-profissional__midia-inicial {
