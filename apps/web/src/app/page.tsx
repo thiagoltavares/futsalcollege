@@ -52,7 +52,7 @@ type AtletaCartao = {
   escolinha: { nome: string; credenciada: boolean } | null;
 };
 
-/** Iniciais do nome para o avatar redondo da seção "Quem assina" (ex.: "Flávio Barbosa" → "FB"). */
+/** Iniciais do nome para o avatar redondo dos fundadores (ex.: "Flávio Barbosa" → "FB"). */
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/);
   const primeira = partes[0]?.[0] ?? "";
@@ -79,7 +79,7 @@ function embaralhar<T>(lista: T[]): T[] {
  * Pool dos atletas ativos mais recentes (colunas escritas à mão, nunca
  * `select("*")` — mesma lista pública de `/atletas`), embaralhado para a
  * grade de destaque. Buscar um pool maior que o exibido e embaralhar no
- * servidor evita que a vitrine sempre abra com os mesmos 12 primeiros.
+ * servidor evita que a vitrine sempre abra com os mesmos primeiros.
  */
 async function buscarPoolDestaque(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
@@ -107,7 +107,7 @@ async function buscarEscolinhasDestaque(supabase: SupabaseClient<Database>) {
     .select("id, nome, cidade, estado_uf, credenciada, foto_storage_path")
     .order("credenciada", { ascending: false })
     .order("nome", { ascending: true })
-    .limit(8);
+    .limit(6);
 
   return (data ?? []) as EscolinhaCartao[];
 }
@@ -115,8 +115,8 @@ async function buscarEscolinhasDestaque(supabase: SupabaseClient<Database>) {
 /**
  * Quantos atletas ativos, e dentre eles quantos avaliados, para cada uma
  * das escolinhas em destaque — mesma régua de `/escolinhas`, só que restrita
- * às 8 que aparecem aqui (evita puxar a tabela de atletas inteira pra
- * home). Não é ranking: os cartões não ordenam por esses números.
+ * às que aparecem aqui (evita puxar a tabela de atletas inteira pra home).
+ * Não é ranking: os cartões não ordenam por esses números.
  */
 async function buscarContagensEscolinhas(
   supabase: SupabaseClient<Database>,
@@ -154,18 +154,16 @@ async function buscarContagensEscolinhas(
 }
 
 /**
- * Profissional em destaque na seção "Quem assina" — hoje sempre o Flávio
- * Barbosa (slug `flavio`), mas lido do banco em vez de escrito à mão no
- * componente: `profissionais.bio` é a mesma fonte que já alimenta
- * `/profissional/flavio` (migration 0010 + seed), então mudar o texto lá
- * atualiza a home junto, sem duplicar a informação em dois lugares. `null`
- * quando a linha some do banco — a seção inteira não renderiza nesse caso,
- * em vez de inventar um texto de substituição.
+ * Linha do Flávio em `profissionais` (slug `flavio`, migration 0010 +
+ * seed). A seção "Quem está por trás" é escrita à mão (os dois fundadores
+ * e o papel de cada um não são dado de banco), mas a foto e o link para a
+ * trajetória completa vêm daqui — `null` quando a linha some, e a seção
+ * cai para as iniciais e para texto sem link, em vez de inventar.
  */
-async function buscarProfissionalDestaque(supabase: SupabaseClient<Database>) {
+async function buscarProfissionalFlavio(supabase: SupabaseClient<Database>) {
   const { data } = await supabase
     .from("profissionais")
-    .select("nome, slug, credencial, bio, foto_storage_path")
+    .select("slug, foto_storage_path")
     .eq("slug", "flavio")
     .eq("ativo", true)
     .maybeSingle();
@@ -189,6 +187,11 @@ async function buscarNumeros(supabase: SupabaseClient<Database>) {
 
 const PILLS_CATEGORIA = ["Sub-9", "Sub-11", "Sub-13", "Sub-15", "Sub-17", "Sub-20"] as const;
 
+/** Quantos cartões em cada faixa da home. Para ver todos, `/atletas`. */
+const MOSAICO_HERO = 3;
+const DESTAQUE = 8;
+const RECENTES = 6;
+
 const PASSOS = [
   {
     numero: "01",
@@ -207,32 +210,77 @@ const PASSOS = [
   },
 ] as const;
 
+/**
+ * Os dois sócios, escritos à mão: papel e descrição vêm do brief
+ * (REVELA10-HOME-001, item 6), sem credencial além do que está escrito
+ * ali. Foto só quando existe no banco (Flávio, `profissionais`); sem foto,
+ * iniciais — nunca retrato inventado.
+ */
+const FUNDADORES = [
+  {
+    chave: "flavio",
+    nome: "Flávio Barbosa",
+    papel: "Esporte e metodologia",
+    texto:
+      "Ex-atleta de futsal, atualmente técnico das seleções de base do Sesc Ceará. Responsável pelo conhecimento esportivo e pela metodologia de avaliação.",
+  },
+  {
+    chave: "thiago",
+    nome: "Thiago Tavares",
+    papel: "Produto e tecnologia",
+    texto:
+      "Desenvolvedor responsável pela concepção técnica, arquitetura, desenvolvimento e experiência do produto.",
+  },
+] as const;
+
 export default async function Home() {
   const supabase = clienteAnonimo();
 
-  const [pool, escolinhasDestaque, numeros, profissionalDestaque] = await Promise.all([
+  const [pool, escolinhasDestaque, numeros, flavio] = await Promise.all([
     buscarPoolDestaque(supabase),
     buscarEscolinhasDestaque(supabase),
     buscarNumeros(supabase),
-    buscarProfissionalDestaque(supabase),
+    buscarProfissionalFlavio(supabase),
   ]);
 
-  const destaque = embaralhar(pool).slice(0, 12);
+  // Contagem de mídia do pool inteiro (uma consulta) antes de escolher quem
+  // vai para o hero: o mosaico do hero é de atleta COM vídeo — é um filtro
+  // de conteúdo ("mostre vídeo"), não uma preferência entre crianças; dentro
+  // dele a ordem continua aleatória.
+  const contagensMidia = await buscarContagemMidias(
+    supabase,
+    pool.map((a) => a.id),
+  );
+  const embaralhado = embaralhar(pool);
+  const mosaico = embaralhado
+    .filter((a) => (contagensMidia.get(a.id)?.videos ?? 0) > 0)
+    .slice(0, MOSAICO_HERO);
+  const idsMosaico = new Set(mosaico.map((a) => a.id));
+  const destaque = embaralhado.filter((a) => !idsMosaico.has(a.id)).slice(0, DESTAQUE);
   // `buscarPoolDestaque` já vem ordenado por `criado_em` decrescente, então
   // os primeiros do pool são os perfis mais novos — não precisa de consulta
-  // própria para a faixa "entraram agora".
-  const recentes = pool.slice(0, 4);
+  // própria para a faixa "perfis novos".
+  const recentes = pool.slice(0, RECENTES);
   const idsAtletasCartoes = [
-    ...new Set([...destaque.map((a) => a.id), ...recentes.map((a) => a.id)]),
+    ...new Set([...mosaico, ...destaque, ...recentes].map((a) => a.id)),
   ];
-  const [contagensEscolinhas, capasAtletas, contagensMidia] = await Promise.all([
+  const [contagensEscolinhas, capasAtletas] = await Promise.all([
     buscarContagensEscolinhas(
       supabase,
       escolinhasDestaque.map((e) => e.id),
     ),
     buscarCapasAtletas(supabase, idsAtletasCartoes),
-    buscarContagemMidias(supabase, idsAtletasCartoes),
   ]);
+
+  const cartao = (a: AtletaCartao) => (
+    <CartaoAtleta
+      key={a.id}
+      atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
+      midia={contagensMidia.get(a.id) ?? null}
+    />
+  );
+
+  const fotoFlavio = flavio ? urlPublicaMidia(supabase, flavio.foto_storage_path) : null;
 
   return (
     <div className={`fc fc-pagina ${fontesFc}`}>
@@ -241,43 +289,54 @@ export default async function Home() {
       <main className="fc-corpo fc-corpo--home">
         {/* ============================ HERO ============================ */}
         {/* A quadra: fundo azul emendado no cabeçalho, marcação amarela em
-            escala por trás, título em display. É o único lugar da página
-            onde a identidade grita — o resto é cal e cartão. */}
+            escala por trás, título em display. Em tela larga, a metade
+            direita da primeira dobra é o produto em si — três figurinhas de
+            atleta com vídeo publicado, dados reais, o mesmo cartão da
+            vitrine. No celular o mosaico some: a grade de destaque começa
+            logo abaixo do placar, não faz sentido repetir. */}
         <section className="fc-home-hero">
           <Quadra />
 
           <div className="fc-container fc-home-hero__conteudo">
-            <h1 className="fc-home-h1">A base jogando, em vídeo.</h1>
-            <p className="fc-home-lead">
-              Futsal e fut7, da Sub-7 à Sub-20, em todo o Brasil. Cada atleta com perfil próprio:
-              vídeo, foto, posição, pé dominante e escolinha, publicado com autorização do
-              responsável. Bairro, escola, endereço e horário de treino não existem como campo.
-            </p>
+            <div className="fc-home-hero__texto">
+              <h1 className="fc-home-h1">A base jogando, em vídeo.</h1>
+              <p className="fc-home-lead">
+                Futsal e fut7, da Sub-7 à Sub-20, em todo o Brasil. Cada atleta com perfil
+                próprio: vídeo, foto, posição e escolinha, publicado com autorização do
+                responsável.
+              </p>
 
-            <form action="/atletas" method="GET" className="fc-vitrine-busca">
-              <input
-                type="text"
-                name="busca"
-                maxLength={40}
-                placeholder="Buscar atleta por apelido…"
-                className="fc-input"
-                aria-label="Buscar atleta por apelido"
-              />
-              <button type="submit" className="fc-botao fc-botao--primario">
-                Buscar
-              </button>
-            </form>
+              <form action="/atletas" method="GET" className="fc-vitrine-busca" role="search">
+                <input
+                  type="search"
+                  name="busca"
+                  maxLength={40}
+                  placeholder="Buscar atleta por apelido"
+                  className="fc-input"
+                  aria-label="Buscar atleta por apelido"
+                />
+                <button type="submit" className="fc-botao fc-botao--primario">
+                  Buscar
+                </button>
+              </form>
 
-            <div className="fc-vitrine-pills">
-              {PILLS_CATEGORIA.map((c) => (
-                <Link key={c} href={`/atletas?categoria=${encodeURIComponent(c)}`} className="fc-pill">
-                  {c}
+              <nav className="fc-vitrine-pills" aria-label="Atletas por categoria">
+                {PILLS_CATEGORIA.map((c) => (
+                  <Link key={c} href={`/atletas?categoria=${encodeURIComponent(c)}`} className="fc-pill">
+                    {c}
+                  </Link>
+                ))}
+                <Link href="/atletas" className="fc-pill fc-pill--forte">
+                  Todos os atletas
                 </Link>
-              ))}
-              <Link href="/atletas" className="fc-pill fc-pill--forte">
-                Ver todos os atletas →
-              </Link>
+              </nav>
             </div>
+
+            {mosaico.length > 0 && (
+              <div className="fc-home-hero__mosaico" aria-label="Atletas com vídeo publicado">
+                {mosaico.map(cartao)}
+              </div>
+            )}
           </div>
         </section>
 
@@ -285,7 +344,7 @@ export default async function Home() {
         {/* A marcação amarela atravessando a página, com os números da
             plataforma como placar de ginásio. Vídeos primeiro: é o que o
             pivô pôs na frente. */}
-        <section className="fc-home-placar">
+        <section className="fc-home-placar" aria-label="Números da plataforma">
           <dl className="fc-container fc-home-placar__lista">
             <div className="fc-home-placar__item">
               <dd className="fc-home-placar__valor">{numeros.videos}</dd>
@@ -303,19 +362,21 @@ export default async function Home() {
         </section>
 
         {/* ====================== ATLETAS EM DESTAQUE ===================== */}
-        <section className="fc-home-secao">
+        {/* Oito cartões, não doze: a home é a amostra, a vitrine inteira é
+            `/atletas`. O botão de "ver todos" fecha a seção também, porque
+            depois de oito figurinhas é lá embaixo que o olho está. */}
+        <section className="fc-home-secao" aria-labelledby="destaque-titulo">
           <div className="fc-container">
             <div className="fc-vitrine-secao-cabecalho">
               <div>
-                <h2 className="fc-titulo">Atletas em destaque</h2>
+                <h2 id="destaque-titulo" className="fc-titulo fc-titulo--secao">
+                  Atletas em destaque
+                </h2>
                 <p className="fc-subtitulo">
-                  Uma amostra dos perfis ativos, em ordem aleatória — não existe ranking, nota
+                  Uma amostra dos perfis ativos, em ordem aleatória. Não existe ranking, nota
                   comparada nem posição em lista.
                 </p>
               </div>
-              <Link href="/atletas" className="fc-botao fc-botao--secundario">
-                Ver todos
-              </Link>
             </div>
 
             {destaque.length === 0 ? (
@@ -323,52 +384,54 @@ export default async function Home() {
                 <p className="fc-estado-vazio">Nenhum atleta ativo ainda.</p>
               </Cartao>
             ) : (
-              <div className="fc-cartoes-atletas">
-                {destaque.map((a) => (
-                  <CartaoAtleta
-                    key={a.id}
-                    atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
-                    midia={contagensMidia.get(a.id) ?? null}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="fc-cartoes-atletas">{destaque.map(cartao)}</div>
+                <p className="fc-home-secao__rodape">
+                  <Link href="/atletas" className="fc-botao fc-botao--primario">
+                    Ver todos os {numeros.atletas} atletas
+                  </Link>
+                </p>
+              </>
             )}
           </div>
         </section>
 
-        {/* ======================== ENTRARAM AGORA ======================== */}
-        {/* Era "Avaliados recentemente", movida a laudo publicado. A faixa
-            agora é de perfil novo: no cardápio de atletas, o que acabou de
-            sair é o menino que entrou, não a avaliação que saiu. */}
+        {/* ========================= PERFIS NOVOS ========================= */}
+        {/* Mesma figurinha, outro formato de seção: esteira horizontal com
+            rolagem, cartões menores, sobre a banda. É o que diferencia
+            "acabou de entrar" de "destaque" sem inventar um segundo cartão. */}
         {recentes.length > 0 && (
-          <section className="fc-home-secao fc-home-secao--banda">
+          <section className="fc-home-secao fc-home-secao--banda" aria-labelledby="novos-titulo">
             <div className="fc-container">
               <div className="fc-vitrine-secao-cabecalho">
                 <div>
-                  <h2 className="fc-titulo">Perfis novos</h2>
-                  <p className="fc-subtitulo">Os últimos atletas que entraram, do mais novo ao mais antigo.</p>
+                  <h2 id="novos-titulo" className="fc-titulo fc-titulo--secao">
+                    Perfis novos
+                  </h2>
+                  <p className="fc-subtitulo">
+                    Os últimos atletas que entraram, do mais novo ao mais antigo.
+                  </p>
                 </div>
+                <Link href="/atletas" className="fc-botao fc-botao--secundario">
+                  Ver todos
+                </Link>
               </div>
+            </div>
 
-              <div className="fc-cartoes-atletas">
-                {recentes.map((a) => (
-                  <CartaoAtleta
-                    key={a.id}
-                    atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
-                    midia={contagensMidia.get(a.id) ?? null}
-                  />
-                ))}
-              </div>
+            <div className="fc-esteira">
+              <div className="fc-container fc-esteira__trilho">{recentes.map(cartao)}</div>
             </div>
           </section>
         )}
 
         {/* ============================ ESCOLINHAS ========================= */}
-        <section id="escolinhas" className="fc-home-secao">
+        <section id="escolinhas" className="fc-home-secao" aria-labelledby="escolinhas-titulo">
           <div className="fc-container">
             <div className="fc-vitrine-secao-cabecalho">
               <div>
-                <h2 className="fc-titulo">De onde vêm os atletas</h2>
+                <h2 id="escolinhas-titulo" className="fc-titulo fc-titulo--secao">
+                  De onde vêm os atletas
+                </h2>
                 <p className="fc-subtitulo">
                   Escolinhas e CTs parceiros, em todo o Brasil. O selo de credenciada indica
                   escolinha verificada pelo Revela 10.
@@ -379,35 +442,73 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="fc-cartoes-escolinhas">
-              {escolinhasDestaque.map((e) => (
-                <CartaoEscolinha
-                  key={e.id}
-                  escolinha={{ ...e, fotoUrl: urlPublicaMidia(supabase, e.foto_storage_path) }}
-                  ativos={contagensEscolinhas.ativos.get(e.id) ?? 0}
-                  avaliados={contagensEscolinhas.avaliados.get(e.id) ?? 0}
-                />
-              ))}
-            </div>
+            {escolinhasDestaque.length === 0 ? (
+              <Cartao>
+                <p className="fc-estado-vazio">Nenhuma escolinha cadastrada ainda.</p>
+              </Cartao>
+            ) : (
+              <div className="fc-cartoes-escolinhas">
+                {escolinhasDestaque.map((e) => (
+                  <CartaoEscolinha
+                    key={e.id}
+                    escolinha={{ ...e, fotoUrl: urlPublicaMidia(supabase, e.foto_storage_path) }}
+                    ativos={contagensEscolinhas.ativos.get(e.id) ?? 0}
+                    avaliados={contagensEscolinhas.avaliados.get(e.id) ?? 0}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
-        {/* ======================= COMO FUNCIONA + AVALIAÇÃO =============== */}
-        <section id="como-funciona" className="fc-home-secao fc-home-secao--quadra">
+        {/* ================== COMO FUNCIONA + PARA QUEM É =================== */}
+        {/* Uma seção escura só: os três passos e, logo abaixo, para quem a
+            plataforma é (escolinhas, clubes e olheiros). Antes eram duas
+            seções — escura e clara — dizendo coisas vizinhas. */}
+        <section id="como-funciona" className="fc-home-secao fc-home-secao--quadra" aria-labelledby="como-titulo">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
-              <h2 className="fc-titulo">Como funciona</h2>
+              <h2 id="como-titulo" className="fc-titulo fc-titulo--secao">
+                Como funciona
+              </h2>
               <p className="fc-subtitulo">Do cadastro ao perfil no ar, em três passos.</p>
             </div>
 
-            <div className="fc-home-passos">
+            <ol className="fc-home-passos">
               {PASSOS.map((passo) => (
-                <div key={passo.numero} className="fc-home-passo">
-                  <span className="fc-home-passo__numero">{passo.numero}</span>
+                <li key={passo.numero} className="fc-home-passo">
+                  <span className="fc-home-passo__numero" aria-hidden="true">
+                    {passo.numero}
+                  </span>
                   <h3>{passo.titulo}</h3>
                   <p>{passo.texto}</p>
-                </div>
+                </li>
               ))}
+            </ol>
+
+            <div id="clubes" className="fc-home-publico">
+              <div className="fc-home-publico__item">
+                <h3>Para escolinhas</h3>
+                <p>
+                  O treinador cadastra a turma e acompanha quantos responsáveis já assinaram a
+                  autorização. Cada aluno ganha o próprio perfil, com vídeo e foto.
+                </p>
+                <Link href="/escolinhas" className="fc-botao fc-botao--secundario">
+                  Escolinhas parceiras
+                </Link>
+              </div>
+
+              <div className="fc-home-publico__item">
+                <h3>Para clubes e olheiros</h3>
+                <p>
+                  Busca por categoria, posição, pé dominante e estado, com o vídeo no próprio
+                  perfil. A identificação da criança fica sempre atrás de verificação própria,
+                  separada do acesso público.
+                </p>
+                <Link href="/atletas" className="fc-botao fc-botao--secundario">
+                  Buscar atletas
+                </Link>
+              </div>
             </div>
 
             {/* A seção "A avaliação" (rubrica, quatro eixos, laudo imutável)
@@ -418,83 +519,65 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ================= ESCOLINHAS E CLUBES/OLHEIROS (pitch) ========== */}
-        <section className="fc-home-secao">
-          <div className="fc-container fc-home-duplo">
-            <Cartao>
-              <h3 className="fc-titulo fc-titulo--card">Para escolinhas</h3>
-              <p className="fc-subtitulo fc-subtitulo--livre">
-                O treinador cadastra a turma e acompanha quantos responsáveis já assinaram a
-                autorização. Cada aluno ganha o próprio perfil, com vídeo e foto.
+        {/* ========================== FUNDADORES =========================== */}
+        <section id="flavio" className="fc-home-secao fc-home-secao--banda" aria-labelledby="fundadores-titulo">
+          <div className="fc-container">
+            <div className="fc-home-secao__cabecalho">
+              <h2 id="fundadores-titulo" className="fc-titulo fc-titulo--secao">
+                Quem está por trás
+              </h2>
+              <p className="fc-subtitulo">
+                Um técnico de base e um desenvolvedor. Quem conhece a quadra decide o que vale
+                mostrar; quem faz o produto decide como.
               </p>
-            </Cartao>
+            </div>
 
-            <div id="clubes">
-              <Cartao>
-                <h3 className="fc-titulo fc-titulo--card">Para clubes e olheiros</h3>
-                <p className="fc-subtitulo fc-subtitulo--livre">
-                  Busca por categoria, posição, pé dominante e estado, com o vídeo no próprio
-                  perfil. A identificação da criança fica sempre atrás de verificação própria,
-                  separada do acesso público.
-                </p>
-              </Cartao>
+            <div className="fc-home-fundadores">
+              {FUNDADORES.map((f) => {
+                const foto = f.chave === "flavio" ? fotoFlavio : null;
+                const trajetoria = f.chave === "flavio" && flavio ? `/profissional/${flavio.slug}` : null;
+                return (
+                  <Cartao key={f.chave} className="fc-home-fundador">
+                    <span className="fc-home-avatar fc-home-avatar--grande">
+                      {foto ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente.
+                        <img src={foto} alt="" />
+                      ) : (
+                        <span aria-hidden="true">{iniciais(f.nome)}</span>
+                      )}
+                    </span>
+                    <div className="fc-home-fundador__texto">
+                      <p className="fc-home-fundador__nome">{f.nome}</p>
+                      <p className="fc-home-fundador__papel">{f.papel}</p>
+                      <p className="fc-home-fundador__bio">{f.texto}</p>
+                      {trajetoria && (
+                        <Link href={trajetoria} className="fc-home-fundador__link">
+                          Conhecer a trajetória completa
+                        </Link>
+                      )}
+                    </div>
+                  </Cartao>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* ============================ AUTORIDADE ======================== */}
-        {profissionalDestaque && (
-          <section id="flavio" className="fc-home-secao fc-home-secao--banda">
-            <div className="fc-container">
-              <h2 className="fc-titulo">Quem está por trás</h2>
-
-              <Cartao className="fc-home-autoridade fc-home-eixo-nota">
-                <div className="fc-home-autoridade__cabeca">
-                  <span className="fc-home-avatar">
-                    {profissionalDestaque.foto_storage_path ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- bucket público, URL varia por ambiente.
-                      <img
-                        src={urlPublicaMidia(supabase, profissionalDestaque.foto_storage_path)!}
-                        alt=""
-                      />
-                    ) : (
-                      <span aria-hidden="true">{iniciais(profissionalDestaque.nome)}</span>
-                    )}
-                  </span>
-                  <div>
-                    <p className="fc-home-autoridade__nome">{profissionalDestaque.nome}</p>
-                    {profissionalDestaque.credencial && (
-                      <p className="fc-campo__ajuda">{profissionalDestaque.credencial}</p>
-                    )}
-                  </div>
-                </div>
-
-                {profissionalDestaque.bio && (
-                  <div>
-                    <p className="fc-subtitulo fc-subtitulo--livre">{profissionalDestaque.bio}</p>
-                    <Link
-                      href={`/profissional/${profissionalDestaque.slug}`}
-                      className="fc-botao fc-botao--secundario"
-                    >
-                      Conhecer a trajetória completa
-                    </Link>
-                  </div>
-                )}
-              </Cartao>
-            </div>
-          </section>
-        )}
-
         {/* =========================== PRIVACIDADE ========================= */}
-        <section id="privacidade" className="fc-home-secao">
+        {/* Três colunas com régua colorida no topo em vez de três cartões:
+            é a quarta grade da página, e cartão de novo seria repetir o
+            formato das figurinhas para um conteúdo que é lista. */}
+        <section id="privacidade" className="fc-home-secao" aria-labelledby="privacidade-titulo">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
-              <h2 className="fc-titulo">O que é público, o que é restrito, o que nunca aparece</h2>
+              <h2 id="privacidade-titulo" className="fc-titulo fc-titulo--secao">
+                O que é público, o que é restrito, o que nunca aparece
+              </h2>
             </div>
 
             <div className="fc-home-privacidade">
-              <Cartao>
-                <span className="fc-etiqueta fc-etiqueta--sucesso fc-home-privacidade__titulo">Público</span>
+              <div className="fc-home-privacidade__coluna" data-nivel="publico">
+                <h3 className="fc-home-privacidade__titulo">Público</h3>
                 <ul className="fc-home-privacidade__lista">
                   <li>Apelido esportivo</li>
                   <li>Categoria (ex.: Sub-13)</li>
@@ -502,28 +585,26 @@ export default async function Home() {
                   <li>Avaliação técnica, quando existe, e quem assinou</li>
                   <li>Clube ou escolinha e estado</li>
                 </ul>
-              </Cartao>
+              </div>
 
-              <Cartao>
-                <span className="fc-etiqueta fc-etiqueta--alerta fc-home-privacidade__titulo">
-                  Só clube verificado
-                </span>
+              <div className="fc-home-privacidade__coluna" data-nivel="restrito">
+                <h3 className="fc-home-privacidade__titulo">Só clube verificado</h3>
                 <ul className="fc-home-privacidade__lista">
                   <li>Nome completo</li>
                   <li>Data de nascimento</li>
                   <li>Cidade</li>
                   <li>Contato do responsável</li>
                 </ul>
-              </Cartao>
+              </div>
 
-              <Cartao>
-                <span className="fc-etiqueta fc-etiqueta--perigo fc-home-privacidade__titulo">Nunca aparece</span>
+              <div className="fc-home-privacidade__coluna" data-nivel="nunca">
+                <h3 className="fc-home-privacidade__titulo">Nunca aparece</h3>
                 <ul className="fc-home-privacidade__lista">
                   <li>Bairro, endereço ou escola</li>
                   <li>Local e horário de treino</li>
-                  <li>Avaliação física, postural e de saúde — só a família e o profissional têm acesso</li>
+                  <li>Avaliação física, postural e de saúde: só a família e o profissional têm acesso</li>
                 </ul>
-              </Cartao>
+              </div>
             </div>
 
             <p className="fc-home-privacidade__nota">

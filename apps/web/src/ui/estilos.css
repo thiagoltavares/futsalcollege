@@ -1325,7 +1325,7 @@ a.fc-botao--perigo:hover {
   overflow: hidden;
   background: var(--fc-quadra);
   color: var(--fc-giz);
-  padding-block: clamp(2.75rem, 9vw, 6rem) clamp(2.5rem, 8vw, 5rem);
+  padding-block: clamp(2.75rem, 8vw, 4.5rem) clamp(2.5rem, 7vw, 4rem);
 }
 
 .fc-corpo--home {
@@ -1380,6 +1380,54 @@ a.fc-botao--perigo:hover {
 .fc-home-hero__conteudo {
   position: relative;
   z-index: 1;
+  display: grid;
+  gap: var(--fc-esp-6);
+}
+
+/* Primeira dobra em tela larga: texto à esquerda, o produto à direita —
+   três figurinhas de atleta com vídeo (o mesmo cartão da vitrine, dados
+   reais), em degraus, como figurinhas largadas sobre a mesa. Abaixo de
+   64rem o mosaico some: a grade de destaque começa logo depois do placar. */
+.fc-home-hero__mosaico {
+  display: none;
+}
+
+@media (min-width: 64rem) {
+  .fc-home-hero__conteudo {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--fc-esp-7);
+  }
+
+  .fc-home-hero__mosaico {
+    display: grid;
+    grid-template-columns: repeat(3, 10rem);
+    gap: var(--fc-esp-3);
+    align-items: start;
+  }
+
+  .fc-home-hero__mosaico > :nth-child(2) {
+    margin-top: 2.25rem;
+  }
+
+  .fc-home-hero__mosaico > :nth-child(3) {
+    margin-top: 4.5rem;
+  }
+}
+
+@media (min-width: 80rem) {
+  .fc-home-hero__mosaico {
+    grid-template-columns: repeat(3, 11.25rem);
+  }
+}
+
+.fc-home-hero__mosaico .fc-cartao-atleta {
+  border-color: transparent;
+  box-shadow: 0 30px 50px -30px rgb(0 0 0 / 0.7);
+}
+
+.fc-home-hero__mosaico .fc-cartao-atleta__nome {
+  font-size: 1.15rem;
 }
 
 .fc-home-h1 {
@@ -1394,11 +1442,6 @@ a.fc-botao--perigo:hover {
   text-wrap: balance;
 }
 
-.fc-home-h1 em {
-  font-style: normal;
-  color: var(--fc-amarelo);
-}
-
 .fc-home-lead {
   margin-top: var(--fc-esp-5);
   font-size: 1.0625rem;
@@ -1411,14 +1454,6 @@ a.fc-botao--perigo:hover {
   .fc-home-lead {
     font-size: 1.125rem;
   }
-}
-
-.fc-home-acoes {
-  margin-top: var(--fc-esp-6);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--fc-esp-3);
-  align-items: center;
 }
 
 .fc-home-secao {
@@ -1450,7 +1485,43 @@ a.fc-botao--perigo:hover {
 .fc-home-secao--quadra {
   background: var(--fc-quadra);
   color: var(--fc-giz);
-  border-top: none;
+  /* A marcação da quadra como divisória: mesma linha amarela de 3px do
+     cabeçalho, em vez do fio de 1px das seções claras. */
+  border-top: 3px solid var(--fc-amarelo);
+}
+
+/* Título de seção um degrau abaixo do H1 do hero. `.fc-titulo` sozinho é
+   a régua de título de PÁGINA (3.25–3.75rem); na home, seis títulos desse
+   tamanho em sequência disputavam com o hero. */
+.fc-titulo--secao {
+  font-size: clamp(1.9rem, 5vw, 2.75rem);
+}
+
+@media (min-width: 80rem) {
+  .fc-titulo--secao {
+    font-size: 2.75rem;
+  }
+}
+
+/* Rodapé de seção: o botão primário depois da grade — é onde o olho está
+   depois de oito figurinhas, não no cabeçalho lá em cima. */
+.fc-home-secao__rodape {
+  margin-top: var(--fc-esp-6);
+  display: flex;
+  justify-content: center;
+}
+
+.fc-home-secao--quadra .fc-botao--secundario,
+.fc-home-secao--quadra a.fc-botao--secundario {
+  color: var(--fc-giz);
+  border-color: rgb(255 255 255 / 0.45);
+}
+
+.fc-home-secao--quadra .fc-botao--secundario:hover,
+.fc-home-secao--quadra a.fc-botao--secundario:hover {
+  color: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+  background: rgb(255 210 63 / 0.1);
 }
 
 .fc-home-secao--quadra .fc-titulo,
@@ -1459,8 +1530,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-home-secao--quadra .fc-subtitulo,
-.fc-home-secao--quadra .fc-home-passo p,
-.fc-home-secao--quadra .fc-home-eixo p {
+.fc-home-secao--quadra .fc-home-passo p {
   color: var(--fc-giz-2);
 }
 
@@ -1486,6 +1556,43 @@ a.fc-botao--perigo:hover {
   display: grid;
   gap: var(--fc-esp-5);
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* "Para escolinhas" e "Para clubes e olheiros" dentro da mesma seção
+   escura dos passos, separados por um fio de giz — antes eram dois
+   cartões brancos numa seção própria, logo depois de outra seção. */
+.fc-home-publico {
+  margin-top: var(--fc-esp-7);
+  padding-top: var(--fc-esp-6);
+  border-top: 1px solid rgb(255 255 255 / 0.18);
+  display: grid;
+  gap: var(--fc-esp-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.fc-home-publico__item h3 {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fc-giz);
+}
+
+.fc-home-publico__item p {
+  margin-top: var(--fc-esp-3);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--fc-giz-2);
+  max-width: 34rem;
+}
+
+.fc-home-publico__item .fc-botao {
+  margin-top: var(--fc-esp-4);
 }
 
 .fc-home-passo__numero {
@@ -1510,76 +1617,52 @@ a.fc-botao--perigo:hover {
   color: var(--fc-tinta-3);
 }
 
-.fc-home-eixos {
+/* Fundadores: dois cartões lado a lado, avatar + nome em display + papel
+   + duas frases. Sem foto no banco, iniciais — nunca retrato inventado. */
+.fc-home-fundadores {
   display: grid;
   gap: var(--fc-esp-4);
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  margin-top: var(--fc-esp-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 }
 
-.fc-home-eixo {
-  border-left: 3px solid var(--fc-eixo-tecnico-forte);
-  padding-left: var(--fc-esp-3);
+.fc-home-fundador {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--fc-esp-4);
+  align-items: start;
 }
 
-.fc-home-eixo__rotulo {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+.fc-home-fundador__nome {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  color: var(--fc-tinta);
+}
+
+.fc-home-fundador__papel {
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 700;
   color: var(--fc-acento);
 }
 
-.fc-home-eixo p {
-  margin-top: 0.35rem;
+.fc-home-fundador__bio {
+  margin-top: 0.6rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--fc-tinta-2);
+}
+
+.fc-home-fundador__link,
+.fc a.fc-home-fundador__link {
+  display: inline-block;
+  margin-top: 0.75rem;
   font-size: 0.875rem;
-  color: var(--fc-tinta-3);
-  line-height: 1.5;
-}
-
-/* Cor com função: cada eixo da avaliação (técnico, físico, tático,
-   comportamental) ganha o mesmo tom em qualquer lugar que apareça — aqui,
-   no radar da ficha pública e no formulário de avaliação. As variáveis
-   "-forte" entram aqui porque este bloco vive dentro da seção `--tinta`. */
-.fc-home-eixo[data-eixo="tecnico"] .fc-home-eixo__rotulo {
-  color: var(--fc-eixo-tecnico-forte);
-}
-
-.fc-home-eixo[data-eixo="fisico"] {
-  border-left-color: var(--fc-eixo-fisico-forte);
-}
-
-.fc-home-eixo[data-eixo="fisico"] .fc-home-eixo__rotulo {
-  color: var(--fc-eixo-fisico-forte);
-}
-
-.fc-home-eixo[data-eixo="tatico"] {
-  border-left-color: var(--fc-eixo-tatico-forte);
-}
-
-.fc-home-eixo[data-eixo="tatico"] .fc-home-eixo__rotulo {
-  color: var(--fc-eixo-tatico-forte);
-}
-
-.fc-home-eixo[data-eixo="comportamental"] {
-  border-left-color: var(--fc-eixo-comportamental-forte);
-}
-
-.fc-home-eixo[data-eixo="comportamental"] .fc-home-eixo__rotulo {
-  color: var(--fc-eixo-comportamental-forte);
-}
-
-.fc-home-duplo {
-  display: grid;
-  gap: var(--fc-esp-6);
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-}
-
-.fc-home-autoridade {
-  display: grid;
-  gap: var(--fc-esp-6);
-  align-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  font-weight: 700;
+  color: var(--fc-acento);
 }
 
 .fc-home-avatar {
@@ -1604,21 +1687,65 @@ a.fc-botao--perigo:hover {
   object-fit: cover;
 }
 
+.fc-home-avatar--grande {
+  width: 4.5rem;
+  height: 4.5rem;
+  font-size: 1.5rem;
+}
+
 .fc-home-privacidade {
   display: grid;
-  gap: var(--fc-esp-4);
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--fc-esp-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+/* Três colunas com régua colorida no topo (verde, âmbar, vermelho — a
+   mesma semântica das etiquetas de estado), em vez de três cartões. */
+.fc-home-privacidade__coluna {
+  border-top: 3px solid var(--fc-linha-forte);
+  padding-top: var(--fc-esp-4);
+}
+
+.fc-home-privacidade__coluna[data-nivel="publico"] {
+  border-color: var(--fc-sucesso);
+}
+
+.fc-home-privacidade__coluna[data-nivel="restrito"] {
+  border-color: var(--fc-alerta);
+}
+
+.fc-home-privacidade__coluna[data-nivel="nunca"] {
+  border-color: var(--fc-perigo);
 }
 
 .fc-home-privacidade__titulo {
-  display: inline-flex;
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   margin-bottom: var(--fc-esp-3);
+  color: var(--fc-tinta);
+}
+
+.fc-home-privacidade__coluna[data-nivel="publico"] .fc-home-privacidade__titulo {
+  color: var(--fc-sucesso);
+}
+
+.fc-home-privacidade__coluna[data-nivel="restrito"] .fc-home-privacidade__titulo {
+  color: var(--fc-alerta);
+}
+
+.fc-home-privacidade__coluna[data-nivel="nunca"] .fc-home-privacidade__titulo {
+  color: var(--fc-perigo);
 }
 
 .fc-home-privacidade__lista {
   display: grid;
   gap: 0.55rem;
   font-size: 0.9375rem;
+  line-height: 1.45;
   color: var(--fc-tinta-2);
 }
 
@@ -1639,26 +1766,6 @@ a.fc-botao--perigo:hover {
   font-size: clamp(1.4rem, 3vw, 1.9rem);
 }
 
-.fc-home-eixo-nota {
-  margin-top: var(--fc-esp-6);
-}
-
-.fc-home-autoridade__cabeca {
-  display: flex;
-  gap: var(--fc-esp-4);
-  align-items: flex-start;
-}
-
-.fc-home-autoridade__nome {
-  font-size: 1.0625rem;
-  font-weight: 700;
-  color: var(--fc-tinta);
-}
-
-.fc-home-autoridade .fc-botao {
-  margin-top: var(--fc-esp-4);
-}
-
 /* ---------- home: vitrine pública (busca, números, cartões) ---------- */
 
 .fc-vitrine-busca {
@@ -1666,7 +1773,7 @@ a.fc-botao--perigo:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
-  max-width: 28rem;
+  max-width: 32rem;
 }
 
 .fc-vitrine-busca .fc-input {
@@ -1677,6 +1784,13 @@ a.fc-botao--perigo:hover {
    numeral/texto na cor da quadra — o par de maior contraste da paleta. */
 .fc-home-hero .fc-input {
   border-color: transparent;
+  min-height: 3.25rem;
+  font-size: 1rem;
+}
+
+.fc-home-hero .fc-botao--primario {
+  min-height: 3.25rem;
+  padding-inline: 1.6rem;
 }
 
 .fc-home-hero .fc-input:focus {
@@ -1783,6 +1897,30 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
 }
 
+/* Esteira horizontal (seção "Perfis novos"): as mesmas figurinhas, menores,
+   numa linha só com rolagem e encaixe por cartão. É o que diferencia
+   "acabou de entrar" de "destaque" sem inventar um segundo cartão. O
+   trilho é o próprio `.fc-container`, então os cartões começam alinhados
+   ao título da seção e a rolagem fica dentro da margem da página. */
+.fc-esteira__trilho {
+  display: flex;
+  gap: var(--fc-esp-3);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--fc-margem);
+  padding-block: 0.25rem var(--fc-esp-4);
+}
+
+.fc-esteira__trilho > * {
+  flex: 0 0 10rem;
+  scroll-snap-align: start;
+}
+
+.fc-esteira__trilho .fc-cartao-atleta__nome {
+  font-size: 1.2rem;
+}
+
 .fc-vitrine-secao-cabecalho {
   display: flex;
   flex-wrap: wrap;
@@ -1819,8 +1957,7 @@ a.fc-botao--perigo:hover {
    apertadas, até parar de caber e o auto-fill assumir de novo. */
 @media (min-width: 64rem) {
   .fc-cartoes-atletas,
-  .fc-grade-cartoes,
-  .fc-cartoes-escolinhas {
+  .fc-grade-cartoes {
     grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
   }
 }
@@ -1840,7 +1977,9 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-atletas-item-link:hover .fc-cartao-atleta,
-.fc-atletas-item-link:focus-visible .fc-cartao-atleta {
+.fc-atletas-item-link:focus-visible .fc-cartao-atleta,
+.fc-atletas-item-link:hover .fc-cartao-escolinha,
+.fc-atletas-item-link:focus-visible .fc-cartao-escolinha {
   border-color: var(--fc-quadra);
   box-shadow: 0 0 0 1px var(--fc-quadra), var(--fc-sombra);
 }
@@ -1874,25 +2013,65 @@ a.fc-botao--perigo:hover {
   color: var(--fc-amarelo);
 }
 
-/* Contagem de vídeo sobre a capa: é a informação que o pivô pôs na frente,
-   então ela vai onde o olho chega primeiro. Só aparece quando há vídeo. */
+/* Com vídeo publicado, a capa vira miniatura do vídeo: degradê de leitura
+   no rodapé da imagem, botão de reprodução amarelo no centro (só sinal —
+   o cartão inteiro é o link para a ficha, onde o vídeo toca) e a contagem
+   em display no canto inferior. Sem vídeo, nada disso: foto é foto, e não
+   se promete reprodução que não existe. */
+.fc-cartao-atleta__midia[data-video]::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 48%;
+  background: linear-gradient(to top, rgb(15 27 43 / 0.82), rgb(15 27 43 / 0));
+  pointer-events: none;
+}
+
+.fc-cartao-atleta__play {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 3rem;
+  height: 3rem;
+  translate: -50% -50%;
+  border-radius: 999px;
+  background: var(--fc-amarelo);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
+  transition: transform 0.15s ease;
+}
+
+.fc-cartao-atleta__play::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -38% -50%;
+  border-style: solid;
+  border-width: 0.5rem 0 0.5rem 0.85rem;
+  border-color: transparent transparent transparent var(--fc-quadra);
+}
+
+.fc-atletas-item-link:hover .fc-cartao-atleta__play,
+.fc-atletas-item-link:focus-visible .fc-cartao-atleta__play {
+  transform: scale(1.1);
+}
+
 .fc-cartao-atleta__videos {
   position: absolute;
   z-index: 1;
-  top: 0.5rem;
-  left: 0.5rem;
+  left: 0.6rem;
+  bottom: 0.55rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.5rem 0.2rem 0.4rem;
-  border-radius: var(--fc-raio-sm);
-  background: rgb(16 53 95 / 0.88);
+  gap: 0.35rem;
   color: var(--fc-giz);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .fc-cartao-atleta__videos::before {
@@ -1902,6 +2081,17 @@ a.fc-botao--perigo:hover {
   border-style: solid;
   border-width: 0.3rem 0 0.3rem 0.5rem;
   border-color: transparent transparent transparent var(--fc-amarelo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-cartao-atleta__play {
+    transition: none;
+  }
+
+  .fc-atletas-item-link:hover .fc-cartao-atleta__play,
+  .fc-atletas-item-link:focus-visible .fc-cartao-atleta__play {
+    transform: none;
+  }
 }
 
 /* Faixas 2-6 — a foto sangra até a borda, o texto continua recuado. */
@@ -2010,101 +2200,127 @@ a.fc-botao--perigo:hover {
 .fc-cartoes-escolinhas {
   display: grid;
   gap: var(--fc-esp-4);
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
 }
 
-/* Cartão de escolinha — cinco faixas fixas (identidade, nome, cidade/UF,
-   números, selos), sempre na mesma ordem e sempre com a mesma altura por
-   faixa, mesma disciplina do cartão de atleta logo acima (ver
-   CartaoAtleta.tsx e CartaoEscolinha.tsx para a estrutura completa). */
+/* Cartão de escolinha — horizontal: escudo à esquerda, nome e dados à
+   direita. Escolinha é instituição, não retrato; o formato horizontal é
+   o que a separa, na mesma página, da figurinha vertical do atleta. Cinco
+   faixas fixas (escudo, nome, cidade/UF, números, selos), ver
+   CartaoEscolinha.tsx. Em contêiner estreito (coluna de `/escolinhas` no
+   celular) o escudo sobe para cima do texto. */
 .fc-cartao-escolinha {
   display: grid;
-  align-content: start;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--fc-esp-4);
+  align-items: start;
   height: 100%;
-  padding: 0;
-  overflow: hidden;
+  padding: var(--fc-esp-4);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Faixa 1 — identidade: nenhuma coluna de mídia em `escolinhas`, então é
-   sempre o grafismo de marca com a inicial do nome — mesmo raciocínio do
-   avatar do atleta sem foto de capa. */
-.fc-cartao-escolinha__midia {
+/* Faixa 1 — escudo: recorte em forma de escudo, imagem da escolinha
+   quando ela subiu uma; sem imagem, as iniciais sobre um pedaço da quadra. */
+.fc-cartao-escolinha__escudo {
   position: relative;
-  aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
-  background: var(--fc-quadra);
+  width: 4.5rem;
+  aspect-ratio: 1 / 1.12;
   overflow: hidden;
+  background: var(--fc-quadra);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
 }
 
-.fc-cartao-escolinha__midia img {
+.fc-cartao-escolinha__escudo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.fc-cartao-escolinha__midia-inicial {
+.fc-cartao-escolinha__escudo .fc-quadra {
+  inset: -40% -60% -40% -20%;
+}
+
+.fc-cartao-escolinha__escudo b {
   position: relative;
   z-index: 1;
+  padding-bottom: 0.5rem; /* centro ótico: o bico do escudo tira peso de baixo */
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: 3.25rem;
+  font-size: 1.6rem;
   line-height: 1;
+  letter-spacing: 0.02em;
   color: var(--fc-amarelo);
 }
 
 .fc-cartao-escolinha__corpo {
   display: grid;
   align-content: start;
-  gap: 0.35rem;
-  padding: clamp(1rem, 3vw, 1.35rem);
+  gap: 0.3rem;
+  min-width: 0;
 }
 
-/* Faixa 2 — nome: até duas linhas (nome de escolinha é longo — "Academia
-   Futsal Cariri", "Escolinha Esportiva Maranguape"), altura reservada. */
+/* Faixa 2 — nome em display, como o nome na frente da camisa: até duas
+   linhas, altura reservada. */
 .fc-cartao-escolinha__nome {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  min-height: 2.6rem;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.3;
+  min-height: 2.5rem;
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  line-height: 0.96;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--fc-tinta);
   overflow: hidden;
 }
 
-/* Faixa 3 — cidade e UF: uma linha, corte por reticências. */
-.fc-cartao-escolinha__cidade {
+/* Faixas 3 e 4 — cidade/UF e números: uma linha cada. */
+.fc-cartao-escolinha__cidade,
+.fc-cartao-escolinha__meta {
   display: block;
   font-size: 0.8125rem;
+  line-height: 1.4;
   color: var(--fc-tinta-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Faixa 4 — números: atletas ativos e, dentre eles, quantos avaliados. */
-.fc-cartao-escolinha__meta {
-  display: block;
-  font-size: 0.8125rem;
-  color: var(--fc-tinta-3);
-}
-
 /* Faixa 5 — selos: linha própria, sempre presente (mesmo vazia, para
-   reservar a altura), alinhada à esquerda. O selo de credenciada vive
-   aqui, nunca ao lado do nome (faixa 2). */
+   reservar a altura). */
 .fc-cartao-escolinha__selos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
   min-height: 1.5rem;
+  margin-top: 0.15rem;
 }
 
 .fc-cartao-escolinha__selos .fc-etiqueta {
   font-size: 0.6875rem;
+}
+
+@container (max-width: 15rem) {
+  .fc-cartao-escolinha {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fc-cartao-escolinha__escudo {
+    width: 3.75rem;
+  }
+
+  /* Coluna estreita: deixa cidade e números quebrarem linha em vez de
+     cortar "1 atleta ativo, 1 aval…" por reticências. */
+  .fc-cartao-escolinha__cidade,
+  .fc-cartao-escolinha__meta {
+    white-space: normal;
+  }
 }
 
 /* ---------- cartão de profissional (/profissionais) ---------- */
@@ -2522,6 +2738,9 @@ a.fc-botao--perigo:hover {
   text-decoration: none;
   color: inherit;
   transition: transform 0.1s ease;
+  /* Contêiner de consulta para os cartões (ver `.fc-cartao-escolinha`, que
+     empilha o escudo sobre o texto quando a coluna é estreita). */
+  container-type: inline-size;
 }
 
 .fc-atletas-item-link:hover .fc-item-atleta,

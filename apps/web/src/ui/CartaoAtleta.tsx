@@ -70,9 +70,12 @@ export type CartaoAtletaProps = {
  * um cartão alinhar com a faixa N do vizinho na grade, tenha ou não
  * mídia/escolinha/avaliação:
  *
- *   1. capa        — foto de capa em 4:5, com a contagem de vídeos por
- *                     cima quando há vídeo; sem foto, um pedaço da quadra
- *                     com a inicial do apelido, nunca um espaço vazio.
+ *   1. capa        — foto de capa em 4:5. Com vídeo publicado, a capa é a
+ *                     miniatura dele: botão de reprodução no centro e a
+ *                     contagem de vídeos no rodapé da imagem, sobre um
+ *                     degradê de leitura. Sem vídeo, nenhum indicador de
+ *                     reprodução — foto é foto. Sem foto, um pedaço da
+ *                     quadra com a inicial do apelido, nunca um espaço vazio.
  *   2. apelido      — uma linha, corte por reticências.
  *   3. categoria (pastilha) e posição — uma linha.
  *   4. físico       — pé dominante, altura e peso; uma linha, altura
@@ -120,7 +123,7 @@ export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoA
   return (
     <Link href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
       <Cartao className="fc-cartao-atleta">
-        <div className="fc-cartao-atleta__midia">
+        <div className="fc-cartao-atleta__midia" data-video={videos > 0 ? "" : undefined}>
           {atleta.capaUrl ? (
             <img src={atleta.capaUrl} alt="" loading="lazy" />
           ) : (
@@ -132,12 +135,16 @@ export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoA
             </>
           )}
           {videos > 0 && (
-            <span
-              className="fc-cartao-atleta__videos"
-              aria-label={videos === 1 ? "1 vídeo" : `${videos} vídeos`}
-            >
-              {videos}
-            </span>
+            <>
+              {/* O botão de reprodução é só sinal visual: o cartão inteiro já
+                  é o link para a ficha, onde o vídeo toca. Não é um controle
+                  próprio (seria <button> dentro de <a>), por isso aria-hidden
+                  — a informação acessível é a contagem logo abaixo. */}
+              <span className="fc-cartao-atleta__play" aria-hidden="true" />
+              <span className="fc-cartao-atleta__videos">
+                {videos === 1 ? "1 vídeo" : `${videos} vídeos`}
+              </span>
+            </>
           )}
         </div>
 
