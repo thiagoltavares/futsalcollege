@@ -1,4 +1,4 @@
-import type { ItemRubrica } from "@futsalcollege/core";
+import type { ItemRubrica } from "@revela10/core";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { NextResponse } from "next/server";
 import { LaudoPDF } from "@/pdf/LaudoPDF";

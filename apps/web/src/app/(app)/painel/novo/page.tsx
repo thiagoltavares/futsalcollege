@@ -1,6 +1,6 @@
 "use client";
 
-import { CATEGORIAS, POSICOES } from "@futsalcollege/core";
+import { CATEGORIAS, POSICOES } from "@revela10/core";
 import { useActionState } from "react";
 import { criarAtleta } from "./acoes";
 import { Aviso, Botao, Campo, Cartao, Selecao } from "@/ui";

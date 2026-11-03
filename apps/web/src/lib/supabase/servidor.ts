@@ -1,4 +1,4 @@
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 

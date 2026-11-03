@@ -10,7 +10,7 @@ export function chave(nova: string, legada: string): string {
   if (!valor) {
     throw new Error(
       `Faltou ${nova} (ou ${legada}) no ambiente. ` +
-        "Rode: pnpm --filter @futsalcollege/db db:start && supabase status -o env > .env.test",
+        "Rode: pnpm --filter @revela10/db db:start && supabase status -o env > .env.test",
     );
   }
 

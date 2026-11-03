@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoProfissional } from "@/ui";
@@ -33,9 +33,9 @@ const corpo = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Profissionais — Futsal College",
+  title: "Profissionais — Revela 10",
   description:
-    "Quem assina as avaliações técnicas do Futsal College: credencial, cidade e quantos laudos cada profissional já publicou.",
+    "Quem assina as avaliações técnicas do Revela 10: credencial, cidade e quantos laudos cada profissional já publicou.",
 };
 
 /**
@@ -111,7 +111,7 @@ export default async function Profissionais() {
             <p className="fc-rotulo-secao fc-etiqueta-rotulo">Navegação pública</p>
             <h1 className="fc-titulo">Profissionais</h1>
             <p className="fc-subtitulo">
-              Quem assina as avaliações técnicas do Futsal College. Cada laudo publicado leva o
+              Quem assina as avaliações técnicas do Revela 10. Cada laudo publicado leva o
               nome de quem avaliou — aqui está a credencial e a trajetória por trás da assinatura.
             </p>
           </div>

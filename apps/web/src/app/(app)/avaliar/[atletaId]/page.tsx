@@ -1,4 +1,4 @@
-import { agruparPorEixo, EIXOS, ROTULO_EIXO } from "@futsalcollege/core";
+import { agruparPorEixo, EIXOS, ROTULO_EIXO } from "@revela10/core";
 import { notFound, redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
 import { Cartao } from "@/ui";
@@ -11,11 +11,38 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
   const { data: sessao } = await supabase.auth.getUser();
   if (!sessao.user) redirect("/entrar");
 
-  // Qualquer usuário autenticado avalia nesta rodada (sem credenciamento —
-  // fora de escopo). A RLS de `atletas` só deixa este select alcançar um
-  // atleta ativo (leitura pública) ou um atleta do próprio responsável; um
-  // atleta de outra família ainda em rascunho não aparece aqui, e a tela
-  // devolve 404 em vez de vazar que o id existe.
+  // Quem avalia é o profissional credenciado vinculado a ESTA conta, e ele
+  // assina em nome próprio. Antes desta rodada qualquer conta autenticada
+  // avaliava e ainda escolhia, num campo de seleção, qual profissional
+  // apareceria assinando — dava para publicar laudo com o nome de qualquer
+  // avaliador da plataforma. A regra real mora na RLS (migration 0016);
+  // esta consulta existe para a tela explicar o bloqueio em vez de deixar o
+  // banco recusar o envio no fim do formulário.
+  const { data: profissional } = await supabase
+    .from("profissionais")
+    .select("id, nome, credencial")
+    .eq("user_id", sessao.user.id)
+    .eq("ativo", true)
+    .maybeSingle();
+
+  if (!profissional || !profissional.credencial) {
+    return (
+      <div className="fc-container fc-container--perfil">
+        <Cartao>
+          <p className="fc-estado-vazio">
+            Esta conta não está credenciada para avaliar. Só um profissional ativo, com registro
+            no conselho cadastrado na plataforma, pode assinar um laudo — e cada um assina em
+            nome próprio.
+          </p>
+        </Cartao>
+      </div>
+    );
+  }
+
+  // A RLS de `atletas` só deixa este select alcançar um atleta ativo
+  // (leitura pública) ou um atleta do próprio responsável; um atleta de
+  // outra família ainda em rascunho não aparece aqui, e a tela devolve 404
+  // em vez de vazar que o id existe.
   const { data: atleta } = await supabase
     .from("atletas")
     .select("id, apelido, categoria, estado")
@@ -41,41 +68,6 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
       </div>
     );
   }
-
-  // O avaliador é escolhido entre os profissionais cadastrados — nunca mais
-  // texto livre (ver AGENTS/brief da rodada): só assim o laudo nasce com
-  // `profissional_id` preenchido e o nome vira link na ficha do atleta.
-  // Só profissional `ativo` entra na lista: um profissional desativado não
-  // deve ganhar novo laudo, mesmo que a página antiga dele continue no ar.
-  const { data: profissionais } = await supabase
-    .from("profissionais")
-    .select("id, nome, credencial")
-    .eq("ativo", true)
-    .order("nome", { ascending: true });
-
-  if (!profissionais || profissionais.length === 0) {
-    return (
-      <div className="fc-container fc-container--perfil">
-        <Cartao>
-          <p className="fc-estado-vazio">
-            Nenhum profissional cadastrado no momento. Não é possível avaliar sem escolher quem
-            assina o laudo — peça para um profissional ser cadastrado antes de continuar.
-          </p>
-        </Cartao>
-      </div>
-    );
-  }
-
-  // Se a conta logada tem uma página de profissional vinculada
-  // (`profissionais.user_id`), pré-seleciona ela — poupa um clique de quem
-  // está logado como o próprio profissional. Sem vínculo, a tela não chuta
-  // nada: quem avalia escolhe explicitamente da lista.
-  const { data: profissionalVinculado } = await supabase
-    .from("profissionais")
-    .select("id")
-    .eq("user_id", sessao.user.id)
-    .eq("ativo", true)
-    .maybeSingle();
 
   const grupos = agruparPorEixo(rubrica.itens as never);
 
@@ -104,8 +96,7 @@ export default async function Avaliar({ params }: PageProps<"/avaliar/[atletaId]
           atletaId={atleta.id}
           rubricaVersao={rubrica.versao}
           grupos={EIXOS.map((eixo) => ({ eixo, rotulo: ROTULO_EIXO[eixo], itens: grupos[eixo] }))}
-          profissionais={profissionais}
-          profissionalIdInicial={profissionalVinculado?.id ?? ""}
+          assinante={{ nome: profissional.nome, credencial: profissional.credencial }}
         />
       </Cartao>
     </div>

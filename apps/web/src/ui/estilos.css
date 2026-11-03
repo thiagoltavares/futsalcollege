@@ -543,6 +543,26 @@
   color: var(--fc-tinta-40);
 }
 
+/* Quem assina o laudo, na tela de avaliar. Não é campo de formulário:
+   o avaliador é sempre a conta logada, resolvida no servidor. */
+.fc-assinante {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--fc-linha);
+  border-radius: var(--fc-raio-sm);
+  background: var(--fc-papel-2);
+  font-size: 0.9375rem;
+  color: var(--fc-tinta);
+}
+
+.fc-assinante__credencial {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--fc-tinta-60);
+}
+
 .fc-campo__erro {
   display: flex;
   align-items: flex-start;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoEscolinha } from "@/ui";
@@ -33,9 +33,9 @@ const corpo = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Escolinhas — Futsal College",
+  title: "Escolinhas — Revela 10",
   description:
-    "Escolinhas e CTs de futsal parceiros do Futsal College, em Fortaleza, região metropolitana e interior do Ceará.",
+    "Escolinhas e CTs de futsal parceiros do Revela 10, em Fortaleza, região metropolitana e interior do Ceará.",
 };
 
 function clienteAnonimo() {

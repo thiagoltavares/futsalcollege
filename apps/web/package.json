@@ -1,5 +1,5 @@
 {
-  "name": "@futsalcollege/web",
+  "name": "@revela10/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@futsalcollege/core": "workspace:^",
-    "@futsalcollege/db": "workspace:^",
+    "@revela10/core": "workspace:^",
+    "@revela10/db": "workspace:^",
     "@react-pdf/renderer": "^4.8.1",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",

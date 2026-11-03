@@ -15,7 +15,6 @@ const NAV_VISITANTE_MENU = [
   { href: "/escolinhas", rotulo: "Escolinhas" },
   { href: "/profissionais", rotulo: "Profissionais" },
   { href: "/#como-funciona", rotulo: "Como funciona" },
-  { href: "/#avaliacao", rotulo: "Avaliação" },
   { href: "/#clubes", rotulo: "Clubes" },
 ] as const;
 
@@ -78,7 +77,7 @@ export function CabecalhoPublico({
       <div className="fc-cabecalho-conteudo">
         <Link href="/" className="fc-marca">
           <span className="fc-marca-nome">
-            Futsal <em>College</em>
+            Revela <em>10</em>
           </span>
         </Link>
         <nav className="fc-cabecalho-nav">

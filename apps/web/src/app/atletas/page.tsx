@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
-import { CATEGORIAS, GENEROS, POSICOES } from "@futsalcollege/core";
+import type { Database } from "@revela10/db";
+import { CATEGORIAS, GENEROS, POSICOES } from "@revela10/core";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Campo, Cartao, CartaoAtleta, Selecao } from "@/ui";
 import "@/ui/estilos.css";
-import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
+import { buscarContagemMidias } from "@/lib/midias";
 import { buscarCapasAtletas } from "@/lib/midias";
 
 export const revalidate = 60;
@@ -36,9 +36,9 @@ const corpo = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Atletas — Futsal College",
+  title: "Atletas — Revela 10",
   description:
-    "Navegue pelos atletas com perfil ativo no Futsal College. Filtre por categoria, posição e estado — sem ranking, sem comparação entre crianças.",
+    "Navegue pelos atletas com perfil ativo no Revela 10. Filtre por categoria, posição e estado — sem ranking, sem comparação entre crianças.",
 };
 
 const UFS = [
@@ -81,7 +81,7 @@ const MAX_CANDIDATOS = 480;
 
 function hrefComPagina(
   filtros: { categoria: string; posicao: string; genero: string; uf: string; busca: string; ordenar: string },
-  somenteAvaliados: boolean,
+  somenteComVideo: boolean,
   pagina: number,
 ): string {
   const params = new URLSearchParams();
@@ -91,7 +91,7 @@ function hrefComPagina(
   if (filtros.genero) params.set("genero", filtros.genero);
   if (filtros.uf) params.set("uf", filtros.uf);
   if (filtros.ordenar === "apelido") params.set("ordenar", filtros.ordenar);
-  if (somenteAvaliados) params.set("avaliados", "1");
+  if (somenteComVideo) params.set("video", "1");
   if (pagina > 1) params.set("pagina", String(pagina));
   const consulta = params.toString();
   return consulta ? `/atletas?${consulta}` : "/atletas";
@@ -144,24 +144,26 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
     busca: primeiroValor(parametros.busca).trim(),
     ordenar: primeiroValor(parametros.ordenar) === "apelido" ? "apelido" : "recentes",
   };
-  const somenteAvaliados = primeiroValor(parametros.avaliados) === "1";
+  const somenteComVideo = primeiroValor(parametros.video) === "1";
   const filtrosAtivos = [
     filtros.categoria,
     filtros.posicao,
     filtros.genero,
     filtros.uf,
     filtros.busca,
-    somenteAvaliados,
+    somenteComVideo,
   ].filter(Boolean).length;
 
   const supabase = clienteAnonimo();
   const atletas = await buscarAtletas(supabase, filtros);
-  const resumoAvaliacoes = await buscarResumoAvaliacoes(
+  const contagensMidia = await buscarContagemMidias(
     supabase,
     atletas.map((a) => a.id),
   );
 
-  const listaFiltrada = somenteAvaliados ? atletas.filter((a) => resumoAvaliacoes.has(a.id)) : atletas;
+  const listaFiltrada = somenteComVideo
+    ? atletas.filter((a) => (contagensMidia.get(a.id)?.videos ?? 0) > 0)
+    : atletas;
 
   const totalPaginas = Math.max(1, Math.ceil(listaFiltrada.length / TAMANHO_PAGINA));
   const paginaPedida = Number(primeiroValor(parametros.pagina)) || 1;
@@ -188,8 +190,8 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
             <h1 className="fc-titulo">Atletas</h1>
             <p className="fc-subtitulo">
               Perfis com autorização vigente, do jeito que qualquer visitante enxerga. Dá para
-              filtrar por categoria, posição e estado — não existe ranking, nota comparada nem
-              posição em lista: essa comparação entre crianças o Futsal College não faz.
+              filtrar por categoria, posição, estado e quem tem vídeo — não existe ranking, nota
+              comparada nem posição em lista: essa comparação entre crianças o Revela 10 não faz.
             </p>
           </div>
 
@@ -277,8 +279,8 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
               </Campo>
 
               <label className="fc-checkbox-linha fc-atletas-filtro-checkbox">
-                <input type="checkbox" name="avaliados" value="1" defaultChecked={somenteAvaliados} />
-                Só com avaliação publicada
+                <input type="checkbox" name="video" value="1" defaultChecked={somenteComVideo} />
+                Só com vídeo
               </label>
 
               <div className="fc-atletas-filtro-acoes">
@@ -308,7 +310,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
                 <li key={a.id}>
                   <CartaoAtleta
                     atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
-                    avaliacao={resumoAvaliacoes.get(a.id) ?? null}
+                    midia={contagensMidia.get(a.id) ?? null}
                   />
                 </li>
               ))}
@@ -318,7 +320,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
           {totalPaginas > 1 && (
             <nav className="fc-paginacao" aria-label="Páginas de atletas">
               {pagina > 1 ? (
-                <Link href={hrefComPagina(filtros, somenteAvaliados, pagina - 1)} className="fc-botao fc-botao--secundario">
+                <Link href={hrefComPagina(filtros, somenteComVideo, pagina - 1)} className="fc-botao fc-botao--secundario">
                   ← Anterior
                 </Link>
               ) : (
@@ -332,7 +334,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
               </span>
 
               {pagina < totalPaginas ? (
-                <Link href={hrefComPagina(filtros, somenteAvaliados, pagina + 1)} className="fc-botao fc-botao--secundario">
+                <Link href={hrefComPagina(filtros, somenteComVideo, pagina + 1)} className="fc-botao fc-botao--secundario">
                   Próxima →
                 </Link>
               ) : (

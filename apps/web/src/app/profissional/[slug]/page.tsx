@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
@@ -125,10 +125,10 @@ export async function generateMetadata({
 
   if (!profissional) return { title: "Profissional não encontrado" };
 
-  const titulo = `${profissional.nome} — Futsal College`;
+  const titulo = `${profissional.nome} — Revela 10`;
   const descricao =
     profissional.credencial ??
-    "Profissional credenciado a assinar avaliações técnicas no Futsal College.";
+    "Profissional credenciado a assinar avaliações técnicas no Revela 10.";
 
   return {
     title: titulo,
@@ -209,7 +209,7 @@ export default async function ProfissionalDetalhe({
           />
 
           <p className="fc-ficha-rodape">
-            Página pública do profissional no Futsal College. Só atletas com perfil ativo e
+            Página pública do profissional no Revela 10. Só atletas com perfil ativo e
             avaliação publicada aparecem aqui.
           </p>
         </div>

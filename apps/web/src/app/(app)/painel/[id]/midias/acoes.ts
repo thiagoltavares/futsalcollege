@@ -5,7 +5,7 @@ import {
   TAMANHO_MAX_FOTO_BYTES,
   TAMANHO_MAX_VIDEO_BYTES,
   validarMidia,
-} from "@futsalcollege/core";
+} from "@revela10/core";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";

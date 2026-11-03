@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import Link from "next/link";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha, Quadra } from "@/ui";
 import "@/ui/estilos.css";
-import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
-import { buscarCapasAtletas, urlPublicaMidia } from "@/lib/midias";
+import { buscarCapasAtletas, buscarContagemMidias, urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
@@ -36,13 +35,13 @@ const corpo = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: "Futsal College — vitrine de atletas do futsal de base",
+  title: "Revela 10 — o perfil do atleta de base",
   description:
-    "Cada atleta de 7 a 20 anos ganha uma ficha esportiva verificável, com avaliação técnica assinada por profissional credenciado. Navegue pelos perfis, sem ranking e sem dado que localize a criança.",
+    "Futsal e fut7, da Sub-7 à Sub-20. Cada atleta com perfil próprio: vídeo, foto, posição e escolinha, com autorização do responsável. Sem ranking e sem dado que localize a criança.",
   openGraph: {
-    title: "Futsal College — vitrine de atletas do futsal de base",
+    title: "Revela 10 — o perfil do atleta de base",
     description:
-      "O trabalho de cada atleta, registrado por quem entende de futsal: avaliação técnica assinada, física medida com protocolo, evolução no tempo.",
+      "Cada atleta de base com o perfil dele: vídeo, foto e ficha, publicados com autorização do responsável.",
     locale: "pt_BR",
     type: "website",
   },
@@ -115,45 +114,6 @@ async function buscarPoolDestaque(supabase: SupabaseClient<Database>) {
     .limit(60);
 
   return (data ?? []) as AtletaCartao[];
-}
-
-/**
- * Últimos laudos publicados (atleta, data e quem assinou — nunca a nota) e
- * os dados públicos dos atletas correspondentes. A política
- * `laudos_leitura_publica` (migration 0008) já restringe a leitura anônima
- * a laudo publicado de atleta ativo.
- */
-async function buscarAvaliadosRecentemente(supabase: SupabaseClient<Database>) {
-  const { data: laudos } = await supabase
-    .from("laudos")
-    .select("atleta_id, publicado_em, avaliador_nome")
-    .not("publicado_em", "is", null)
-    .order("publicado_em", { ascending: false })
-    .limit(8);
-
-  const lista = laudos ?? [];
-  if (lista.length === 0) return [];
-
-  const { data: atletas } = await supabase
-    .from("atletas")
-    .select(COLUNAS_ATLETA_PUBLICO)
-    .in(
-      "id",
-      lista.map((l) => l.atleta_id),
-    )
-    .eq("estado", "ativo");
-
-  const porId = new Map((atletas ?? []).map((a) => [a.id, a as AtletaCartao]));
-
-  return lista
-    .map((l) => {
-      const atleta = porId.get(l.atleta_id);
-      if (!atleta) return null;
-      return { atleta, publicadoEm: l.publicado_em!, avaliadorNome: l.avaliador_nome };
-    })
-    .filter((item): item is { atleta: AtletaCartao; publicadoEm: string; avaliadorNome: string } =>
-      Boolean(item),
-    );
 }
 
 type EscolinhaCartao = {
@@ -238,39 +198,20 @@ async function buscarProfissionalDestaque(supabase: SupabaseClient<Database>) {
 }
 
 async function buscarNumeros(supabase: SupabaseClient<Database>) {
-  const [atletas, escolinhas, laudos] = await Promise.all([
+  const [atletas, escolinhas, videos] = await Promise.all([
     supabase.from("atletas").select("id", { count: "exact", head: true }).eq("estado", "ativo"),
     supabase.from("escolinhas").select("id", { count: "exact", head: true }),
-    supabase.from("laudos").select("id", { count: "exact", head: true }).not("publicado_em", "is", null),
+    supabase.from("atleta_midias").select("id", { count: "exact", head: true }).eq("tipo", "video"),
   ]);
 
   return {
     atletas: atletas.count ?? 0,
     escolinhas: escolinhas.count ?? 0,
-    laudos: laudos.count ?? 0,
+    videos: videos.count ?? 0,
   };
 }
 
 const PILLS_CATEGORIA = ["Sub-9", "Sub-11", "Sub-13", "Sub-15", "Sub-17", "Sub-20"] as const;
-
-// `chave` alimenta `data-eixo` (ver `.fc-home-eixo[data-eixo]` em
-// estilos.css) — mesma chave que a rubrica usa (`@futsalcollege/core`), para
-// o mesmo eixo levar sempre a mesma cor aqui, no radar da ficha pública e no
-// formulário de avaliação.
-const EIXOS = [
-  { chave: "tecnico", nome: "Técnico", texto: "Domínio de bola, passe, finalização, 1x1." },
-  {
-    chave: "fisico",
-    nome: "Físico",
-    texto: "Velocidade, resistência, coordenação — medidos com protocolo, não a olho.",
-  },
-  { chave: "tatico", nome: "Tático", texto: "Leitura de jogo, posicionamento, decisão sob pressão." },
-  {
-    chave: "comportamental",
-    nome: "Comportamental",
-    texto: "Liderança, disciplina, reação ao erro, relação com o time.",
-  },
-] as const;
 
 const PASSOS = [
   {
@@ -280,39 +221,41 @@ const PASSOS = [
   },
   {
     numero: "02",
-    titulo: "Avaliação técnica assinada",
-    texto: "Um profissional credenciado aplica a rubrica e assina o laudo — presencial ou por análise de vídeo.",
+    titulo: "Publica vídeo e foto",
+    texto: "O que o menino joga, em vídeo — é o que um clube quer ver antes de qualquer outra coisa.",
   },
   {
     numero: "03",
-    titulo: "Ficha que acompanha a evolução",
-    texto: "Cada nova avaliação entra no histórico, ao lado das anteriores — o perfil cresce junto com o atleta.",
+    titulo: "O perfil cresce com ele",
+    texto: "Posição, físico, escolinha e mídia nova entram no mesmo perfil, temporada após temporada.",
   },
 ] as const;
 
 export default async function Home() {
   const supabase = clienteAnonimo();
 
-  const [pool, avaliadosRecentemente, escolinhasDestaque, numeros, profissionalDestaque] =
-    await Promise.all([
-      buscarPoolDestaque(supabase),
-      buscarAvaliadosRecentemente(supabase),
-      buscarEscolinhasDestaque(supabase),
-      buscarNumeros(supabase),
-      buscarProfissionalDestaque(supabase),
-    ]);
+  const [pool, escolinhasDestaque, numeros, profissionalDestaque] = await Promise.all([
+    buscarPoolDestaque(supabase),
+    buscarEscolinhasDestaque(supabase),
+    buscarNumeros(supabase),
+    buscarProfissionalDestaque(supabase),
+  ]);
 
   const destaque = embaralhar(pool).slice(0, 12);
+  // `buscarPoolDestaque` já vem ordenado por `criado_em` decrescente, então
+  // os primeiros do pool são os perfis mais novos — não precisa de consulta
+  // própria para a faixa "entraram agora".
+  const recentes = pool.slice(0, 4);
   const idsAtletasCartoes = [
-    ...new Set([...destaque.map((a) => a.id), ...avaliadosRecentemente.map((r) => r.atleta.id)]),
+    ...new Set([...destaque.map((a) => a.id), ...recentes.map((a) => a.id)]),
   ];
-  const [resumoAvaliacoes, contagensEscolinhas, capasAtletas] = await Promise.all([
-    buscarResumoAvaliacoes(supabase, idsAtletasCartoes),
+  const [contagensEscolinhas, capasAtletas, contagensMidia] = await Promise.all([
     buscarContagensEscolinhas(
       supabase,
       escolinhasDestaque.map((e) => e.id),
     ),
     buscarCapasAtletas(supabase, idsAtletasCartoes),
+    buscarContagemMidias(supabase, idsAtletasCartoes),
   ]);
 
   return (
@@ -325,12 +268,12 @@ export default async function Home() {
           <Quadra />
 
           <div className="fc-home-hero__conteudo">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Futsal College</p>
-            <h1 className="fc-home-h1">Atletas do futsal de base, com registro que ninguém contesta.</h1>
+            <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Revela 10</p>
+            <h1 className="fc-home-h1">Cada atleta de base com o perfil dele.</h1>
             <p className="fc-home-lead">
-              Da Sub-7 à Sub-20, cada atleta ganha uma ficha esportiva verificável: avaliação
-              técnica assinada por profissional credenciado, física medida com protocolo, e um
-              registro que acompanha a evolução dele ao longo do tempo.
+              Futsal e fut7, da Sub-7 à Sub-20. Vídeo, foto, posição, pé dominante e escolinha,
+              numa ficha que o responsável autoriza — e onde bairro, escola, endereço e horário
+              de treino não existem como campo.
             </p>
 
             <form action="/atletas" method="GET" className="fc-vitrine-busca">
@@ -372,8 +315,8 @@ export default async function Home() {
               <span className="fc-vitrine-numero__rotulo">escolinhas parceiras</span>
             </div>
             <div className="fc-vitrine-numero">
-              <span className="fc-vitrine-numero__valor">{numeros.laudos}</span>
-              <span className="fc-vitrine-numero__rotulo">avaliações técnicas assinadas</span>
+              <span className="fc-vitrine-numero__valor">{numeros.videos}</span>
+              <span className="fc-vitrine-numero__rotulo">vídeos publicados</span>
             </div>
           </div>
         </section>
@@ -405,7 +348,7 @@ export default async function Home() {
                   <CartaoAtleta
                     key={a.id}
                     atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
-                    avaliacao={resumoAvaliacoes.get(a.id) ?? null}
+                    midia={contagensMidia.get(a.id) ?? null}
                   />
                 ))}
               </div>
@@ -413,24 +356,27 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ===================== AVALIADOS RECENTEMENTE ==================== */}
-        {avaliadosRecentemente.length > 0 && (
+        {/* ======================== ENTRARAM AGORA ======================== */}
+        {/* Era "Avaliados recentemente", movida a laudo publicado. A faixa
+            agora é de perfil novo: no cardápio de atletas, o que acabou de
+            sair é o menino que entrou, não a avaliação que saiu. */}
+        {recentes.length > 0 && (
           <section className="fc-home-secao fc-home-secao--areia">
             <div className="fc-container">
               <div className="fc-vitrine-secao-cabecalho">
                 <div>
-                  <p className="fc-rotulo-secao fc-etiqueta-rotulo">Acabou de sair</p>
-                  <h2 className="fc-titulo">Avaliados recentemente</h2>
-                  <p className="fc-subtitulo">Laudos publicados nos últimos dias, do mais novo ao mais antigo.</p>
+                  <p className="fc-rotulo-secao fc-etiqueta-rotulo">Acabou de entrar</p>
+                  <h2 className="fc-titulo">Perfis novos</h2>
+                  <p className="fc-subtitulo">Os últimos atletas que entraram, do mais novo ao mais antigo.</p>
                 </div>
               </div>
 
               <div className="fc-cartoes-atletas">
-                {avaliadosRecentemente.map(({ atleta }) => (
+                {recentes.map((a) => (
                   <CartaoAtleta
-                    key={atleta.id}
-                    atleta={{ ...atleta, capaUrl: capasAtletas.get(atleta.id) ?? null }}
-                    avaliacao={resumoAvaliacoes.get(atleta.id) ?? null}
+                    key={a.id}
+                    atleta={{ ...a, capaUrl: capasAtletas.get(a.id) ?? null }}
+                    midia={contagensMidia.get(a.id) ?? null}
                   />
                 ))}
               </div>
@@ -447,7 +393,7 @@ export default async function Home() {
                 <h2 className="fc-titulo">De onde vêm os atletas</h2>
                 <p className="fc-subtitulo">
                   Escolinhas e CTs de Fortaleza, região metropolitana e interior do Ceará. O selo
-                  de credenciada indica escolinha auditada pelo método do Futsal College.
+                  de credenciada indica escolinha auditada pelo método do Revela 10.
                 </p>
               </div>
               <Link href="/escolinhas" className="fc-botao fc-botao--secundario">
@@ -473,7 +419,7 @@ export default async function Home() {
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
               <p className="fc-rotulo-secao fc-etiqueta-rotulo">Como funciona</p>
-              <h2 className="fc-titulo">Do cadastro à ficha assinada</h2>
+              <h2 className="fc-titulo">Do cadastro ao perfil no ar</h2>
             </div>
 
             <div className="fc-home-passos">
@@ -486,24 +432,11 @@ export default async function Home() {
               ))}
             </div>
 
-            <div id="avaliacao" className="fc-espaco-topo">
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">A avaliação</p>
-              <h2 className="fc-titulo">Um método, não uma opinião solta</h2>
-              <p className="fc-subtitulo">
-                Rubrica própria, que todo avaliador credenciado segue — para a ficha de um atleta
-                significar a mesma coisa que a de outro. Publicado, o laudo não se edita: uma
-                correção gera uma nova versão, com a anterior visível.
-              </p>
-
-              <div className="fc-home-eixos">
-                {EIXOS.map((eixo) => (
-                  <div key={eixo.nome} className="fc-home-eixo" data-eixo={eixo.chave}>
-                    <p className="fc-home-eixo__rotulo">{eixo.nome}</p>
-                    <p>{eixo.texto}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* A seção "A avaliação" (rubrica, quatro eixos, laudo imutável)
+                saiu daqui. A avaliação técnica continua existindo e continua
+                pública na ficha de quem tem uma, mas deixou de ser o que a
+                home vende: vira produto de uma fase seguinte. Quando voltar,
+                volta como oferta paga, não como promessa da porta de entrada. */}
           </div>
         </section>
 
@@ -524,8 +457,8 @@ export default async function Home() {
                 <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para clubes e olheiros</p>
                 <h3 className="fc-titulo fc-titulo--card">Entrada separada, busca por dado verificado</h3>
                 <p className="fc-subtitulo fc-subtitulo--livre">
-                  Clubes e olheiros usam a plataforma para buscar atletas por categoria, posição e
-                  avaliação técnica assinada. Identificação da criança fica sempre atrás de
+                  Clubes e olheiros buscam por categoria, posição, pé dominante e estado, com o
+                  vídeo no próprio perfil. A identificação da criança fica sempre atrás de
                   verificação própria, separada do acesso público.
                 </p>
               </Cartao>
@@ -537,8 +470,8 @@ export default async function Home() {
         {profissionalDestaque && (
           <section id="flavio" className="fc-home-secao fc-home-secao--areia">
             <div className="fc-container">
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem assina</p>
-              <h2 className="fc-titulo">A avaliação tem nome e trajetória</h2>
+              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem está por trás</p>
+              <h2 className="fc-titulo">A plataforma tem nome e trajetória</h2>
 
               <Cartao className="fc-home-autoridade fc-home-eixo-nota">
                 <div className="fc-home-autoridade__cabeca">

@@ -1,4 +1,4 @@
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { createBrowserClient } from "@supabase/ssr";
 
 export function criarClienteNavegador() {

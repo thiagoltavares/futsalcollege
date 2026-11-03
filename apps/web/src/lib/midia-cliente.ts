@@ -3,7 +3,7 @@ import {
   TAMANHO_MAX_VIDEO_BYTES,
   TIPOS_FOTO_PERMITIDOS,
   TIPOS_VIDEO_PERMITIDOS,
-} from "@futsalcollege/core";
+} from "@revela10/core";
 
 /**
  * Compressão/redimensionamento de foto e extração de quadro de capa de
@@ -22,7 +22,7 @@ import {
 const LADO_MAX_FOTO = 2000; // px — maior lado, depois de redimensionar
 const QUALIDADE_JPEG = 0.85;
 
-// Reexportados com nome mais curto — mesma constante de `@futsalcollege/core`
+// Reexportados com nome mais curto — mesma constante de `@revela10/core`
 // que a Server Action (`enviarMidia`) usa para validar de verdade; aqui só
 // avisamos cedo, antes do upload.
 export const TAMANHO_MAX_FOTO = TAMANHO_MAX_FOTO_BYTES;

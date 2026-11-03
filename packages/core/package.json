@@ -1,5 +1,5 @@
 {
-  "name": "@futsalcollege/core",
+  "name": "@revela10/core",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@futsalcollege/config": "workspace:*",
+    "@revela10/config": "workspace:*",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },

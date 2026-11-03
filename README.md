@@ -1,4 +1,4 @@
-# futsalcollege
+# revela10
 
 Projeto de futsal. Next.js 16 (App Router) + React 19 + Tailwind CSS 4.
 

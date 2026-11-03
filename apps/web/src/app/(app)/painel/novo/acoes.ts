@@ -1,6 +1,6 @@
 "use server";
 
-import { esquemaAtleta } from "@futsalcollege/core";
+import { esquemaAtleta } from "@revela10/core";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
 

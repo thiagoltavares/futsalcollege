@@ -1,4 +1,4 @@
 {
-  "extends": "@futsalcollege/config/tsconfig.base.json",
+  "extends": "@revela10/config/tsconfig.base.json",
   "include": ["src/**/*"]
 }

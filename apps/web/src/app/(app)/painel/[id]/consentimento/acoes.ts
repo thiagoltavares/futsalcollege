@@ -1,6 +1,6 @@
 "use server";
 
-import { validarDocumento } from "@futsalcollege/core";
+import { validarDocumento } from "@revela10/core";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { VERSAO_TERMO } from "@/conteudo/termo-2026-08-v1";

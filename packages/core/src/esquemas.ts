@@ -5,7 +5,27 @@ export const CATEGORIAS = [
   "Sub-14", "Sub-15", "Sub-16", "Sub-17", "Sub-18", "Sub-19", "Sub-20",
 ] as const;
 
-export const POSICOES = ["Goleiro", "Fixo", "Ala", "Pivô"] as const;
+/**
+ * Posições de futsal E de fut7, numa lista só. O escopo inicial era só
+ * futsal (decisão de 27/09), mas a federação cearense de fut7 tem ~3.000
+ * atletas inscritos na base e cerca de metade joga as duas modalidades —
+ * um menino com dois perfis, ou fora de um deles, seria pior do que uma
+ * lista um pouco mais longa.
+ *
+ * Não há campo de modalidade no atleta de propósito: quem joga as duas não
+ * caberia num valor só, e a posição já diz de onde a pessoa vem. Goleiro e
+ * Ala existem nas duas; Fixo e Pivô são de futsal; Zagueiro, Meia e
+ * Atacante, de fut7. Ordenadas da defesa para o ataque.
+ */
+export const POSICOES = [
+  "Goleiro",
+  "Fixo",
+  "Zagueiro",
+  "Ala",
+  "Meia",
+  "Pivô",
+  "Atacante",
+] as const;
 
 // Não faz parte de `esquemaAtleta` (cadastro não coleta isto ainda, ver
 // migration 0015) — só o valor de referência para o filtro de `/atletas`.

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 
 /**
  * Foto de capa por atleta (bucket `midias`, migration 0011) — já resolvida
@@ -58,4 +58,38 @@ export function urlPublicaMidia(
 ): string | null {
   if (!storagePath) return null;
   return supabase.storage.from("midias").getPublicUrl(storagePath).data.publicUrl;
+}
+
+export type ContagemMidia = { fotos: number; videos: number };
+
+/**
+ * Quantas fotos e vídeos cada atleta tem — a informação que o cartão mostra
+ * desde que a vitrine virou a porta de entrada do produto. Até aqui a
+ * última faixa do `CartaoAtleta` era sobre avaliação, e um atleta sem laudo
+ * aparecia como "Sem avaliação publicada", como se faltasse algo nele; no
+ * cardápio de atletas, quem não tem laudo é a regra, não a exceção.
+ *
+ * Mesma régua das outras consultas deste arquivo: uma por página, nunca uma
+ * por atleta, e a política `midias_leitura_publica` (migration 0011) já
+ * restringe a leitura anônima a mídia de atleta `ativo`.
+ */
+export async function buscarContagemMidias(
+  supabase: SupabaseClient<Database>,
+  atletaIds: string[],
+): Promise<Map<string, ContagemMidia>> {
+  if (atletaIds.length === 0) return new Map();
+
+  const { data } = await supabase
+    .from("atleta_midias")
+    .select("atleta_id, tipo")
+    .in("atleta_id", atletaIds);
+
+  const contagem = new Map<string, ContagemMidia>();
+  for (const midia of data ?? []) {
+    const atual = contagem.get(midia.atleta_id) ?? { fotos: 0, videos: 0 };
+    if (midia.tipo === "video") atual.videos += 1;
+    else atual.fotos += 1;
+    contagem.set(midia.atleta_id, atual);
+  }
+  return contagem;
 }

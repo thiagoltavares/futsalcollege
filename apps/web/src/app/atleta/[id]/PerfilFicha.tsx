@@ -9,7 +9,7 @@ import {
   type ContextoAvaliacao,
   type Eixo,
   type ItemRubrica,
-} from "@futsalcollege/core";
+} from "@revela10/core";
 
 export type MidiaPublica = {
   id: string;
@@ -162,6 +162,7 @@ export function PerfilFicha({ atleta, stats, destaques, midias, laudoAtual, hist
           <VisaoGeral
             atleta={atleta}
             fotos={fotos}
+            videos={videos}
             laudoAtual={laudoAtual}
             totalFotos={fotos.length}
             totalVideos={videos.length}
@@ -241,18 +242,22 @@ function CabecalhoPerfil({
         {/* Só contagem real aqui. A escolinha saiu desta linha porque nome
             de escolinha não cabe em coluna de número — ficava cortado — e
             porque ela já aparece inteira na linha de tags, logo abaixo. */}
+        {/* Vídeo primeiro, avaliação por último — mesma ordem da visão
+            geral logo abaixo. Esta linha é a primeira coisa que se lê na
+            ficha, e até esta rodada ela abria por "Avaliações", o que
+            prometia um produto de laudo antes de mostrar o menino jogar. */}
         <dl className="fc-perfil-stats">
           <div>
-            <dt>Avaliações</dt>
-            <dd>{stats.avaliacoes}</dd>
+            <dt>Vídeos</dt>
+            <dd>{stats.videos}</dd>
           </div>
           <div>
             <dt>Fotos</dt>
             <dd>{stats.fotos}</dd>
           </div>
           <div>
-            <dt>Vídeos</dt>
-            <dd>{stats.videos}</dd>
+            <dt>Avaliações</dt>
+            <dd>{stats.avaliacoes}</dd>
           </div>
         </dl>
       </div>
@@ -275,6 +280,7 @@ function CabecalhoPerfil({
 function VisaoGeral({
   atleta,
   fotos,
+  videos,
   laudoAtual,
   totalFotos,
   totalVideos,
@@ -283,6 +289,7 @@ function VisaoGeral({
 }: {
   atleta: PerfilFichaProps["atleta"];
   fotos: MidiaPublica[];
+  videos: MidiaPublica[];
   laudoAtual: LaudoDetalhado | null;
   totalFotos: number;
   totalVideos: number;
@@ -297,8 +304,28 @@ function VisaoGeral({
     atleta.estadoUf && { rotulo: "Estado", valor: atleta.estadoUf },
   ].filter(Boolean) as { rotulo: string; valor: string }[];
 
+  // A ordem desta aba é a ordem de leitura do olheiro, e ela mudou: vídeo
+  // primeiro, avaliação por último. Antes era o contrário — a avaliação
+  // abria a visão geral com o radar, e o vídeo era o item mais fraco da
+  // página, um link de texto com a contagem ao lado. Quem chega numa ficha
+  // quer ver o menino jogar; a ficha de dados é o filtro, e a avaliação é o
+  // que confirma depois.
   return (
     <div className="fc-visao-geral">
+      {totalVideos > 0 && (
+        <section className="fc-visao-geral__secao">
+          <div className="fc-visao-geral__cabecalho">
+            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Vídeos</p>
+            {totalVideos > 4 && (
+              <button type="button" className="fc-link-botao" onClick={() => onIrPara("videos")}>
+                Ver todos ({totalVideos})
+              </button>
+            )}
+          </div>
+          <GradeMidia itens={videos.slice(0, 4)} onAbrir={onAbrirMidia} />
+        </section>
+      )}
+
       {sobre.length > 0 && (
         <dl className="fc-ficha-grid fc-visao-geral__sobre">
           {sobre.map((item) => (
@@ -322,31 +349,19 @@ function VisaoGeral({
         </section>
       )}
 
-      {totalVideos > 0 && (
+      {laudoAtual && (
         <section className="fc-visao-geral__secao">
-          <button type="button" className="fc-link-botao" onClick={() => onIrPara("videos")}>
-            Ver vídeos ({totalVideos})
-          </button>
-        </section>
-      )}
-
-      <section className="fc-visao-geral__secao">
-        <div className="fc-visao-geral__cabecalho">
-          <p className="fc-rotulo-secao fc-etiqueta-rotulo">Avaliação técnica</p>
-          {laudoAtual && (
+          <div className="fc-visao-geral__cabecalho">
+            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Avaliação técnica</p>
             <button type="button" className="fc-link-botao" onClick={() => onIrPara("avaliacoes")}>
               Ver completa
             </button>
-          )}
-        </div>
-        {laudoAtual ? (
+          </div>
           <div className="fc-visao-geral__radar">
             <RadarAvaliacao porEixo={laudoAtual.porEixo} />
           </div>
-        ) : (
-          <p className="fc-estado-vazio">Ainda sem avaliação técnica publicada.</p>
-        )}
-      </section>
+        </section>
+      )}
     </div>
   );
 }

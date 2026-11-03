@@ -1,5 +1,5 @@
 import path from "node:path";
-import { agruparPorEixo, EIXOS, ROTULO_EIXO, type Eixo, type ItemRubrica } from "@futsalcollege/core";
+import { agruparPorEixo, EIXOS, ROTULO_EIXO, type Eixo, type ItemRubrica } from "@revela10/core";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 // Sem hifenização automática: o dicionário padrão do @react-pdf/renderer é
@@ -488,7 +488,7 @@ export function LaudoPDF({ dados }: { dados: DadosLaudo }) {
           <Text style={estilos.rodapeFrase}>{fraseComparacao}</Text>
           <View style={estilos.rodapeMetaLinha}>
             <Text style={estilos.rodapeMeta}>
-              Rubrica {dados.rubricaVersao} · Publicado em {dados.publicadoEm} · Futsal College
+              Rubrica {dados.rubricaVersao} · Publicado em {dados.publicadoEm} · Revela 10
             </Text>
             <Text
               style={estilos.rodapeMeta}

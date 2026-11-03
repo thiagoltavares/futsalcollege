@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
-import { agruparPorEixo, EIXOS, type Eixo, type ItemRubrica } from "@futsalcollege/core";
+import type { Database } from "@revela10/db";
+import { agruparPorEixo, EIXOS, type Eixo, type ItemRubrica } from "@revela10/core";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
@@ -191,10 +191,10 @@ export async function generateMetadata({
     return { title: "Ficha não encontrada" };
   }
 
-  const titulo = `${ficha.apelido} — ${ficha.categoria} · Futsal College`;
+  const titulo = `${ficha.apelido} — ${ficha.categoria} · Revela 10`;
   const descricao = [ficha.posicao, ficha.clube_atual, ficha.estado_uf]
     .filter(Boolean)
-    .join(" · ") || "Ficha esportiva verificada no Futsal College.";
+    .join(" · ") || "Ficha esportiva verificada no Revela 10.";
 
   return {
     title: titulo,

@@ -23,6 +23,11 @@ export type AtletaResumoCartao = {
   capaUrl?: string | null;
 };
 
+export type MidiaResumoCartao = {
+  fotos: number;
+  videos: number;
+};
+
 export type AvaliacaoResumoCartao = {
   quantidade: number;
   ultimaEm: string;
@@ -31,6 +36,18 @@ export type AvaliacaoResumoCartao = {
 
 export type CartaoAtletaProps = {
   atleta: AtletaResumoCartao;
+  /**
+   * Quantas fotos e vídeos o atleta tem. É o que a última faixa mostra nas
+   * listagens públicas (home, `/atletas`, `/escolinha/[id]`), onde o
+   * produto é o cardápio de atletas.
+   */
+  midia?: MidiaResumoCartao | null;
+  /**
+   * Só passado onde a avaliação É o assunto da página — hoje, a aba
+   * "Atletas avaliados" de `/profissional/[slug]`. Nas demais listagens
+   * fica de fora de propósito: avaliação virou produto premium de uma fase
+   * seguinte, e um atleta sem laudo é o caso normal, não o incompleto.
+   */
   avaliacao?: AvaliacaoResumoCartao | null;
   /**
    * Omite clube/escolinha da faixa de físico — usado em `/escolinha/[id]`,
@@ -59,15 +76,33 @@ export type CartaoAtletaProps = {
  *   5. selos        — linha própria, sempre presente, alinhada à esquerda:
  *                     escolinha credenciada e avaliação publicada vivem
  *                     aqui, nunca ao lado do apelido (faixa 2).
- *   6. metadado da avaliação — quantas, quando, quem assinou; sem
- *                     avaliação, texto neutro no mesmo espaço, nunca vazio.
+ *   6. metadado — quantos vídeos e fotos o atleta tem. Onde a avaliação é
+ *                     o assunto da página (`/profissional/[slug]`), esta
+ *                     faixa mostra o laudo no lugar: quantas, quando, quem
+ *                     assinou. Nunca vazia, nos dois casos.
  *
  * O nome de quem assinou aparece como texto simples, nunca como link: o
  * cartão inteiro já é um `<Link>` para a ficha do atleta, e HTML não aceita
  * `<a>` dentro de `<a>`. O link para a página do profissional mora só na
  * ficha pública (`/atleta/[id]`), fora deste cartão — ver AGENTS/brief.
  */
-export function CartaoAtleta({ atleta, avaliacao, ocultarClube }: CartaoAtletaProps) {
+/**
+ * Texto da última faixa nas listagens públicas. Sem mídia nenhuma o texto é
+ * um convite, não um defeito: o atleta acabou de entrar, e a plataforma é
+ * de quem vai publicar vídeo, não de quem já tem.
+ */
+function resumoMidia(midia: MidiaResumoCartao | null | undefined): string {
+  const videos = midia?.videos ?? 0;
+  const fotos = midia?.fotos ?? 0;
+  if (videos === 0 && fotos === 0) return "Perfil novo, ainda sem vídeo";
+
+  const partes: string[] = [];
+  if (videos > 0) partes.push(videos === 1 ? "1 vídeo" : `${videos} vídeos`);
+  if (fotos > 0) partes.push(fotos === 1 ? "1 foto" : `${fotos} fotos`);
+  return partes.join(" · ");
+}
+
+export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoAtletaProps) {
   const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg);
   const clubeOuEscolinha = ocultarClube ? null : (atleta.escolinha?.nome ?? atleta.clube_atual);
   const categoriaLinha = [atleta.categoria, atleta.posicao].filter(Boolean).join(" · ");
@@ -115,7 +150,7 @@ export function CartaoAtleta({ atleta, avaliacao, ocultarClube }: CartaoAtletaPr
                 assinado por {avaliacao.avaliadorNome}
               </>
             ) : (
-              "Sem avaliação publicada"
+              resumoMidia(midia)
             )}
           </span>
         </div>

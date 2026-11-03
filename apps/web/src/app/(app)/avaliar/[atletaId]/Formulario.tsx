@@ -1,7 +1,7 @@
 "use client";
 
-import { CONTEXTOS_AVALIACAO, ROTULO_CONTEXTO } from "@futsalcollege/core";
-import type { Eixo, ItemRubrica } from "@futsalcollege/core";
+import { CONTEXTOS_AVALIACAO, ROTULO_CONTEXTO } from "@revela10/core";
+import type { Eixo, ItemRubrica } from "@revela10/core";
 import { useActionState } from "react";
 import { publicarLaudo } from "./acoes";
 import { Aviso, Botao, Campo, Selecao } from "@/ui";
@@ -9,19 +9,17 @@ import { Aviso, Botao, Campo, Selecao } from "@/ui";
 const NOTAS = ["1", "2", "3", "4", "5"] as const;
 
 type Grupo = { eixo: Eixo; rotulo: string; itens: ItemRubrica[] };
-type ProfissionalOpcao = { id: string; nome: string; credencial: string | null };
+type Assinante = { nome: string; credencial: string };
 
 export function FormularioAvaliacao({
   atletaId,
   grupos,
-  profissionais,
-  profissionalIdInicial,
+  assinante,
 }: {
   atletaId: string;
   rubricaVersao: string;
   grupos: Grupo[];
-  profissionais: ProfissionalOpcao[];
-  profissionalIdInicial: string;
+  assinante: Assinante;
 }) {
   const acao = publicarLaudo.bind(null, atletaId);
   const [estado, disparar, pendente] = useActionState(acao, null);
@@ -71,24 +69,21 @@ export function FormularioAvaliacao({
           )}
         </Campo>
 
-        <Campo
-          id="profissional_id"
-          rotulo="Avaliador"
-          ajuda="Quem assina este laudo — a ficha do atleta vira link para a página dele."
-        >
-          {(campo) => (
-            <Selecao {...campo} name="profissional_id" required defaultValue={profissionalIdInicial}>
-              <option value="" disabled>
-                Escolha um profissional
-              </option>
-              {profissionais.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.credencial ? `${p.nome} — ${p.credencial}` : p.nome}
-                </option>
-              ))}
-            </Selecao>
-          )}
-        </Campo>
+        {/* Quem assina não é mais escolha: é sempre a conta logada. O campo
+            de seleção que existia aqui deixava publicar laudo com o nome de
+            outro avaliador. O servidor resolve o assinante de novo pela
+            sessão e ignora qualquer coisa que venha do formulário — isto
+            abaixo é só o aviso de quem vai assinar. */}
+        <div className="fc-campo">
+          <span className="fc-campo__rotulo">Avaliador</span>
+          <p className="fc-assinante">
+            <strong>{assinante.nome}</strong>
+            <span className="fc-assinante__credencial">{assinante.credencial}</span>
+          </p>
+          <p className="fc-campo__ajuda">
+            Você assina em nome próprio. A ficha do atleta vira link para a sua página.
+          </p>
+        </div>
 
         <Campo
           id="texto"

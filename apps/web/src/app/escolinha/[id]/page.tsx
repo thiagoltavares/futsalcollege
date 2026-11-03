@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@futsalcollege/db";
+import type { Database } from "@revela10/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { cache } from "react";
@@ -91,7 +91,7 @@ export async function generateMetadata({
 
   if (!escolinha) return { title: "Escolinha não encontrada" };
 
-  const titulo = `${escolinha.nome} — Futsal College`;
+  const titulo = `${escolinha.nome} — Revela 10`;
   const descricao = `${escolinha.cidade} · ${escolinha.estado_uf}${escolinha.credenciada ? " · escolinha credenciada" : ""}`;
 
   return {

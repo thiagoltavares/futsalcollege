@@ -17,15 +17,15 @@ importers:
 
   apps/web:
     dependencies:
-      '@futsalcollege/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@futsalcollege/db':
-        specifier: workspace:^
-        version: link:../../packages/db
       '@react-pdf/renderer':
         specifier: ^4.8.1
         version: 4.8.1(react@19.2.8)
+      '@revela10/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@revela10/db':
+        specifier: workspace:^
+        version: link:../../packages/db
       '@supabase/ssr':
         specifier: ^0.12.5
         version: 0.12.5(@supabase/supabase-js@2.112.4)
@@ -81,7 +81,7 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
-      '@futsalcollege/config':
+      '@revela10/config':
         specifier: workspace:*
         version: link:../config
       typescript:
@@ -93,7 +93,7 @@ importers:
 
   packages/db:
     devDependencies:
-      '@futsalcollege/config':
+      '@revela10/config':
         specifier: workspace:*
         version: link:../config
       '@supabase/supabase-js':

@@ -1,5 +1,5 @@
 {
-  "name": "@futsalcollege/config",
+  "name": "@revela10/config",
   "version": "0.0.0",
   "private": true,
   "files": ["tsconfig.base.json"]

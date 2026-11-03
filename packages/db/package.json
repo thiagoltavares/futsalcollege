@@ -1,5 +1,5 @@
 {
-  "name": "@futsalcollege/db",
+  "name": "@revela10/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,7 +15,7 @@
     "test": "supabase status -o env > .env.test && dotenv -e .env.test -- vitest run"
   },
   "devDependencies": {
-    "@futsalcollege/config": "workspace:*",
+    "@revela10/config": "workspace:*",
     "@supabase/supabase-js": "^2.112.4",
     "dotenv-cli": "^7.4.4",
     "typescript": "^5.7.2",

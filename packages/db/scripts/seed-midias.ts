@@ -25,7 +25,7 @@
 //
 // Uso: node packages/db/scripts/seed-midias.ts (a partir da raiz do repo,
 // ou de dentro de packages/db — o caminho do script já resolve os módulos
-// certos). Precisa do Supabase local rodando (`pnpm --filter @futsalcollege/db db:start`)
+// certos). Precisa do Supabase local rodando (`pnpm --filter @revela10/db db:start`)
 // e do ffmpeg instalado (só para os vídeos; sem ele, o script segue e gera
 // só fotos, avisando no console).
 

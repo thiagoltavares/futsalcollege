@@ -4,7 +4,7 @@ import { criarClienteServidor } from "@/lib/supabase/servidor";
 import { Botao, Cartao, Etiqueta } from "@/ui";
 import { revogarConsentimento } from "./[id]/consentimento/acoes";
 
-// A Tarefa 11 cria @futsalcollege/api com listarAtletasDoResponsavel; até lá,
+// A Tarefa 11 cria @revela10/api com listarAtletasDoResponsavel; até lá,
 // a consulta fica inline aqui (decisão do coordenador da Tarefa 9, já que o
 // pacote ainda não existe).
 
@@ -25,6 +25,26 @@ export default async function Painel() {
   const supabase = await criarClienteServidor();
   const { data: sessao } = await supabase.auth.getUser();
   if (!sessao.user) redirect("/entrar");
+
+  // O botão "Avaliar" lá embaixo só aparece para quem pode mesmo assinar um
+  // laudo: profissional ativo e credenciado vinculado a ESTA conta. O painel
+  // é a área do responsável, e pai não avalia o próprio filho — até esta
+  // rodada o botão aparecia para todo mundo, e era por ele que se chegava à
+  // tela que ainda deixava escolher o nome de outro avaliador na assinatura
+  // (ver migration 0016).
+  //
+  // Ponta solta conhecida: hoje este é o único caminho de interface até
+  // `/avaliar`. O certo é o avaliador ter área própria, com busca de atleta,
+  // em vez de depender de ser por acaso responsável de alguém. Enquanto ela
+  // não existe, quem avalia chega pela URL.
+  const { data: perfilProfissional } = await supabase
+    .from("profissionais")
+    .select("id, credencial")
+    .eq("user_id", sessao.user.id)
+    .eq("ativo", true)
+    .maybeSingle();
+
+  const ehAvaliador = Boolean(perfilProfissional?.credencial);
 
   // A tabela `atletas` tem uma política de leitura pública para
   // estado = 'ativo' (a ficha esportiva é pública). Sem o filtro por
@@ -116,9 +136,14 @@ export default async function Painel() {
                       <Link href={`/atleta/${a.id}`} className="fc-botao fc-botao--secundario">
                         Ver ficha pública
                       </Link>
-                      <Link href={`/avaliar/${a.id}`} className="fc-botao fc-botao--secundario">
-                        Avaliar
-                      </Link>
+                      {ehAvaliador && (
+                        <Link
+                          href={`/avaliar/${a.id}`}
+                          className="fc-botao fc-botao--secundario"
+                        >
+                          Avaliar
+                        </Link>
+                      )}
                       {laudoIdPorAtleta.has(a.id) && (
                         <a
                           href={`/api/laudo/${laudoIdPorAtleta.get(a.id)}/pdf`}
