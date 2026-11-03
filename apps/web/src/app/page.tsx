@@ -211,10 +211,12 @@ const PASSOS = [
 ] as const;
 
 /**
- * Os dois sócios, escritos à mão: papel e descrição vêm do brief
- * (REVELA10-HOME-001, item 6), sem credencial além do que está escrito
- * ali. Foto só quando existe no banco (Flávio, `profissionais`); sem foto,
- * iniciais — nunca retrato inventado.
+ * Os dois sócios, escritos à mão. Flávio: papel e descrição do brief
+ * (REVELA10-HOME-001, item 6); o link leva à trajetória completa em
+ * `/profissional/flavio` quando a linha existe no banco. Thiago: trajetória
+ * resumida do perfil público do LinkedIn (linkedin.com/in/thiagoltavares),
+ * nada além do que está escrito lá. Foto só quando existe no banco; sem
+ * foto, iniciais — nunca retrato inventado.
  */
 const FUNDADORES = [
   {
@@ -223,13 +225,15 @@ const FUNDADORES = [
     papel: "Esporte e metodologia",
     texto:
       "Ex-atleta de futsal, atualmente técnico das seleções de base do Sesc Ceará. Responsável pelo conhecimento esportivo e pela metodologia de avaliação.",
+    link: null,
   },
   {
     chave: "thiago",
     nome: "Thiago Tavares",
     papel: "Produto e tecnologia",
     texto:
-      "Desenvolvedor responsável pela concepção técnica, arquitetura, desenvolvimento e experiência do produto.",
+      "Mais de vinte anos em tecnologia, de Fortaleza. Hoje é engenheiro frontend na Deel, plataforma global de RH e folha de pagamento, onde ajudou a construir um produto do zero até mais de 120 países; antes, liderou um time de frontend de oito pessoas entre Lisboa e Dubai. No Revela 10, responde pela concepção técnica, arquitetura, desenvolvimento e experiência do produto.",
+    link: { href: "https://www.linkedin.com/in/thiagoltavares/", rotulo: "Ver perfil no LinkedIn" },
   },
 ] as const;
 
@@ -554,6 +558,16 @@ export default async function Home() {
                         <Link href={trajetoria} className="fc-home-fundador__link">
                           Conhecer a trajetória completa
                         </Link>
+                      )}
+                      {f.link && (
+                        <a
+                          href={f.link.href}
+                          className="fc-home-fundador__link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {f.link.rotulo}
+                        </a>
                       )}
                     </div>
                   </Cartao>
