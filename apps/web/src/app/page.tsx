@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
 import Link from "next/link";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, CartaoEscolinha, Quadra } from "@/ui";
 import "@/ui/estilos.css";
@@ -10,36 +10,12 @@ import { buscarCapasAtletas, buscarContagemMidias, urlPublicaMidia } from "@/lib
 
 export const revalidate = 60;
 
-// Fontes carregadas só nesta rota, mesmo padrão de /profissional/[slug],
-// /plan e do grupo (app): cada rota pública traz as fontes que usa em vez
-// de inflar o layout raiz, que é compartilhado por todas as rotas.
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Revela 10 — o perfil do atleta de base",
+  title: "Revela 10 — a base jogando, em vídeo",
   description:
-    "Futsal e fut7, da Sub-7 à Sub-20. Cada atleta com perfil próprio: vídeo, foto, posição e escolinha, com autorização do responsável. Sem ranking e sem dado que localize a criança.",
+    "Futsal e fut7, da Sub-7 à Sub-20, em todo o Brasil. Cada atleta com perfil próprio: vídeo, foto, posição e escolinha, com autorização do responsável. Sem ranking e sem dado que localize a criança.",
   openGraph: {
-    title: "Revela 10 — o perfil do atleta de base",
+    title: "Revela 10 — a base jogando, em vídeo",
     description:
       "Cada atleta de base com o perfil dele: vídeo, foto e ficha, publicados com autorização do responsável.",
     locale: "pt_BR",
@@ -222,7 +198,7 @@ const PASSOS = [
   {
     numero: "02",
     titulo: "Publica vídeo e foto",
-    texto: "O que o menino joga, em vídeo — é o que um clube quer ver antes de qualquer outra coisa.",
+    texto: "O que o atleta joga, em vídeo. É o que um clube quer ver antes de qualquer outra coisa.",
   },
   {
     numero: "03",
@@ -259,21 +235,23 @@ export default async function Home() {
   ]);
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
-      <main className="fc-corpo">
+      <main className="fc-corpo fc-corpo--home">
         {/* ============================ HERO ============================ */}
-        <section className="fc-container fc-home-hero">
+        {/* A quadra: fundo azul emendado no cabeçalho, marcação amarela em
+            escala por trás, título em display. É o único lugar da página
+            onde a identidade grita — o resto é cal e cartão. */}
+        <section className="fc-home-hero">
           <Quadra />
 
-          <div className="fc-home-hero__conteudo">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo fc-home-eyebrow">Revela 10</p>
-            <h1 className="fc-home-h1">Cada atleta de base com o perfil dele.</h1>
+          <div className="fc-container fc-home-hero__conteudo">
+            <h1 className="fc-home-h1">A base jogando, em vídeo.</h1>
             <p className="fc-home-lead">
-              Futsal e fut7, da Sub-7 à Sub-20. Vídeo, foto, posição, pé dominante e escolinha,
-              numa ficha que o responsável autoriza — e onde bairro, escola, endereço e horário
-              de treino não existem como campo.
+              Futsal e fut7, da Sub-7 à Sub-20, em todo o Brasil. Cada atleta com perfil próprio:
+              vídeo, foto, posição, pé dominante e escolinha, publicado com autorização do
+              responsável. Bairro, escola, endereço e horário de treino não existem como campo.
             </p>
 
             <form action="/atletas" method="GET" className="fc-vitrine-busca">
@@ -303,22 +281,25 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* =========================== NÚMEROS =========================== */}
-        <section className="fc-home-secao fc-home-secao--areia fc-home-secao--numeros">
-          <div className="fc-container fc-vitrine-numeros">
-            <div className="fc-vitrine-numero">
-              <span className="fc-vitrine-numero__valor">{numeros.atletas}</span>
-              <span className="fc-vitrine-numero__rotulo">atletas com perfil ativo</span>
+        {/* =========================== PLACAR =========================== */}
+        {/* A marcação amarela atravessando a página, com os números da
+            plataforma como placar de ginásio. Vídeos primeiro: é o que o
+            pivô pôs na frente. */}
+        <section className="fc-home-placar">
+          <dl className="fc-container fc-home-placar__lista">
+            <div className="fc-home-placar__item">
+              <dd className="fc-home-placar__valor">{numeros.videos}</dd>
+              <dt className="fc-home-placar__rotulo">vídeos publicados</dt>
             </div>
-            <div className="fc-vitrine-numero">
-              <span className="fc-vitrine-numero__valor">{numeros.escolinhas}</span>
-              <span className="fc-vitrine-numero__rotulo">escolinhas parceiras</span>
+            <div className="fc-home-placar__item">
+              <dd className="fc-home-placar__valor">{numeros.atletas}</dd>
+              <dt className="fc-home-placar__rotulo">atletas com perfil ativo</dt>
             </div>
-            <div className="fc-vitrine-numero">
-              <span className="fc-vitrine-numero__valor">{numeros.videos}</span>
-              <span className="fc-vitrine-numero__rotulo">vídeos publicados</span>
+            <div className="fc-home-placar__item">
+              <dd className="fc-home-placar__valor">{numeros.escolinhas}</dd>
+              <dt className="fc-home-placar__rotulo">escolinhas parceiras</dt>
             </div>
-          </div>
+          </dl>
         </section>
 
         {/* ====================== ATLETAS EM DESTAQUE ===================== */}
@@ -326,7 +307,6 @@ export default async function Home() {
           <div className="fc-container">
             <div className="fc-vitrine-secao-cabecalho">
               <div>
-                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Vitrine</p>
                 <h2 className="fc-titulo">Atletas em destaque</h2>
                 <p className="fc-subtitulo">
                   Uma amostra dos perfis ativos, em ordem aleatória — não existe ranking, nota
@@ -361,11 +341,10 @@ export default async function Home() {
             agora é de perfil novo: no cardápio de atletas, o que acabou de
             sair é o menino que entrou, não a avaliação que saiu. */}
         {recentes.length > 0 && (
-          <section className="fc-home-secao fc-home-secao--areia">
+          <section className="fc-home-secao fc-home-secao--banda">
             <div className="fc-container">
               <div className="fc-vitrine-secao-cabecalho">
                 <div>
-                  <p className="fc-rotulo-secao fc-etiqueta-rotulo">Acabou de entrar</p>
                   <h2 className="fc-titulo">Perfis novos</h2>
                   <p className="fc-subtitulo">Os últimos atletas que entraram, do mais novo ao mais antigo.</p>
                 </div>
@@ -389,11 +368,10 @@ export default async function Home() {
           <div className="fc-container">
             <div className="fc-vitrine-secao-cabecalho">
               <div>
-                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Escolinhas parceiras</p>
                 <h2 className="fc-titulo">De onde vêm os atletas</h2>
                 <p className="fc-subtitulo">
-                  Escolinhas e CTs de Fortaleza, região metropolitana e interior do Ceará. O selo
-                  de credenciada indica escolinha auditada pelo método do Revela 10.
+                  Escolinhas e CTs parceiros, em todo o Brasil. O selo de credenciada indica
+                  escolinha verificada pelo Revela 10.
                 </p>
               </div>
               <Link href="/escolinhas" className="fc-botao fc-botao--secundario">
@@ -415,11 +393,11 @@ export default async function Home() {
         </section>
 
         {/* ======================= COMO FUNCIONA + AVALIAÇÃO =============== */}
-        <section id="como-funciona" className="fc-home-secao fc-home-secao--tinta">
+        <section id="como-funciona" className="fc-home-secao fc-home-secao--quadra">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Como funciona</p>
-              <h2 className="fc-titulo">Do cadastro ao perfil no ar</h2>
+              <h2 className="fc-titulo">Como funciona</h2>
+              <p className="fc-subtitulo">Do cadastro ao perfil no ar, em três passos.</p>
             </div>
 
             <div className="fc-home-passos">
@@ -444,22 +422,20 @@ export default async function Home() {
         <section className="fc-home-secao">
           <div className="fc-container fc-home-duplo">
             <Cartao>
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para escolinhas</p>
-              <h3 className="fc-titulo fc-titulo--card">Cadastre a turma, acompanhe os alunos</h3>
+              <h3 className="fc-titulo fc-titulo--card">Para escolinhas</h3>
               <p className="fc-subtitulo fc-subtitulo--livre">
                 O treinador cadastra a turma e acompanha quantos responsáveis já assinaram a
-                autorização. Cada aluno ganha o registro do próprio trabalho.
+                autorização. Cada aluno ganha o próprio perfil, com vídeo e foto.
               </p>
             </Cartao>
 
             <div id="clubes">
               <Cartao>
-                <p className="fc-rotulo-secao fc-etiqueta-rotulo">Para clubes e olheiros</p>
-                <h3 className="fc-titulo fc-titulo--card">Entrada separada, busca por dado verificado</h3>
+                <h3 className="fc-titulo fc-titulo--card">Para clubes e olheiros</h3>
                 <p className="fc-subtitulo fc-subtitulo--livre">
-                  Clubes e olheiros buscam por categoria, posição, pé dominante e estado, com o
-                  vídeo no próprio perfil. A identificação da criança fica sempre atrás de
-                  verificação própria, separada do acesso público.
+                  Busca por categoria, posição, pé dominante e estado, com o vídeo no próprio
+                  perfil. A identificação da criança fica sempre atrás de verificação própria,
+                  separada do acesso público.
                 </p>
               </Cartao>
             </div>
@@ -468,10 +444,9 @@ export default async function Home() {
 
         {/* ============================ AUTORIDADE ======================== */}
         {profissionalDestaque && (
-          <section id="flavio" className="fc-home-secao fc-home-secao--areia">
+          <section id="flavio" className="fc-home-secao fc-home-secao--banda">
             <div className="fc-container">
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Quem está por trás</p>
-              <h2 className="fc-titulo">A plataforma tem nome e trajetória</h2>
+              <h2 className="fc-titulo">Quem está por trás</h2>
 
               <Cartao className="fc-home-autoridade fc-home-eixo-nota">
                 <div className="fc-home-autoridade__cabeca">
@@ -514,7 +489,6 @@ export default async function Home() {
         <section id="privacidade" className="fc-home-secao">
           <div className="fc-container">
             <div className="fc-home-secao__cabecalho">
-              <p className="fc-rotulo-secao fc-etiqueta-rotulo">Privacidade</p>
               <h2 className="fc-titulo">O que é público, o que é restrito, o que nunca aparece</h2>
             </div>
 
@@ -525,7 +499,7 @@ export default async function Home() {
                   <li>Apelido esportivo</li>
                   <li>Categoria (ex.: Sub-13)</li>
                   <li>Posição, pé dominante e físico</li>
-                  <li>Avaliação técnica e quem assinou</li>
+                  <li>Avaliação técnica, quando existe, e quem assinou</li>
                   <li>Clube ou escolinha e estado</li>
                 </ul>
               </Cartao>

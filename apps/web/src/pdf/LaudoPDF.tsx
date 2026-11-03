@@ -40,17 +40,17 @@ Font.register({
 // valores, para o PDF e a tela nunca divergirem.
 // ---------------------------------------------------------------------
 const COR = {
-  tinta: "#0b0d0e", // --fc-ink: fundo da faixa de cabeçalho
-  texto: "#14171a", // --fc-tinta: cor de leitura do corpo, sobre osso/branco
+  tinta: "#10355f", // --fc-quadra: fundo da faixa de cabeçalho
+  texto: "#0f1b2b", // --fc-tinta: cor de leitura do corpo, sobre cal/branco
   texto80: "rgba(20, 23, 26, 0.8)",
   texto60: "rgba(20, 23, 26, 0.6)",
   texto40: "rgba(20, 23, 26, 0.4)",
-  osso: "#f4f0e8", // --fc-osso: fundo da página
-  branco: "#fffdf9", // --fc-branco: cartões sobre o fundo osso
-  ossoTexto: "#f4f0e8",
+  osso: "#f4f4f1", // --fc-cal: fundo da página
+  branco: "#ffffff", // --fc-branco: cartões sobre o fundo cal
+  ossoTexto: "#ffffff",
   ossoTexto70: "rgba(244, 240, 232, 0.7)",
   ossoTexto45: "rgba(244, 240, 232, 0.45)",
-  acento: "#ff3b14", // --fc-gol-forte
+  acento: "#ffd23f", // --fc-amarelo (marcação) sobre a quadra
   linha: "rgba(20, 23, 26, 0.14)",
   linhaForte: "rgba(20, 23, 26, 0.28)",
   faixaOsso: "rgba(244, 240, 232, 0.14)",
@@ -62,10 +62,10 @@ const COR = {
 // formulário de avaliação: técnico reaproveita o "gol" (pilar central da
 // marca), os outros três têm tons próprios da mesma família de peso.
 const COR_EIXO: Record<Eixo, string> = {
-  tecnico: "#c62f0d",
-  fisico: "#0b6d63",
-  tatico: "#2a4a8f",
-  comportamental: "#7a3f7a",
+  tecnico: "#c2410c",
+  fisico: "#15803d",
+  tatico: "#6d28d9",
+  comportamental: "#be185d",
 };
 
 const estilos = StyleSheet.create({
@@ -370,7 +370,7 @@ export function LaudoPDF({ dados }: { dados: DadosLaudo }) {
     <Document title={`Avaliação técnica — ${dados.apelido}`}>
       <Page size="A4" style={estilos.documento}>
         <View style={estilos.faixa}>
-          <Text style={estilos.faixaEyebrow}>AVALIAÇÃO TÉCNICA · FUTSAL COLLEGE</Text>
+          <Text style={estilos.faixaEyebrow}>AVALIAÇÃO TÉCNICA · REVELA 10</Text>
           <Text style={estilos.nomeAtleta}>{dados.apelido}</Text>
           <View style={estilos.tagsLinha}>
             <View style={estilos.tag}>

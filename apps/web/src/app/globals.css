@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
+/* Fundo do documento: a cal das telas de produto (ver `ui/estilos.css`).
+   É o que aparece atrás do conteúdo durante o carregamento e no
+   "overscroll" — tem que ser a mesma cor da página, não um escuro de
+   landing que já não existe. */
 html,
 body {
-  background: #0b0d0e;
+  background: #f4f4f1;
 }

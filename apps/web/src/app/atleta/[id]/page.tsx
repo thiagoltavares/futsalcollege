@@ -4,7 +4,7 @@ import type { Database } from "@revela10/db";
 import { agruparPorEixo, EIXOS, type Eixo, type ItemRubrica } from "@revela10/core";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
@@ -18,29 +18,6 @@ import {
 } from "./PerfilFicha";
 
 export const revalidate = 300;
-
-// Fontes carregadas só nesta rota — mesmo padrão de /profissional/[slug],
-// /plan, da home e do grupo (app): cada rota pública traz as fontes que usa.
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 /**
  * Cliente anônimo de propósito: a ficha pública nunca deve depender de sessão,
@@ -244,7 +221,7 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
   const fisico = linhaFisico(ficha.altura_cm, ficha.peso_kg);
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">

@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
 import { CATEGORIAS, GENEROS, POSICOES } from "@revela10/core";
 import Link from "next/link";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto, Campo, Cartao, CartaoAtleta, Selecao } from "@/ui";
 import "@/ui/estilos.css";
@@ -11,29 +11,6 @@ import { buscarContagemMidias } from "@/lib/midias";
 import { buscarCapasAtletas } from "@/lib/midias";
 
 export const revalidate = 60;
-
-// Mesmo padrão de fontes por rota pública já usado em /, /atleta/[id] e
-// /profissional/[slug].
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Atletas — Revela 10",
@@ -180,13 +157,12 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
   );
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container">
           <div className="fc-cabecalho-pagina">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Navegação pública</p>
             <h1 className="fc-titulo">Atletas</h1>
             <p className="fc-subtitulo">
               Perfis com autorização vigente, do jeito que qualquer visitante enxerga. Dá para

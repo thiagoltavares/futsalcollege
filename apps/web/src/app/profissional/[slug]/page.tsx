@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto } from "@/ui";
 import "@/ui/estilos.css";
@@ -12,32 +12,6 @@ import { urlPublicaMidia } from "@/lib/midias";
 import { PerfilProfissional } from "./PerfilProfissional";
 
 export const revalidate = 60;
-
-// Rota única para qualquer profissional, inclusive Flávio Barbosa
-// (`/profissional/flavio`): a landing especial que existia antes desta
-// rodada foi removida — trajetória, conquistas e citação dele agora são
-// dado (migration 0012 + seed), consumido pelo mesmo template que qualquer
-// outro profissional usa. Ver relatório desta tarefa.
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 function clienteAnonimo() {
   return createClient<Database>(
@@ -169,7 +143,7 @@ export default async function ProfissionalDetalhe({
   const localidade = [profissional.cidade, profissional.estado_uf].filter(Boolean).join(" · ");
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">

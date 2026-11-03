@@ -33,7 +33,7 @@ export function linhaFisico(
   kg: number | string | null | undefined,
 ): string | null {
   const partes = [formatarAltura(cm), formatarPeso(kg)].filter(Boolean);
-  return partes.length ? partes.join(" · ") : null;
+  return partes.length ? partes.join(", ") : null;
 }
 
 /**

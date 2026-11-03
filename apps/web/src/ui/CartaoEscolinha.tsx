@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Cartao } from "./Cartao";
+import { Quadra } from "./Quadra";
 
 export type EscolinhaResumoCartao = {
   id: string;
@@ -50,9 +51,12 @@ export function CartaoEscolinha({ escolinha, ativos, avaliados }: CartaoEscolinh
           {escolinha.fotoUrl ? (
             <img src={escolinha.fotoUrl} alt="" loading="lazy" />
           ) : (
-            <span className="fc-cartao-escolinha__midia-inicial" aria-hidden="true">
-              {inicial}
-            </span>
+            <>
+              <Quadra className="fc-quadra--recorte" />
+              <span className="fc-cartao-escolinha__midia-inicial" aria-hidden="true">
+                {inicial}
+              </span>
+            </>
           )}
         </div>
 

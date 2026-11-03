@@ -3,10 +3,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Futsal",
+    default: "Revela 10",
     template: "%s",
   },
-  description: "Projeto de futsal.",
+  description:
+    "Vitrine do atleta de base de futsal e fut7: vídeo, foto e ficha, publicados com autorização do responsável.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

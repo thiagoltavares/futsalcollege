@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Quadra } from "@/ui/Quadra";
 import {
   EIXOS,
   ROTULO_CONTEXTO,
@@ -229,6 +230,7 @@ function CabecalhoPerfil({
 }) {
   return (
     <section className="fc-perfil-header">
+      <Quadra />
       <div className="fc-perfil-header__topo">
         <span className="fc-perfil-avatar">
           {atleta.avatarUrl ? (

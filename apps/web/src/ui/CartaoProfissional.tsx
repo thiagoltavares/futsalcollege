@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Cartao } from "./Cartao";
+import { Quadra } from "./Quadra";
 import { anoDeData } from "./formato";
 
 export type ProfissionalResumoCartao = {
@@ -62,9 +63,12 @@ export function CartaoProfissional({ profissional, laudos }: CartaoProfissionalP
           {profissional.fotoUrl ? (
             <img src={profissional.fotoUrl} alt="" loading="lazy" />
           ) : (
-            <span className="fc-cartao-profissional__midia-inicial" aria-hidden="true">
-              {inicial}
-            </span>
+            <>
+              <Quadra className="fc-quadra--recorte" />
+              <span className="fc-cartao-profissional__midia-inicial" aria-hidden="true">
+                {inicial}
+              </span>
+            </>
           )}
         </div>
 

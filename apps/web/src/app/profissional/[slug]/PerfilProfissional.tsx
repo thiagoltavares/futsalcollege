@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Cartao } from "@/ui";
+import { Cartao, Quadra } from "@/ui";
 
 export type MarcoPublico = {
   id: string;
@@ -95,6 +95,7 @@ export function PerfilProfissional({
   return (
     <>
       <section className="fc-perfil-header fc-perfil-header--capa">
+        <Quadra />
         <div className="fc-perfil-header__topo">
           <span className="fc-perfil-avatar">
             {profissional.fotoUrl ? (

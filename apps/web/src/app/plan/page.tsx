@@ -2,16 +2,17 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { Metadata } from "next";
-import { Barlow, Big_Shoulders, Source_Serif_4 } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Saira_Extra_Condensed, Source_Serif_4 } from "next/font/google";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import Scrollspy from "./Scrollspy";
 import "./plan.css";
 
-const display = Big_Shoulders({
+const display = Saira_Extra_Condensed({
   variable: "--font-display",
   subsets: ["latin"],
+  weight: ["700", "800"],
   display: "swap",
 });
 
@@ -22,7 +23,7 @@ const texto = Source_Serif_4({
   display: "swap",
 });
 
-const ui = Barlow({
+const ui = Atkinson_Hyperlegible_Next({
   variable: "--font-ui",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

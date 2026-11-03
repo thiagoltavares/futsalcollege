@@ -4,44 +4,60 @@ import { cn } from "./util";
 export type QuadraProps = SVGAttributes<SVGSVGElement>;
 
 /**
- * Grafismo de linhas de quadra de futsal, para o fundo de um cabeçalho —
- * hoje só o hero da home, mas pensado para outros cabeçalhos reaproveitarem
- * (por isso mora em `ui/`, não dentro de `app/page.tsx`).
+ * A marcação da quadra de futsal — o grafismo de marca do Revela 10.
  *
- * Recuperado da página antiga do Flávio (`profissional/flavio/page.tsx`,
- * antes da unificação em `5ad4165` — ver histórico do Git), que tinha fundo
- * escuro e traço osso a 14% de opacidade. Aqui o fundo é claro (osso/papel,
- * ver `estilos.css`), então a cor não pode ser reaproveitada como estava:
- * osso quase-transparente sobre osso não apareceria. `.fc-quadra` (abaixo)
- * troca para tinta a uma opacidade bem baixa — sutil o bastante para não
- * brigar com o título em Big Shoulders nem com o texto de apoio, que
- * continuam por cima via `z-index` de quem usa este componente.
+ * Desenhada em escala real (40 × 20 m, 30 px por metro): linha lateral e de
+ * fundo, linha central com o círculo de 3 m, as duas áreas em "D" (arcos de
+ * 6 m a partir de cada poste, emendados por 3,16 m de reta), marca do
+ * pênalti aos 6 m e segunda marca aos 10 m, arcos de escanteio de 25 cm e
+ * as marcas da zona de substituição a 5 m da linha central. Quem joga
+ * reconhece: é futsal, não campo, não basquete.
  *
- * Posicionamento (`position: absolute; inset: 0`) e cor vêm da classe
- * `.fc-quadra`; este componente só desenha o traço. Quem usa precisa
- * garantir `position: relative` (ou similar) no ancestral direto para o
- * `absolute` valer em relação a ele, e `overflow: hidden` se a rotação
- * puder vazar para fora da caixa.
+ * O componente só desenha o traço em `currentColor`; cor, posição e
+ * recorte vêm da classe `.fc-quadra` e suas variantes em `estilos.css`
+ * (`.fc-home-hero .fc-quadra` amplia e corta pelo canto; `.fc-quadra--recorte`
+ * é o pedaço para fundos pequenos, como a capa de cartão sem foto). Quem
+ * usa garante `position: relative` e `overflow: hidden` no ancestral.
  */
 export function Quadra({ className, ...props }: QuadraProps) {
   return (
     <svg
       className={cn("fc-quadra", className)}
-      viewBox="0 0 1200 800"
+      viewBox="0 0 1200 600"
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
       focusable="false"
       {...props}
     >
-      <g transform="rotate(-7 600 400)" fill="none" stroke="currentColor" strokeWidth="1.25">
-        <rect x="60" y="60" width="1080" height="680" />
-        <line x1="600" y1="60" x2="600" y2="740" />
-        <circle cx="600" cy="400" r="112" />
-        <circle cx="600" cy="400" r="3.5" fill="currentColor" stroke="none" />
-        <path d="M60 250 A 170 170 0 0 1 60 550" />
-        <path d="M1140 250 A 170 170 0 0 0 1140 550" />
-        <line x1="230" y1="392" x2="230" y2="408" />
-        <line x1="970" y1="392" x2="970" y2="408" />
+      <g fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round">
+        {/* laterais e fundo */}
+        <rect x="0" y="0" width="1200" height="600" strokeWidth="6" />
+        {/* linha central e círculo de 3 m */}
+        <line x1="600" y1="0" x2="600" y2="600" />
+        <circle cx="600" cy="300" r="90" />
+        <circle cx="600" cy="300" r="4" fill="currentColor" stroke="none" />
+        {/* área esquerda: arcos de 6 m a partir dos postes (y = 255 e 345) */}
+        <path d="M0 75 A180 180 0 0 1 180 255 L180 345 A180 180 0 0 1 0 525" />
+        {/* área direita */}
+        <path d="M1200 75 A180 180 0 0 0 1020 255 L1020 345 A180 180 0 0 0 1200 525" />
+        {/* marcas do pênalti (6 m) e segunda marca (10 m) */}
+        <circle cx="180" cy="300" r="4" fill="currentColor" stroke="none" />
+        <circle cx="300" cy="300" r="4" fill="currentColor" stroke="none" />
+        <circle cx="1020" cy="300" r="4" fill="currentColor" stroke="none" />
+        <circle cx="900" cy="300" r="4" fill="currentColor" stroke="none" />
+        {/* gols (3 m de boca) */}
+        <rect x="-30" y="255" width="30" height="90" />
+        <rect x="1200" y="255" width="30" height="90" />
+        {/* arcos de escanteio */}
+        <path d="M0 24 A24 24 0 0 0 24 0" />
+        <path d="M1176 0 A24 24 0 0 0 1200 24" />
+        <path d="M0 576 A24 24 0 0 1 24 600" />
+        <path d="M1176 600 A24 24 0 0 1 1200 576" />
+        {/* zona de substituição: marcas a 5 m da linha central, na lateral */}
+        <line x1="450" y1="0" x2="450" y2="24" />
+        <line x1="750" y1="0" x2="750" y2="24" />
+        <line x1="450" y1="576" x2="450" y2="600" />
+        <line x1="750" y1="576" x2="750" y2="600" />
       </g>
     </svg>
   );

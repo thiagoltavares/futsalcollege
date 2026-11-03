@@ -10,21 +10,22 @@
 
 .plan {
   /* papel */
-  --papel: #f6f2ea;
-  --papel-2: #efe9de;
-  --papel-3: #e7e0d2;
+  --papel: #f4f4f1;
+  --papel-2: #e9eae4;
+  --papel-3: #dcded6;
 
   /* tinta */
-  --tinta: #16191b;
-  --tinta-80: rgb(22 25 27 / 0.82);
-  --tinta-60: rgb(22 25 27 / 0.6);
-  --tinta-40: rgb(22 25 27 / 0.4);
-  --regua: rgb(22 25 27 / 0.14);
-  --regua-forte: rgb(22 25 27 / 0.28);
+  --tinta: #0f1b2b;
+  --tinta-80: rgb(15 27 43 / 0.84);
+  --tinta-60: rgb(15 27 43 / 0.68);
+  --tinta-40: rgb(15 27 43 / 0.62);
+  --regua: rgb(15 27 43 / 0.14);
+  --regua-forte: rgb(15 27 43 / 0.28);
 
-  /* acento — mais fechado que o da landing, para contraste em papel */
-  --gol: #c62f0d;
-  --gol-suave: rgb(198 47 13 / 0.08);
+  /* acento — a quadra azul do produto (ver ui/estilos.css); o amarelo de
+     marcação não passa AA como texto sobre papel, então não entra aqui */
+  --gol: #10355f;
+  --gol-suave: rgb(16 53 95 / 0.08);
 
   --medida: 68ch;
   --margem: clamp(1.5rem, 5vw, 4rem);
@@ -71,8 +72,8 @@
 .plan-display {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.88;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
   text-transform: uppercase;
 }
 

@@ -4,37 +4,14 @@ import type { Database } from "@revela10/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { cache } from "react";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
-import { CabecalhoPublicoAuto, Cartao, CartaoAtleta } from "@/ui";
+import { CabecalhoPublicoAuto, Cartao, CartaoAtleta, Quadra } from "@/ui";
 import "@/ui/estilos.css";
 import { buscarResumoAvaliacoes } from "@/lib/avaliacoes";
 import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
-
-// Mesmo padrão de fontes por rota pública já usado em /, /atletas,
-// /atleta/[id] e /escolinhas.
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 function clienteAnonimo() {
   return createClient<Database>(
@@ -116,7 +93,7 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
   const avaliados = atletas.filter((a) => resumoAvaliacoes.has(a.id)).length;
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo fc-corpo--perfil">
@@ -126,6 +103,7 @@ export default async function EscolinhaDetalhe({ params }: PageProps<"/escolinha
           </p>
 
           <section className="fc-perfil-header fc-perfil-header--capa">
+            <Quadra />
             <div className="fc-perfil-header__topo">
               <span className="fc-perfil-avatar">
                 {escolinha.foto_storage_path ? (

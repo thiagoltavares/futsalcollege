@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Cartao } from "./Cartao";
+import { Quadra } from "./Quadra";
 import { linhaFisico } from "./formato";
 
 export type AtletaResumoCartao = {
@@ -60,23 +61,27 @@ export type CartaoAtletaProps = {
 /**
  * Cartão de atleta compartilhado por `/atletas`, `/escolinha/[id]`, a home
  * e a aba "Atletas avaliados" de `/profissional/[slug]` — as quatro
- * listagens públicas de atleta usam o mesmo cartão.
+ * listagens públicas de atleta usam o mesmo cartão. É a figurinha do
+ * álbum: capa em retrato, apelido grande como nome na camisa, categoria
+ * como pastilha na cor da quadra.
  *
  * Estrutura de FAIXAS FIXAS, sempre nesta ordem, sempre com a mesma altura
- * por faixa (via `line-clamp`/`min-height` em `estilos.css`) — é o que faz
- * a faixa N de um cartão alinhar com a faixa N do vizinho na grade, tenha
- * ou não mídia/escolinha/avaliação:
+ * por faixa (via `min-height` em `estilos.css`) — é o que faz a faixa N de
+ * um cartão alinhar com a faixa N do vizinho na grade, tenha ou não
+ * mídia/escolinha/avaliação:
  *
- *   1. mídia       — foto de capa, proporção fixa; sem foto, grafismo de
- *                     marca (inicial do apelido), nunca um espaço vazio.
+ *   1. capa        — foto de capa em 4:5, com a contagem de vídeos por
+ *                     cima quando há vídeo; sem foto, um pedaço da quadra
+ *                     com a inicial do apelido, nunca um espaço vazio.
  *   2. apelido      — uma linha, corte por reticências.
- *   3. categoria e posição — uma linha.
- *   4. físico, clube ou escolinha — até duas linhas, corte, altura
- *                     reservada mesmo com texto mais curto.
- *   5. selos        — linha própria, sempre presente, alinhada à esquerda:
+ *   3. categoria (pastilha) e posição — uma linha.
+ *   4. físico       — pé dominante, altura e peso; uma linha, altura
+ *                     reservada mesmo sem dado.
+ *   5. origem       — escolinha ou clube, e estado; uma linha, idem.
+ *   6. selos        — linha própria, sempre presente, alinhada à esquerda:
  *                     escolinha credenciada e avaliação publicada vivem
  *                     aqui, nunca ao lado do apelido (faixa 2).
- *   6. metadado — quantos vídeos e fotos o atleta tem. Onde a avaliação é
+ *   7. metadado — quantos vídeos e fotos o atleta tem. Onde a avaliação é
  *                     o assunto da página (`/profissional/[slug]`), esta
  *                     faixa mostra o laudo no lugar: quantas, quando, quem
  *                     assinou. Nunca vazia, nos dois casos.
@@ -99,17 +104,18 @@ function resumoMidia(midia: MidiaResumoCartao | null | undefined): string {
   const partes: string[] = [];
   if (videos > 0) partes.push(videos === 1 ? "1 vídeo" : `${videos} vídeos`);
   if (fotos > 0) partes.push(fotos === 1 ? "1 foto" : `${fotos} fotos`);
-  return partes.join(" · ");
+  return partes.join(" e ");
 }
 
 export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoAtletaProps) {
   const fisico = linhaFisico(atleta.altura_cm, atleta.peso_kg);
   const clubeOuEscolinha = ocultarClube ? null : (atleta.escolinha?.nome ?? atleta.clube_atual);
-  const categoriaLinha = [atleta.categoria, atleta.posicao].filter(Boolean).join(" · ");
-  const fisicoLinha = [atleta.pe_dominante, fisico, clubeOuEscolinha, atleta.estado_uf]
-    .filter(Boolean)
-    .join(" · ");
+  // Vírgula, não ponto no meio: "Destro, 1,52 m, 42 kg" é como se escreve
+  // uma lista em português — a linha lê como frase, não como metadado.
+  const fisicoLinha = [atleta.pe_dominante, fisico].filter(Boolean).join(", ");
+  const origemLinha = [clubeOuEscolinha, atleta.estado_uf].filter(Boolean).join(", ");
   const inicial = atleta.apelido.trim().charAt(0).toUpperCase() || "?";
+  const videos = midia?.videos ?? 0;
 
   return (
     <Link href={`/atleta/${atleta.id}`} className="fc-atletas-item-link">
@@ -118,16 +124,31 @@ export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoA
           {atleta.capaUrl ? (
             <img src={atleta.capaUrl} alt="" loading="lazy" />
           ) : (
-            <span className="fc-cartao-atleta__midia-inicial" aria-hidden="true">
-              {inicial}
+            <>
+              <Quadra className="fc-quadra--recorte" />
+              <span className="fc-cartao-atleta__midia-inicial" aria-hidden="true">
+                {inicial}
+              </span>
+            </>
+          )}
+          {videos > 0 && (
+            <span
+              className="fc-cartao-atleta__videos"
+              aria-label={videos === 1 ? "1 vídeo" : `${videos} vídeos`}
+            >
+              {videos}
             </span>
           )}
         </div>
 
         <div className="fc-cartao-atleta__corpo">
           <span className="fc-cartao-atleta__nome">{atleta.apelido}</span>
-          <span className="fc-cartao-atleta__categoria">{categoriaLinha}</span>
+          <span className="fc-cartao-atleta__categoria">
+            <b>{atleta.categoria}</b>
+            {atleta.posicao && <span>{atleta.posicao}</span>}
+          </span>
           <span className="fc-cartao-atleta__fisico">{fisicoLinha}</span>
+          <span className="fc-cartao-atleta__origem">{origemLinha}</span>
 
           <div className="fc-cartao-atleta__selos">
             {atleta.escolinha?.credenciada && (

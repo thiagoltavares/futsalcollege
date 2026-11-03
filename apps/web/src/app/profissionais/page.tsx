@@ -1,36 +1,13 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoProfissional } from "@/ui";
 import "@/ui/estilos.css";
 import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
-
-// Mesmo padrão de fontes por rota pública já usado em /, /atletas,
-// /escolinhas e /atleta/[id].
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Profissionais — Revela 10",
@@ -102,13 +79,12 @@ export default async function Profissionais() {
   );
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container">
           <div className="fc-cabecalho-pagina">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Navegação pública</p>
             <h1 className="fc-titulo">Profissionais</h1>
             <p className="fc-subtitulo">
               Quem assina as avaliações técnicas do Revela 10. Cada laudo publicado leva o

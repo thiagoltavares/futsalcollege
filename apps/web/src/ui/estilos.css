@@ -1,89 +1,107 @@
 /* ------------------------------------------------------------------
-   apps/web/src/ui — folha de estilo do design system das telas
-   autenticadas (entrar, painel, cadastro, consentimento).
+   apps/web/src/ui — folha de estilo do design system do Revela 10.
 
-   Escopada sob .fc, no mesmo padrão de .flv (/profissional/[slug]) e
-   .plan (/plan): tokens e componentes não vazam para fora da rota que
-   os usa.
+   Escopada sob .fc, no mesmo padrão de .plan (/plan): tokens e
+   componentes não vazam para fora da rota que os usa.
 
-   Decisão de fundo: aqui é PRODUTO, não landing nem documento de
-   leitura. A landing do Flávio é tinta escura porque é drama editorial;
-   o /plan é papel claro porque é para ler nove mil palavras. Este app é
-   formulário — um pai preenchendo dados do filho pelo celular, muitas
-   vezes ao sol, muitas vezes com pressa. Fundo claro (a mesma família
-   "papel" do /plan) dá mais contraste para texto de input, rótulo e
-   erro do que tinta escura seria capaz com a mesma legibilidade em
-   telas de baixo brilho — e áreas de erro/aviso em vermelho sobre
-   branco leem melhor que em vermelho sobre quase-preto.
-   A identidade de marca entra pelo cabeçalho (tinta escura, acento
-   "gol") e pelas cores/tipografia — não pelo fundo da tela inteira.
+   IDENTIDADE (rebranding pós-pivô, nov/2026 — ver
+   docs/design/2026-11-02-identidade-revela10.md):
+
+   Quadra azul, marcação amarela, número na camisa. Três coisas que todo
+   mundo que já pisou num ginásio reconhece sem explicação — o piso azul
+   das quadras de futsal, a linha amarela pintada por cima dele (na quadra
+   compartilhada da escola, cada esporte tem a sua cor, e a do futsal é a
+   amarela) e o número grande nas costas. É isso que torna o produto
+   reconhecível como ESTE, e não como qualquer plataforma esportiva:
+   nada de grama de campo, nada de cartão SaaS, nada de papel creme.
+
+   Decisão de fundo mantida: tela de produto é CLARA. Um pai preenche o
+   cadastro do filho pelo celular, muitas vezes ao sol — o fundo "cal"
+   (parede caiada, não papel creme) dá mais contraste para input, rótulo
+   e erro do que a quadra escura daria em tela de baixo brilho. A quadra
+   azul entra pelo cabeçalho, pelo hero da home, pelo cabeçalho da ficha
+   e por uma seção de ritmo; o amarelo nunca é texto sobre fundo claro.
 ------------------------------------------------------------------- */
 
 .fc {
-  /* tinta / papel — mesma família do /plan */
-  --fc-tinta: #14171a;
-  --fc-tinta-80: rgb(20 23 26 / 0.82);
-  --fc-tinta-60: rgb(20 23 26 / 0.6);
-  --fc-tinta-40: rgb(20 23 26 / 0.4);
-  --fc-papel: #f6f2ea;
-  --fc-papel-2: #efe9de;
-  --fc-papel-3: #e7e0d2;
-  --fc-branco: #fffdf9;
+  /* ---- paleta nomeada (6 cores) ----
+     quadra   — azul do piso da quadra de futsal. Superfície escura de marca.
+     amarelo  — marcação da quadra. Acento sobre a quadra; NUNCA texto
+                sobre fundo claro (não passa AA).
+     cal      — parede caiada: fundo claro das telas de produto.
+     tinta    — texto sobre cal. Azul-preto, não preto puro: é a quadra
+                vista no escuro.
+     giz      — texto sobre a quadra. Branco de giz.
+     branco   — superfície de cartão e input sobre a cal. */
+  --fc-quadra: #10355f;
+  --fc-quadra-2: #163f70; /* superfície elevada sobre a quadra (menu, avatar) */
+  --fc-amarelo: #ffd23f;
+  --fc-amarelo-risco: rgb(255 210 63 / 0.34); /* a marcação desenhada em escala, no hero */
+  --fc-cal: #f4f4f1;
+  --fc-cal-2: #e9eae4;
+  --fc-cal-3: #dcded6;
+  --fc-branco: #ffffff;
 
-  /* tinta escura de marca, para o cabeçalho */
-  --fc-ink: #0b0d0e;
-  --fc-ink-2: #15181a;
-  --fc-osso: #f4f0e8;
-  --fc-osso-70: rgb(244 240 232 / 0.7);
-  --fc-osso-45: rgb(244 240 232 / 0.45);
+  --fc-tinta: #0f1b2b;
+  --fc-tinta-2: rgb(15 27 43 / 0.84);
+  --fc-tinta-3: rgb(15 27 43 / 0.68);
+  --fc-tinta-4: rgb(15 27 43 / 0.64); /* texto pequeno de apoio: 4.6:1 sobre a cal */
 
-  /* acento "gol" — versão escurecida para leitura em fundo claro
-     (mesmo raciocínio já usado em /plan: branco sobre #ff3b14 fica
-     abaixo de AA para texto; #c62f0d passa). O tom vivo original fica
-     reservado para o cabeçalho escuro, onde o contraste é outro. */
-  --fc-gol: #c62f0d;
-  --fc-gol-forte: #ff3b14;
-  --fc-gol-suave: rgb(198 47 13 / 0.08);
-  --fc-gol-hover: #a8280b;
+  --fc-giz: #ffffff;
+  --fc-giz-2: rgb(255 255 255 / 0.78);
+  --fc-giz-3: rgb(255 255 255 / 0.62);
 
-  --fc-linha: rgb(20 23 26 / 0.14);
-  --fc-linha-forte: rgb(20 23 26 / 0.28);
+  /* ---- acento com função ----
+     Sobre fundo claro, o acento (link, botão primário, foco, rótulo) é a
+     própria quadra: azul escuro, 11:1 sobre a cal. Sobre fundo escuro, o
+     acento é a marcação amarela. O mesmo papel, duas tintas — a variável
+     "-forte" é sempre a versão para fundo escuro. */
+  --fc-acento: var(--fc-quadra);
+  --fc-acento-hover: #0b2745;
+  --fc-acento-suave: rgb(16 53 95 / 0.08);
+  --fc-acento-forte: var(--fc-amarelo);
 
+  /* réguas e divisórias (tinta quase transparente) */
+  --fc-linha: rgb(15 27 43 / 0.14);
+  --fc-linha-forte: rgb(15 27 43 / 0.28);
+
+  /* ---- semântica ----
+     perigo é vermelho fechado, não laranja, para não confundir com o
+     eixo técnico (laranja) nem com o acento de marca. */
   --fc-sucesso: #1f7a4d;
-  --fc-sucesso-suave: rgb(31 122 77 / 0.09);
-  --fc-alerta: #9a5b00;
-  --fc-alerta-suave: rgb(154 91 0 / 0.1);
-  --fc-perigo: #c62f0d;
-  --fc-perigo-suave: rgb(198 47 13 / 0.08);
-  --fc-neutro-suave: rgb(20 23 26 / 0.06);
+  --fc-sucesso-suave: rgb(31 122 77 / 0.1);
+  --fc-alerta: #8a5200;
+  --fc-alerta-suave: rgb(138 82 0 / 0.1);
+  --fc-perigo: #b42318;
+  --fc-perigo-suave: rgb(180 35 24 / 0.08);
+  --fc-neutro-suave: rgb(15 27 43 / 0.06);
 
-  /* tom de apoio — banda intermediária entre osso/papel e tinta, usada para
-     dar ritmo às seções (ver `.fc-home-secao--areia` mais abaixo) sem
-     recorrer sempre ao par claro/escuro. */
-  --fc-areia: #eadfc2;
+  /* banda intermediária entre cal e quadra — quadra desbotada — para dar
+     ritmo às seções da home sem recorrer sempre ao par claro/escuro. */
+  --fc-banda: #e4ebf2;
 
-  /* eixos da avaliação — cor com função, não só decoração: técnico, físico,
-     tático e comportamental precisam ser reconhecíveis à distância no
-     radar, no formulário de avaliação e nos blocos "como funciona". Técnico
-     reaproveita o "gol" (o pilar central da marca); os outros três ganham
-     tons novos da mesma família de peso/saturação — nunca um arco-íris.
-     Cada eixo expõe uma variante de texto (AA sobre papel/branco/areia) e
-     uma "-forte" para fundo escuro/preenchimento. */
-  --fc-eixo-tecnico: var(--fc-gol);
-  --fc-eixo-tecnico-forte: var(--fc-gol-forte);
-  --fc-eixo-tecnico-suave: var(--fc-gol-suave);
+  /* ---- eixos da avaliação: cor com função, não decoração ----
+     Técnico, físico, tático e comportamental precisam ser reconhecíveis à
+     distância no radar, no formulário e na ficha. Nenhum deles reusa a cor
+     de marca (azul) nem o amarelo: o conjunto é um conjunto, separado da
+     identidade. Quatro matizes afastados entre si (laranja 25°, verde
+     145°, roxo 270°, rosa 335°), cada um com variante para fundo claro
+     (AA sobre cal/branco) e "-forte" para fundo escuro/preenchimento. */
+  --fc-eixo-tecnico: #c2410c;
+  --fc-eixo-tecnico-forte: #fb923c;
+  --fc-eixo-tecnico-suave: rgb(194 65 12 / 0.1);
 
-  --fc-eixo-fisico: #0b6d63;
-  --fc-eixo-fisico-forte: #17b8a6;
-  --fc-eixo-fisico-suave: rgb(11 109 99 / 0.09);
+  --fc-eixo-fisico: #15803d;
+  --fc-eixo-fisico-forte: #4ade80;
+  --fc-eixo-fisico-suave: rgb(21 128 61 / 0.1);
 
-  --fc-eixo-tatico: #2a4a8f;
-  --fc-eixo-tatico-forte: #4d78e0;
-  --fc-eixo-tatico-suave: rgb(42 74 143 / 0.09);
+  --fc-eixo-tatico: #6d28d9;
+  --fc-eixo-tatico-forte: #b7a4fc;
+  --fc-eixo-tatico-suave: rgb(109 40 217 / 0.1);
 
-  --fc-eixo-comportamental: #7a3f7a;
-  --fc-eixo-comportamental-forte: #c25fc2;
-  --fc-eixo-comportamental-suave: rgb(122 63 122 / 0.09);
+  --fc-eixo-comportamental: #be185d;
+  --fc-eixo-comportamental-forte: #f68cc3;
+  --fc-eixo-comportamental-suave: rgb(190 24 93 / 0.1);
 
   /* espaçamento */
   --fc-esp-1: 0.25rem;
@@ -94,15 +112,17 @@
   --fc-esp-6: 2rem;
   --fc-esp-7: 3rem;
 
-  /* raio, sombra, alvo de toque */
-  --fc-raio: 10px;
-  --fc-raio-sm: 6px;
+  /* raio, sombra, alvo de toque. Raio pequeno de propósito: a marcação da
+     quadra tem canto vivo, e cartão com raio grande é a pinta de SaaS que
+     o brief pede para evitar. */
+  --fc-raio: 6px;
+  --fc-raio-sm: 4px;
   --fc-raio-pill: 999px;
-  --fc-sombra: 0 1px 2px rgb(20 23 26 / 0.05), 0 10px 28px -14px rgb(20 23 26 / 0.22);
+  --fc-sombra: 0 1px 2px rgb(15 27 43 / 0.06), 0 8px 24px -14px rgb(15 27 43 / 0.25);
   --fc-alvo: 2.75rem; /* ~44px — alvo de toque mínimo confortável */
 
   --fc-medida: 40rem;
-  --fc-margem: clamp(1.1rem, 5vw, 2.5rem);
+  --fc-margem: clamp(1rem, 5vw, 2.5rem);
 
   /* Altura do cabeçalho fixo (`.fc-cabecalho`, border-bottom incluído —
      `border-box` do preflight do Tailwind). Um único valor para toda
@@ -115,15 +135,7 @@
      mesma variável — um só número, um só lugar para ajustar. */
   --fc-cabecalho-altura: 3.75rem;
 
-  /* Fundo com uma textura muito discreta em vez de osso liso — só um
-     gradiente radial suave no canto do acento da marca, fixo à viewport
-     (não rola com a página) para não interferir com nenhum fundo de seção
-     por cima (`.fc-home-secao--areia/--tinta`, cartões, cabeçalho). Em
-     telas de formulário estreito (entrar, cadastro) é o que evita a
-     sensação de "página em branco esticada"; nas demais, é só uma camada a
-     mais de profundidade atrás do conteúdo. */
-  background: radial-gradient(120% 70% at 100% 0%, rgb(255 59 20 / 0.05), transparent 55%) fixed,
-    var(--fc-papel);
+  background: var(--fc-cal);
   color: var(--fc-tinta);
   font-family: var(--font-fc-corpo), ui-sans-serif, system-ui, sans-serif;
   min-height: 100svh;
@@ -131,12 +143,12 @@
 }
 
 .fc ::selection {
-  background: var(--fc-gol);
-  color: var(--fc-branco);
+  background: var(--fc-amarelo);
+  color: var(--fc-tinta);
 }
 
 .fc a {
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 .fc a:focus-visible,
@@ -144,31 +156,39 @@
 .fc input:focus-visible,
 .fc select:focus-visible,
 .fc [tabindex]:focus-visible {
-  outline: 2px solid var(--fc-gol);
+  outline: 2px solid var(--fc-acento);
   outline-offset: 2px;
   border-radius: var(--fc-raio-sm);
 }
 
 /* ---------- tipografia de apoio ---------- */
 
+/* Display: Saira Extra Condensed, peso 800, caixa alta — a fonte do número
+   nas costas da camisa e do placar do ginásio. Extra condensada de
+   propósito: título grande cabe em 375px sem quebrar palavra, e numeral
+   (contagem de vídeo, stats da ficha) lê como placar, não como planilha. */
 .fc-display {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.015em;
-  line-height: 0.95;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
   text-transform: uppercase;
 }
 
+/* Mantida por compatibilidade (termo de consentimento): não existe mais
+   serifa no sistema; bloco de leitura longa usa o corpo um pouco maior. */
 .fc-serif {
-  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
+  font-family: var(--font-fc-corpo), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Rótulo de seção: sentence case, peso médio, sem tracking. O "eyebrow" em
+   caixa alta espaçada saiu — era cromo de template, não informação. */
 .fc-etiqueta-rotulo {
   font-family: var(--font-fc-corpo), ui-sans-serif, sans-serif;
-  font-size: 0.6875rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 /* ---------- estrutura de página ---------- */
@@ -195,9 +215,9 @@
   height: var(--fc-cabecalho-altura);
   display: flex;
   align-items: center;
-  background: var(--fc-ink);
-  color: var(--fc-osso);
-  border-bottom: 3px solid var(--fc-gol-forte);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
+  border-bottom: 3px solid var(--fc-amarelo);
 }
 
 .fc-cabecalho-conteudo {
@@ -237,31 +257,51 @@
   scroll-margin-top: calc(var(--fc-cabecalho-altura) + var(--fc-esp-4));
 }
 
-.fc-marca {
+/* `.fc a.fc-marca` para ganhar de `.fc a` (classe + tag, mais acima): a
+   marca é um link, e sem isto o acento azul pintaria "Revela" na mesma
+   cor da quadra atrás. */
+.fc-marca,
+.fc a.fc-marca {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--fc-osso);
+  color: var(--fc-giz);
 }
 
 .fc-marca:focus-visible {
-  outline: 2px solid var(--fc-gol-forte);
+  outline: 2px solid var(--fc-acento-forte);
   outline-offset: 3px;
 }
 
+/* Wordmark: REVELA em display + o 10 como número de camisa — um retângulo
+   amarelo com o numeral na cor da quadra, igual ao número costurado nas
+   costas. O retângulo é o que torna a marca independente do fundo: sobre
+   a quadra escura do cabeçalho e sobre o branco de um PDF, o 10 é o mesmo
+   objeto. Nunca é só a cor que muda. */
 .fc-marca-nome {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28em;
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  font-size: clamp(1.15rem, 3vw, 1.5rem);
+  font-size: clamp(1.45rem, 3.4vw, 1.7rem);
   line-height: 1;
 }
 
 .fc-marca-nome em {
   font-style: normal;
-  color: var(--fc-gol-forte);
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5em;
+  height: 1.18em;
+  padding: 0.06em 0.2em 0;
+  border-radius: 0.1em;
+  background: var(--fc-amarelo);
+  color: var(--fc-quadra);
+  letter-spacing: 0;
 }
 
 .fc-cabecalho-nav {
@@ -272,7 +312,7 @@
 
 .fc-cabecalho-nav a,
 .fc-cabecalho-nav button {
-  color: var(--fc-osso-70);
+  color: var(--fc-giz-2);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
@@ -281,7 +321,7 @@
 
 .fc-cabecalho-nav a:hover,
 .fc-cabecalho-nav button:hover {
-  color: var(--fc-osso);
+  color: var(--fc-giz);
 }
 
 /* Botão "Sair": mesma pinta dos links da nav, mas continua um <button>
@@ -368,27 +408,27 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
   margin-bottom: var(--fc-esp-2);
 }
 
 .fc-rotulo-secao .fc-etiqueta-rotulo {
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 .fc-titulo {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 0.98;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
   text-transform: uppercase;
-  font-size: clamp(1.9rem, 5.5vw, 2.75rem);
+  font-size: clamp(2.25rem, 6.5vw, 3.25rem);
   color: var(--fc-tinta);
 }
 
 @media (min-width: 80rem) {
   .fc-titulo {
-    font-size: 3.25rem;
+    font-size: 3.75rem;
   }
 }
 
@@ -396,7 +436,7 @@
   margin-top: var(--fc-esp-2);
   font-size: 1.0625rem;
   line-height: 1.55;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   max-width: 42rem;
 }
 
@@ -480,8 +520,22 @@
   background: var(--fc-eixo-comportamental);
 }
 
-/* A opção marcada dentro de cada eixo usa a cor do eixo em vez do "gol"
-   uniforme — reforça a mesma cor do início ao fim do formulário. */
+/* A opção marcada dentro de cada eixo usa a cor do eixo em vez do acento
+   uniforme — reforça a mesma cor do início ao fim do formulário. Técnico
+   também: desde que o acento virou azul, nenhum eixo herda a cor de marca. */
+.fc-fieldset[data-eixo="tecnico"] .fc-escala__opcao:has(input:checked) {
+  border-color: var(--fc-eixo-tecnico);
+  background: var(--fc-eixo-tecnico-suave);
+}
+
+.fc-fieldset[data-eixo="tecnico"] .fc-escala__opcao:has(input:checked) .fc-escala__numero {
+  background: var(--fc-eixo-tecnico);
+}
+
+.fc-fieldset[data-eixo="tecnico"] input[type="radio"] {
+  accent-color: var(--fc-eixo-tecnico);
+}
+
 .fc-fieldset[data-eixo="fisico"] .fc-escala__opcao:has(input:checked) {
   border-color: var(--fc-eixo-fisico);
   background: var(--fc-eixo-fisico-suave);
@@ -534,13 +588,13 @@
 
 .fc-campo__opcional {
   font-weight: 400;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-campo__ajuda {
   font-size: 0.8125rem;
   line-height: 1.45;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 /* Quem assina o laudo, na tela de avaliar. Não é campo de formulário:
@@ -552,7 +606,7 @@
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--fc-linha);
   border-radius: var(--fc-raio-sm);
-  background: var(--fc-papel-2);
+  background: var(--fc-cal-2);
   font-size: 0.9375rem;
   color: var(--fc-tinta);
 }
@@ -560,7 +614,7 @@
 .fc-assinante__credencial {
   font-size: 0.8125rem;
   line-height: 1.45;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 .fc-campo__erro {
@@ -604,16 +658,16 @@
 }
 
 .fc-input::placeholder {
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-input:hover {
-  border-color: var(--fc-tinta-40);
+  border-color: var(--fc-tinta-4);
 }
 
 .fc-input:focus {
-  border-color: var(--fc-gol);
-  box-shadow: 0 0 0 3px var(--fc-gol-suave);
+  border-color: var(--fc-acento);
+  box-shadow: 0 0 0 3px var(--fc-acento-suave);
   outline: none;
 }
 
@@ -627,8 +681,8 @@
 }
 
 .fc-input:disabled {
-  background: var(--fc-papel-2);
-  color: var(--fc-tinta-40);
+  background: var(--fc-cal-2);
+  color: var(--fc-tinta-4);
   cursor: not-allowed;
 }
 
@@ -655,8 +709,8 @@ select.fc-input.fc-select {
   top: 50%;
   width: 0.6rem;
   height: 0.6rem;
-  border-right: 2px solid var(--fc-tinta-60);
-  border-bottom: 2px solid var(--fc-tinta-60);
+  border-right: 2px solid var(--fc-tinta-3);
+  border-bottom: 2px solid var(--fc-tinta-3);
   transform: translateY(-70%) rotate(45deg);
   pointer-events: none;
 }
@@ -669,7 +723,7 @@ select.fc-input.fc-select {
   gap: 0.65rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-checkbox-linha input[type="checkbox"] {
@@ -677,7 +731,7 @@ select.fc-input.fc-select {
   width: 1.25rem;
   height: 1.25rem;
   margin-top: 0.1rem;
-  accent-color: var(--fc-gol);
+  accent-color: var(--fc-acento);
 }
 
 /* ---------- envio de arquivo ---------- */
@@ -692,7 +746,7 @@ select.fc-input.fc-select {
 }
 
 .fc-arquivo:has(input:focus-visible) .fc-arquivo__botao {
-  outline: 2px solid var(--fc-gol);
+  outline: 2px solid var(--fc-acento);
   outline-offset: 2px;
 }
 
@@ -717,20 +771,20 @@ select.fc-input.fc-select {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--fc-tinta);
-  background: var(--fc-papel-2);
+  background: var(--fc-cal-2);
   border: 1.5px solid var(--fc-linha-forte);
   border-radius: var(--fc-raio-sm);
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .fc-arquivo:hover .fc-arquivo__botao {
-  border-color: var(--fc-tinta-40);
-  background: var(--fc-papel-3);
+  border-color: var(--fc-tinta-4);
+  background: var(--fc-cal-3);
 }
 
 .fc-arquivo__nome {
   font-size: 0.875rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   overflow-wrap: anywhere;
 }
 
@@ -774,15 +828,15 @@ select.fc-input.fc-select {
    resolve isso para as três variantes. */
 .fc-botao--primario,
 a.fc-botao--primario {
-  background: var(--fc-gol);
+  background: var(--fc-acento);
   color: var(--fc-branco);
-  border-color: var(--fc-gol);
+  border-color: var(--fc-acento);
 }
 
 .fc-botao--primario:hover,
 a.fc-botao--primario:hover {
-  background: var(--fc-gol-hover);
-  border-color: var(--fc-gol-hover);
+  background: var(--fc-acento-hover);
+  border-color: var(--fc-acento-hover);
 }
 
 .fc-botao--secundario,
@@ -891,7 +945,7 @@ a.fc-botao--perigo:hover {
 
 .fc-etiqueta--neutro {
   background: var(--fc-neutro-suave);
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 .fc-etiqueta--alerta {
@@ -936,7 +990,7 @@ a.fc-botao--perigo:hover {
 
 .fc-aviso--erro {
   background: var(--fc-perigo-suave);
-  border-color: rgb(198 47 13 / 0.25);
+  border-color: rgb(180 35 24 / 0.25);
   color: var(--fc-perigo);
 }
 
@@ -958,7 +1012,7 @@ a.fc-botao--perigo:hover {
 
 .fc-aviso--aviso {
   background: var(--fc-alerta-suave);
-  border-color: rgb(154 91 0 / 0.3);
+  border-color: rgb(138 82 0 / 0.3);
   color: var(--fc-alerta);
 }
 
@@ -1009,16 +1063,16 @@ a.fc-botao--perigo:hover {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
-  color: var(--fc-branco);
+  background: var(--fc-quadra);
+  color: var(--fc-amarelo);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: 0.9375rem;
+  font-size: 1.05rem;
 }
 
 .fc-item-atleta__meta {
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 .fc-item-atleta__acoes {
@@ -1031,7 +1085,7 @@ a.fc-botao--perigo:hover {
 .fc-estado-vazio {
   text-align: center;
   padding: var(--fc-esp-7) var(--fc-esp-4);
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 /* ---------- termo (bloco de leitura dentro do app) ---------- */
@@ -1049,13 +1103,12 @@ a.fc-botao--perigo:hover {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--fc-esp-5);
-  background: var(--fc-papel-2);
+  background: var(--fc-cal-2);
   border: 1px solid var(--fc-linha);
   border-radius: var(--fc-raio);
-  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.65;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
   white-space: pre-wrap;
 }
 
@@ -1068,7 +1121,7 @@ a.fc-botao--perigo:hover {
 /* ---------- cabeçalho público (home, ficha do atleta) ---------- */
 
 .fc-cabecalho-nav__entrar {
-  color: var(--fc-osso);
+  color: var(--fc-giz);
 }
 
 /* Itens secundários da nav pública (visitante) — Escolinhas, Como funciona,
@@ -1097,7 +1150,7 @@ a.fc-botao--perigo:hover {
   min-width: var(--fc-alvo);
   padding: var(--fc-esp-2) var(--fc-esp-3);
   margin: 0;
-  color: var(--fc-osso-70);
+  color: var(--fc-giz-2);
   font-size: 0.875rem;
   font-weight: 600;
   list-style: none;
@@ -1114,11 +1167,11 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-cabecalho-menu__botao:hover {
-  color: var(--fc-osso);
+  color: var(--fc-giz);
 }
 
 .fc-cabecalho-menu__botao:focus-visible {
-  outline: 2px solid var(--fc-gol-forte);
+  outline: 2px solid var(--fc-acento-forte);
   outline-offset: 2px;
   border-radius: var(--fc-raio-sm);
 }
@@ -1145,8 +1198,8 @@ a.fc-botao--perigo:hover {
   margin-top: var(--fc-esp-2);
   min-width: 12rem;
   padding: var(--fc-esp-2);
-  background: var(--fc-ink-2);
-  border: 1px solid rgb(244 240 232 / 0.16);
+  background: var(--fc-quadra-2);
+  border: 1px solid rgb(255 255 255 / 0.16);
   border-radius: var(--fc-raio);
   box-shadow: var(--fc-sombra);
   z-index: 20;
@@ -1162,8 +1215,8 @@ a.fc-botao--perigo:hover {
 
 .fc-cabecalho-menu__lista a:hover,
 .fc-cabecalho-menu__lista a:focus-visible {
-  background: rgb(244 240 232 / 0.08);
-  color: var(--fc-osso);
+  background: rgb(255 255 255 / 0.08);
+  color: var(--fc-giz);
 }
 
 @media (min-width: 42.01rem) {
@@ -1181,24 +1234,26 @@ a.fc-botao--perigo:hover {
 /* ---------- ficha pública (perfil do atleta) ---------- */
 
 .fc-ficha-hero {
-  background: var(--fc-ink);
-  color: var(--fc-osso);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
   border-radius: var(--fc-raio);
   padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
-  border-bottom: 3px solid var(--fc-gol-forte);
+  border-bottom: 3px solid var(--fc-acento-forte);
 }
 
+/* Usado na aba de avaliações da ficha, sobre fundo claro: acento azul,
+   nunca o amarelo (não passa AA sobre branco). */
 .fc-ficha-eyebrow {
-  color: var(--fc-gol-forte);
+  color: var(--fc-acento);
 }
 
 .fc-ficha-nome {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.92;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
   text-transform: uppercase;
-  font-size: clamp(2.75rem, 10vw, 5.5rem);
+  font-size: clamp(3rem, 11vw, 6rem);
   margin-top: var(--fc-esp-3);
   overflow-wrap: anywhere;
 }
@@ -1220,9 +1275,9 @@ a.fc-botao--perigo:hover {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   border-radius: var(--fc-raio-pill);
-  background: rgb(244 240 232 / 0.12);
-  color: var(--fc-osso-70);
-  border: 1px solid rgb(244 240 232 / 0.18);
+  background: rgb(255 255 255 / 0.12);
+  color: var(--fc-giz-2);
+  border: 1px solid rgb(255 255 255 / 0.18);
 }
 
 .fc-ficha-grid {
@@ -1237,7 +1292,7 @@ a.fc-botao--perigo:hover {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-ficha-item dd {
@@ -1251,7 +1306,7 @@ a.fc-botao--perigo:hover {
   margin-top: var(--fc-esp-7);
   padding-top: var(--fc-esp-5);
   border-top: 1px solid var(--fc-linha);
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   font-size: 0.8125rem;
   line-height: 1.6;
   max-width: var(--fc-medida);
@@ -1259,14 +1314,26 @@ a.fc-botao--perigo:hover {
 
 /* ---------- home (landing pública) ---------- */
 
+/* O hero é a quadra: fundo azul emendado no cabeçalho (mesma cor, a
+   marcação amarela de 3px do cabeçalho vira a linha lateral), a marcação
+   desenhada grande por trás (`<Quadra />`), título em display, busca e
+   categorias por cima. É o único lugar onde a identidade grita; o resto
+   da página é cal e cartão. Largura total — o `.fc-container` fica no
+   conteúdo de dentro. */
 .fc-home-hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(3rem, 9vw, 6rem) clamp(2.5rem, 7vw, 4rem);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
+  padding-block: clamp(2.75rem, 9vw, 6rem) clamp(2.5rem, 8vw, 5rem);
+}
+
+.fc-corpo--home {
+  padding-block-start: 0;
 }
 
 /* Grafismo de quadra (`<Quadra />`, `ui/Quadra.tsx`) atrás do conteúdo do
-   hero. Cor recalculada para o fundo claro deste hero (`--fc-papel`, ver
+   hero. Cor recalculada para o fundo claro deste hero (`--fc-cal`, ver
    topo do arquivo): o original tinha traço osso a 14% sobre tinta escura;
    aqui é tinta a 8% sobre osso/papel claro — mesma família de "linha quase
    invisível" de `--fc-linha` (tinta a 14%, usada em divisórias), só mais
@@ -1277,7 +1344,32 @@ a.fc-botao--perigo:hover {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  color: rgb(11 13 14 / 0.08);
+  color: var(--fc-amarelo-risco);
+}
+
+/* No hero, a quadra entra pelo canto: círculo central e área do lado
+   esquerdo em escala grande, cortados pela borda — ninguém precisa ver a
+   quadra inteira para reconhecer a marcação. */
+.fc-home-hero .fc-quadra {
+  inset: -30% -20% -20% -8%;
+  width: auto;
+  height: auto;
+}
+
+/* No celular o hero é alto e estreito: a quadra fica mais larga que a
+   tela para o círculo central e a área cairem atrás do título, em vez de
+   sobrar só um canto de linha lateral. */
+@media (max-width: 48rem) {
+  .fc-home-hero .fc-quadra {
+    inset: -10% -150% -10% -45%;
+  }
+}
+
+/* Versão recortada para fundos pequenos (capa do cartão sem foto,
+   cabeçalho da ficha): só um pedaço da marcação, ainda mais ampliado. */
+.fc-quadra--recorte {
+  inset: -60% -70% -60% -10%;
+  color: rgb(255 210 63 / 0.4);
 }
 
 /* Conteúdo do hero por cima do grafismo — sem isto ele nasceria atrás do
@@ -1290,38 +1382,35 @@ a.fc-botao--perigo:hover {
   z-index: 1;
 }
 
-.fc-home-eyebrow {
-  color: var(--fc-gol);
-}
-
 .fc-home-h1 {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.015em;
-  line-height: 0.98;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
   text-transform: uppercase;
-  font-size: clamp(2.25rem, 6.5vw, 4rem);
-  max-width: 46rem;
-  margin-top: var(--fc-esp-3);
-  color: var(--fc-tinta);
+  font-size: clamp(3.25rem, 13vw, 7rem);
+  max-width: 11ch;
+  color: var(--fc-giz);
+  text-wrap: balance;
 }
 
-/* Mais contraste de escala em telas largas — o teto de 4rem já era
-   alcançado bem antes de 1280px (a fórmula é em vw), então o título parava
-   de crescer justo onde sobrava mais espaço para ele ser grande. */
-@media (min-width: 80rem) {
-  .fc-home-h1 {
-    font-size: 4.75rem;
-    max-width: 54rem;
-  }
+.fc-home-h1 em {
+  font-style: normal;
+  color: var(--fc-amarelo);
 }
 
 .fc-home-lead {
-  margin-top: var(--fc-esp-4);
-  font-size: 1.125rem;
-  line-height: 1.6;
-  color: var(--fc-tinta-60);
-  max-width: 38rem;
+  margin-top: var(--fc-esp-5);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--fc-giz-2);
+  max-width: 34rem;
+}
+
+@media (min-width: 48rem) {
+  .fc-home-lead {
+    font-size: 1.125rem;
+  }
 }
 
 .fc-home-acoes {
@@ -1344,40 +1433,48 @@ a.fc-botao--perigo:hover {
    alternando com o osso padrão em vez de precisar de linha divisória.
    Reservado para 2-3 seções por página no máximo — o objetivo é dar
    respiração, não pintar tudo. */
-.fc-home-secao--areia {
-  background: var(--fc-areia);
+.fc-home-secao--banda {
+  background: var(--fc-banda);
   border-top: none;
-  /* Ajuste fino de contraste: tons a 60%/opacidade pensados para o osso
-     (mais claro) caem um pouco abaixo de AA sobre a areia (mais escura).
-     Escopar as variáveis aqui em vez de mudar as classes de texto mantém
-     o mesmo componente (`.fc-subtitulo`, `.fc-rotulo-secao` etc.) legível
-     nos dois fundos sem duplicar CSS. */
-  --fc-tinta-60: rgb(20 23 26 / 0.65);
-  --fc-gol: var(--fc-gol-hover);
+  /* Ajuste fino de contraste: tons em opacidade pensados para a cal caem
+     um pouco abaixo de AA sobre a banda (mais escura). Escopar as
+     variáveis aqui mantém o mesmo componente legível nos dois fundos. */
+  --fc-tinta-3: rgb(15 27 43 / 0.72);
+  --fc-tinta-4: rgb(15 27 43 / 0.68);
   --fc-sucesso: #175f3d;
-  --fc-alerta: #7a4800;
+  --fc-alerta: #6f4200;
+  --fc-eixo-tecnico: #a63a0b;
+  --fc-eixo-fisico: #116b33;
 }
 
-.fc-home-secao--tinta {
-  background: var(--fc-ink);
+.fc-home-secao--quadra {
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
   border-top: none;
 }
 
-.fc-home-secao--tinta .fc-titulo,
-.fc-home-secao--tinta .fc-home-passo h3 {
-  color: var(--fc-osso);
+.fc-home-secao--quadra .fc-titulo,
+.fc-home-secao--quadra .fc-home-passo h3 {
+  color: var(--fc-giz);
 }
 
-.fc-home-secao--tinta .fc-subtitulo,
-.fc-home-secao--tinta .fc-home-passo p,
-.fc-home-secao--tinta .fc-home-eixo p {
-  color: var(--fc-osso-70);
+.fc-home-secao--quadra .fc-subtitulo,
+.fc-home-secao--quadra .fc-home-passo p,
+.fc-home-secao--quadra .fc-home-eixo p {
+  color: var(--fc-giz-2);
 }
 
-.fc-home-secao--tinta .fc-rotulo-secao,
-.fc-home-secao--tinta .fc-rotulo-secao .fc-etiqueta-rotulo,
-.fc-home-secao--tinta .fc-home-passo__numero {
-  color: var(--fc-gol-forte);
+.fc-home-secao--quadra .fc-rotulo-secao,
+.fc-home-secao--quadra .fc-rotulo-secao .fc-etiqueta-rotulo,
+.fc-home-secao--quadra .fc-home-passo__numero {
+  color: var(--fc-acento-forte);
+}
+
+.fc-home-secao--quadra a:focus-visible,
+.fc-home-hero a:focus-visible,
+.fc-home-hero button:focus-visible,
+.fc-home-hero input:focus-visible {
+  outline-color: var(--fc-amarelo);
 }
 
 .fc-home-secao__cabecalho {
@@ -1395,7 +1492,7 @@ a.fc-botao--perigo:hover {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
   font-size: 2.5rem;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
   line-height: 1;
 }
 
@@ -1410,7 +1507,7 @@ a.fc-botao--perigo:hover {
   margin-top: 0.4rem;
   font-size: 0.9375rem;
   line-height: 1.55;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 .fc-home-eixos {
@@ -1430,13 +1527,13 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 .fc-home-eixo p {
   margin-top: 0.35rem;
   font-size: 0.875rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   line-height: 1.5;
 }
 
@@ -1444,6 +1541,10 @@ a.fc-botao--perigo:hover {
    comportamental) ganha o mesmo tom em qualquer lugar que apareça — aqui,
    no radar da ficha pública e no formulário de avaliação. As variáveis
    "-forte" entram aqui porque este bloco vive dentro da seção `--tinta`. */
+.fc-home-eixo[data-eixo="tecnico"] .fc-home-eixo__rotulo {
+  color: var(--fc-eixo-tecnico-forte);
+}
+
 .fc-home-eixo[data-eixo="fisico"] {
   border-left-color: var(--fc-eixo-fisico-forte);
 }
@@ -1488,8 +1589,8 @@ a.fc-botao--perigo:hover {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 999px;
-  background: var(--fc-ink);
-  color: var(--fc-osso);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
   font-size: 1.25rem;
@@ -1518,20 +1619,20 @@ a.fc-botao--perigo:hover {
   display: grid;
   gap: 0.55rem;
   font-size: 0.9375rem;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-home-privacidade__nota {
   margin-top: var(--fc-esp-5);
   font-size: 0.8125rem;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   line-height: 1.55;
   max-width: var(--fc-medida);
 }
 
 .fc-subtitulo--livre {
   max-width: none;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-titulo--card {
@@ -1572,6 +1673,83 @@ a.fc-botao--perigo:hover {
   flex: 1 1 14rem;
 }
 
+/* Sobre a quadra: input branco sem borda, botão na marcação amarela com o
+   numeral/texto na cor da quadra — o par de maior contraste da paleta. */
+.fc-home-hero .fc-input {
+  border-color: transparent;
+}
+
+.fc-home-hero .fc-input:focus {
+  border-color: var(--fc-amarelo);
+  box-shadow: 0 0 0 3px rgb(255 210 63 / 0.35);
+}
+
+.fc-home-hero .fc-botao--primario {
+  background: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+  color: var(--fc-quadra);
+}
+
+.fc-home-hero .fc-botao--primario:hover {
+  background: #ffdc66;
+  border-color: #ffdc66;
+}
+
+.fc-home-hero .fc-pill {
+  background: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.3);
+  color: var(--fc-giz);
+}
+
+.fc-home-hero .fc-pill:hover {
+  border-color: var(--fc-amarelo);
+  background: rgb(255 210 63 / 0.12);
+}
+
+.fc-home-hero .fc-pill--forte {
+  color: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+}
+
+/* Placar: a faixa de números logo abaixo do hero é a marcação amarela
+   atravessando a página — uma linha só, numerais em display na cor da
+   quadra, como o placar do ginásio. Não é "número grande com rótulo em
+   gradiente": é um placar. */
+.fc-home-placar {
+  background: var(--fc-amarelo);
+  color: var(--fc-quadra);
+  border-top: none;
+  padding-block: var(--fc-esp-4);
+}
+
+.fc-home-placar__lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--fc-esp-3) var(--fc-esp-6);
+  margin: 0;
+}
+
+.fc-home-placar__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.fc-home-placar__valor {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.fc-home-placar__rotulo {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 .fc-vitrine-pills {
   margin-top: var(--fc-esp-4);
   display: flex;
@@ -1586,7 +1764,7 @@ a.fc-botao--perigo:hover {
   padding: 0.4rem 0.85rem;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
   background: var(--fc-branco);
   border: 1.5px solid var(--fc-linha-forte);
   border-radius: var(--fc-raio-pill);
@@ -1595,58 +1773,14 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-pill:hover {
-  border-color: var(--fc-gol);
-  background: var(--fc-gol-suave);
+  border-color: var(--fc-acento);
+  background: var(--fc-acento-suave);
 }
 
 .fc-pill--forte {
-  color: var(--fc-gol);
-  border-color: var(--fc-gol);
+  color: var(--fc-acento);
+  border-color: var(--fc-acento);
   font-weight: 700;
-}
-
-.fc-vitrine-numeros {
-  margin-top: var(--fc-esp-7);
-  display: grid;
-  gap: var(--fc-esp-5);
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  padding-block: var(--fc-esp-6);
-  border-block: 1px solid var(--fc-linha);
-}
-
-/* Dentro da banda `--areia` (ver home), a seção já dá o respiro vertical e
-   a cor de fundo já separa do resto — a régua/margem duplicada por cima
-   ficaria redundante. */
-.fc-home-secao--numeros.fc-home-secao--areia {
-  padding-block: clamp(2.25rem, 6vw, 3.5rem);
-}
-
-.fc-home-secao--numeros .fc-vitrine-numeros {
-  margin-top: 0;
-  padding-block: 0;
-  border-block: none;
-}
-
-.fc-home-secao--numeros .fc-vitrine-numero__valor {
-  font-size: clamp(2.5rem, 6vw, 3.75rem);
-}
-
-.fc-vitrine-numero {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.fc-vitrine-numero__valor {
-  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
-  font-weight: 800;
-  font-size: clamp(2rem, 5vw, 2.75rem);
-  line-height: 1;
-  color: var(--fc-gol);
-}
-
-.fc-vitrine-numero__rotulo {
-  font-size: 0.875rem;
-  color: var(--fc-tinta-60);
 }
 
 .fc-vitrine-secao-cabecalho {
@@ -1662,10 +1796,21 @@ a.fc-botao--perigo:hover {
   max-width: 34rem;
 }
 
+/* Duas colunas já no celular: é um cardápio, e página de álbum tem mais de
+   uma figurinha por linha. O piso de 9.75rem dá 2 cartões em 375px com a
+   margem lateral de 1rem; cresce por degraus nas larguras maiores. */
 .fc-cartoes-atletas {
   display: grid;
-  gap: var(--fc-esp-4);
-  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: var(--fc-esp-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.75rem), 1fr));
+}
+
+@media (min-width: 48rem) {
+  .fc-cartoes-atletas,
+  .fc-grade-cartoes {
+    gap: var(--fc-esp-4);
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  }
 }
 
 /* Em telas largas o `.fc-container` cresceu (ver acima) — sem isto, o
@@ -1676,34 +1821,39 @@ a.fc-botao--perigo:hover {
   .fc-cartoes-atletas,
   .fc-grade-cartoes,
   .fc-cartoes-escolinhas {
-    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
   }
 }
 
-/* Cartão de atleta — seis faixas fixas (mídia, apelido, categoria/posição,
-   físico/clube, selos, metadado de avaliação), sempre na mesma ordem e
-   sempre com a mesma altura por faixa, para a faixa N de um cartão alinhar
-   com a faixa N do vizinho em qualquer linha da grade — mesmo com atleta
-   sem mídia, sem escolinha ou sem avaliação publicada. Ver CartaoAtleta.tsx
-   para a estrutura completa e o brief desta rodada para o diagnóstico do
-   problema anterior (chip flutuante, altura esticada pelo vizinho). */
+/* Cartão de atleta — a figurinha do álbum. Seis faixas fixas (capa,
+   apelido, categoria e posição, físico, origem, selos e contagem de mídia),
+   sempre na mesma ordem e com a mesma altura por faixa, para a faixa N de um
+   cartão alinhar com a faixa N do vizinho — tenha ou não foto, escolinha
+   ou vídeo. Ver CartaoAtleta.tsx. */
 .fc-cartao-atleta {
   display: grid;
   align-content: start;
   height: 100%;
   padding: 0;
   overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Faixa 1 — mídia: proporção fixa. Sem foto de capa, cai para o grafismo
-   de marca (gradiente "gol" + inicial do apelido) — mesmo raciocínio do
-   avatar da ficha (`.fc-perfil-avatar`) e do círculo de destaque
-   (`.fc-destaque__sem-midia`), nunca um buraco. */
+.fc-atletas-item-link:hover .fc-cartao-atleta,
+.fc-atletas-item-link:focus-visible .fc-cartao-atleta {
+  border-color: var(--fc-quadra);
+  box-shadow: 0 0 0 1px var(--fc-quadra), var(--fc-sombra);
+}
+
+/* Faixa 1 — capa em retrato (4:5), como figurinha: vídeo de celular e foto
+   de criança jogando são mais altos que largos. Sem foto, um pedaço da
+   quadra com a inicial do apelido em amarelo — nunca um buraco. */
 .fc-cartao-atleta__midia {
-  aspect-ratio: 4 / 3;
+  position: relative;
+  aspect-ratio: 4 / 5;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  background: var(--fc-quadra);
   overflow: hidden;
 }
 
@@ -1715,89 +1865,136 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-cartao-atleta__midia-inicial {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: 2.75rem;
+  font-size: clamp(3rem, 14vw, 4.5rem);
   line-height: 1;
-  color: var(--fc-osso);
+  color: var(--fc-amarelo);
 }
 
-/* Faixas 2-6 — o padding que o cartão inteiro tinha antes de a mídia virar
-   faixa própria: a foto sangra até a borda, o texto continua recuado. */
+/* Contagem de vídeo sobre a capa: é a informação que o pivô pôs na frente,
+   então ela vai onde o olho chega primeiro. Só aparece quando há vídeo. */
+.fc-cartao-atleta__videos {
+  position: absolute;
+  z-index: 1;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.4rem;
+  border-radius: var(--fc-raio-sm);
+  background: rgb(16 53 95 / 0.88);
+  color: var(--fc-giz);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.fc-cartao-atleta__videos::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0.3rem 0 0.3rem 0.5rem;
+  border-color: transparent transparent transparent var(--fc-amarelo);
+}
+
+/* Faixas 2-6 — a foto sangra até a borda, o texto continua recuado. */
 .fc-cartao-atleta__corpo {
   display: grid;
   align-content: start;
-  gap: 0.35rem;
-  padding: clamp(1rem, 3vw, 1.35rem);
+  gap: 0.3rem;
+  padding: 0.75rem 0.8rem 0.9rem;
 }
 
-/* Faixa 2 — apelido: sempre uma linha, corte por reticências. Nunca mais
-   divide linha com o selo de escolinha (faixa 5) — essa falta de faixa
-   própria era a causa do chip "flutuar" em lugares diferentes cartão a
-   cartão. */
+/* Faixa 2 — apelido em display, como o nome nas costas da camisa: uma
+   linha, corte por reticências. */
 .fc-cartao-atleta__nome {
   display: block;
-  font-size: 1.0625rem;
-  font-weight: 700;
-  line-height: 1.25;
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.25rem, 4.2vw, 1.5rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
   color: var(--fc-tinta);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Faixa 3 — categoria e posição, uma linha. */
+/* Faixa 3 — categoria como pastilha (a quadra em miniatura) e posição em
+   texto, uma linha. */
 .fc-cartao-atleta__categoria {
-  display: block;
-  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fc-tinta-2);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.fc-cartao-atleta__categoria b {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  padding: 0.1rem 0.4rem 0;
+  border-radius: 3px;
+  background: var(--fc-quadra);
+  color: var(--fc-amarelo);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 700;
+  font-size: 0.875rem;
   letter-spacing: 0.04em;
+  line-height: 1.2;
   text-transform: uppercase;
-  color: var(--fc-gol);
+}
+
+/* Faixa 4 — físico (pé, altura, peso) e faixa 5 — origem (escolinha ou
+   clube, estado): uma linha cada, altura reservada mesmo sem dado, para a
+   faixa de selos cair na mesma altura em todo cartão da grade. */
+.fc-cartao-atleta__fisico,
+.fc-cartao-atleta__origem {
+  display: block;
+  min-height: 1.15rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--fc-tinta-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Faixa 4 — físico, clube ou escolinha: até duas linhas, corte, altura
-   reservada mesmo quando o texto é mais curto ou o dado não existe. É essa
-   reserva que faz a faixa 5 (selos) cair na mesma altura em todo cartão da
-   grade, com ou sem físico/escolinha cadastrados. */
-.fc-cartao-atleta__fisico {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  min-height: 2.2rem;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: var(--fc-tinta-60);
-}
-
-/* Faixa 5 — selos: linha própria, sempre presente (mesmo vazia, para
-   reservar a altura), alinhada à esquerda. Escolinha credenciada e
-   avaliação publicada vivem aqui, nunca ao lado do apelido. */
+/* Faixa 6 — selos: linha própria, sempre presente (mesmo vazia). */
 .fc-cartao-atleta__selos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
   min-height: 1.5rem;
+  margin-top: 0.15rem;
 }
 
 .fc-cartao-atleta__selos .fc-etiqueta {
   font-size: 0.6875rem;
 }
 
-/* Faixa 6 — metadado da avaliação: quantas, quando, quem assinou. Sem
-   avaliação publicada, texto neutro no mesmo espaço — nunca vazio, para o
-   cartão não esticar o vizinho na grade. */
+/* Faixa 7 — contagem de mídia (ou o resumo da avaliação, onde ela é o
+   assunto da página). Nunca vazia, para não esticar o vizinho. */
 .fc-cartao-atleta__avaliacao-meta {
   display: block;
   min-height: 2.4rem;
   font-size: 0.75rem;
   line-height: 1.5;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 /* Grade densa reaproveitada pelas listagens que hoje usam `.fc-lista`
@@ -1806,7 +2003,8 @@ a.fc-botao--perigo:hover {
    `minmax` de `.fc-cartoes-atletas`, para os cartões não ficarem espremidos
    nem esticados de mais num grid de 2-3 colunas. */
 .fc-grade-cartoes {
-  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.75rem), 1fr));
+  gap: var(--fc-esp-3);
 }
 
 .fc-cartoes-escolinhas {
@@ -1831,10 +2029,11 @@ a.fc-botao--perigo:hover {
    sempre o grafismo de marca com a inicial do nome — mesmo raciocínio do
    avatar do atleta sem foto de capa. */
 .fc-cartao-escolinha__midia {
+  position: relative;
   aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  background: var(--fc-quadra);
   overflow: hidden;
 }
 
@@ -1846,11 +2045,13 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-cartao-escolinha__midia-inicial {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: 2.75rem;
+  font-size: 3.25rem;
   line-height: 1;
-  color: var(--fc-osso);
+  color: var(--fc-amarelo);
 }
 
 .fc-cartao-escolinha__corpo {
@@ -1860,23 +2061,25 @@ a.fc-botao--perigo:hover {
   padding: clamp(1rem, 3vw, 1.35rem);
 }
 
-/* Faixa 2 — nome: uma linha, corte por reticências. */
+/* Faixa 2 — nome: até duas linhas (nome de escolinha é longo — "Academia
+   Futsal Cariri", "Escolinha Esportiva Maranguape"), altura reservada. */
 .fc-cartao-escolinha__nome {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-height: 2.6rem;
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.3;
   color: var(--fc-tinta);
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* Faixa 3 — cidade e UF: uma linha, corte por reticências. */
 .fc-cartao-escolinha__cidade {
   display: block;
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1886,7 +2089,7 @@ a.fc-botao--perigo:hover {
 .fc-cartao-escolinha__meta {
   display: block;
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 /* Faixa 5 — selos: linha própria, sempre presente (mesmo vazia, para
@@ -1920,10 +2123,11 @@ a.fc-botao--perigo:hover {
 /* Faixa 1 — identidade: nenhuma coluna de mídia em `profissionais`, então
    é sempre o grafismo de marca com a inicial do nome. */
 .fc-cartao-profissional__midia {
+  position: relative;
   aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
+  background: var(--fc-quadra);
   overflow: hidden;
 }
 
@@ -1935,11 +2139,13 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-cartao-profissional__midia-inicial {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: 2.75rem;
+  font-size: 3.25rem;
   line-height: 1;
-  color: var(--fc-osso);
+  color: var(--fc-amarelo);
 }
 
 .fc-cartao-profissional__corpo {
@@ -1974,12 +2180,12 @@ a.fc-botao--perigo:hover {
   min-height: 2.1rem;
   font-size: 0.8125rem;
   line-height: 1.4;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
   font-weight: 600;
 }
 
 .fc-cartao-profissional__credencial[data-vazio] {
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   font-weight: 500;
 }
 
@@ -1987,21 +2193,21 @@ a.fc-botao--perigo:hover {
 .fc-cartao-profissional__cidade {
   display: block;
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .fc-cartao-profissional__cidade[data-vazio] {
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 /* Faixa 5 — números: quantos laudos assinados e desde quando. */
 .fc-cartao-profissional__meta {
   display: block;
   font-size: 0.8125rem;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   line-height: 1.4;
 }
 
@@ -2079,8 +2285,8 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-escala__opcao:has(input:checked) {
-  border-color: var(--fc-gol);
-  background: var(--fc-gol-suave);
+  border-color: var(--fc-acento);
+  background: var(--fc-acento-suave);
 }
 
 .fc-escala__opcao input[type="radio"] {
@@ -2088,7 +2294,7 @@ a.fc-botao--perigo:hover {
   width: 1.1rem;
   height: 1.1rem;
   margin-top: 0.2rem;
-  accent-color: var(--fc-gol);
+  accent-color: var(--fc-acento);
 }
 
 .fc-escala__numero {
@@ -2101,18 +2307,18 @@ a.fc-botao--perigo:hover {
   background: var(--fc-neutro-suave);
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-escala__opcao:has(input:checked) .fc-escala__numero {
-  background: var(--fc-gol);
+  background: var(--fc-acento);
   color: var(--fc-branco);
 }
 
 .fc-escala__ancora {
   font-size: 0.875rem;
   line-height: 1.45;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 /* ---------- ficha pública: avaliação técnica publicada ---------- */
@@ -2134,7 +2340,7 @@ a.fc-botao--perigo:hover {
 
 .fc-laudo__meta {
   font-size: 0.8125rem;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-laudo-eixos {
@@ -2147,8 +2353,12 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
   margin-bottom: var(--fc-esp-2);
+}
+
+.fc-laudo-eixo__rotulo[data-eixo="tecnico"] {
+  color: var(--fc-eixo-tecnico);
 }
 
 .fc-laudo-eixo__rotulo[data-eixo="fisico"] {
@@ -2178,7 +2388,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-laudo-item__rotulo {
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-laudo-item__nota {
@@ -2194,13 +2404,13 @@ a.fc-botao--perigo:hover {
   border-top: 1px solid var(--fc-linha);
   font-size: 0.9375rem;
   line-height: 1.6;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-laudo__rodape {
   margin-top: var(--fc-esp-5);
   font-size: 0.8125rem;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-laudo__acoes {
@@ -2242,7 +2452,7 @@ a.fc-botao--perigo:hover {
 .fc-filtros-disclosure__resumo::after {
   content: "▾";
   margin-left: auto;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   transition: transform 0.15s ease;
 }
 
@@ -2251,7 +2461,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-filtros-disclosure__contagem {
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 .fc-filtros-disclosure .fc-atletas-filtros-cartao {
@@ -2290,7 +2500,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-paginacao__marcador {
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   font-size: 0.9375rem;
   white-space: nowrap;
 }
@@ -2316,7 +2526,7 @@ a.fc-botao--perigo:hover {
 
 .fc-atletas-item-link:hover .fc-item-atleta,
 .fc-atletas-item-link:focus-visible .fc-item-atleta {
-  border-color: var(--fc-gol);
+  border-color: var(--fc-quadra);
 }
 
 .fc-atletas-item-link:active {
@@ -2341,7 +2551,7 @@ a.fc-botao--perigo:hover {
   aspect-ratio: 1;
   border-radius: var(--fc-raio-sm);
   overflow: hidden;
-  background: var(--fc-ink);
+  background: var(--fc-quadra);
 }
 
 .fc-gestao-midia__preview img,
@@ -2407,11 +2617,24 @@ a.fc-botao--perigo:hover {
 /* ---------- cabeçalho de perfil ---------- */
 
 .fc-perfil-header {
-  background: var(--fc-ink);
-  color: var(--fc-osso);
+  position: relative;
+  overflow: hidden;
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
   border-radius: var(--fc-raio);
   padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 5vw, 2.5rem);
-  border-bottom: 3px solid var(--fc-gol-forte);
+  border-bottom: 3px solid var(--fc-acento-forte);
+}
+
+.fc-perfil-header > :not(.fc-quadra) {
+  position: relative;
+  z-index: 1;
+}
+
+.fc-perfil-header .fc-quadra {
+  z-index: 0;
+  inset: -45% -70% -45% -6%;
+  color: rgb(255 210 63 / 0.22);
 }
 
 .fc-perfil-header__topo {
@@ -2428,12 +2651,12 @@ a.fc-botao--perigo:hover {
   height: clamp(3.75rem, 16vw, 6rem);
   border-radius: 999px;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--fc-gol), var(--fc-gol-forte));
-  color: var(--fc-osso);
+  background: var(--fc-quadra-2);
+  color: var(--fc-amarelo);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
   font-size: clamp(1.75rem, 6vw, 2.25rem);
-  box-shadow: 0 0 0 3px rgb(244 240 232 / 0.18), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+  box-shadow: 0 0 0 3px var(--fc-amarelo), 0 8px 24px -8px rgb(0 0 0 / 0.5);
 }
 
 .fc-perfil-avatar img {
@@ -2461,8 +2684,8 @@ a.fc-botao--perigo:hover {
 .fc-perfil-stats dd {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  font-size: clamp(1.15rem, 5vw, 1.6rem);
-  color: var(--fc-gol-forte);
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  color: var(--fc-amarelo);
   line-height: 1;
 }
 
@@ -2470,7 +2693,7 @@ a.fc-botao--perigo:hover {
   font-family: var(--font-fc-corpo), ui-sans-serif, sans-serif;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--fc-osso);
+  color: var(--fc-giz);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2482,7 +2705,7 @@ a.fc-botao--perigo:hover {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--fc-osso-45);
+  color: var(--fc-giz-3);
   overflow-wrap: anywhere;
   hyphens: auto;
 }
@@ -2498,10 +2721,10 @@ a.fc-botao--perigo:hover {
   margin-top: clamp(1.1rem, 4vw, 1.5rem);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
   text-transform: uppercase;
-  font-size: clamp(2.25rem, 9vw, 3.5rem);
+  font-size: clamp(2.75rem, 10vw, 4.25rem);
   overflow-wrap: anywhere;
 }
 
@@ -2513,9 +2736,9 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-ficha-tag--selo {
-  color: var(--fc-osso);
-  background: rgb(31 122 77 / 0.35);
-  border-color: rgb(31 122 77 / 0.5);
+  color: var(--fc-giz);
+  background: rgb(31 122 77 / 0.45);
+  border-color: rgb(31 122 77 / 0.6);
 }
 
 /* ---------- destaques (stories fixos) ---------- */
@@ -2554,7 +2777,7 @@ a.fc-botao--perigo:hover {
   height: 4.25rem;
   border-radius: 999px;
   padding: 3px;
-  background: linear-gradient(135deg, var(--fc-gol-forte), var(--fc-alerta) 55%, var(--fc-gol));
+  background: var(--fc-amarelo);
   transition: transform 0.15s ease;
 }
 
@@ -2582,16 +2805,16 @@ a.fc-botao--perigo:hover {
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: var(--fc-papel);
+  background: var(--fc-quadra);
   border: 2px solid var(--fc-branco);
-  color: var(--fc-gol);
+  color: var(--fc-amarelo);
   font-size: 1.25rem;
 }
 
 .fc-destaque__titulo {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -2611,7 +2834,7 @@ a.fc-botao--perigo:hover {
   z-index: 20;
   display: flex;
   gap: 0.25rem;
-  background: var(--fc-papel);
+  background: var(--fc-cal);
   border-bottom: 1.5px solid var(--fc-linha);
   margin-top: var(--fc-esp-2);
   overflow-x: auto;
@@ -2633,18 +2856,18 @@ a.fc-botao--perigo:hover {
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .fc-aba-botao:hover {
-  color: var(--fc-tinta-80);
+  color: var(--fc-tinta-2);
 }
 
 .fc-aba-botao[data-ativo] {
   color: var(--fc-tinta);
-  border-bottom-color: var(--fc-gol);
+  border-bottom-color: var(--fc-acento);
 }
 
 @keyframes fc-aba-entrar {
@@ -2704,13 +2927,13 @@ a.fc-botao--perigo:hover {
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
   cursor: pointer;
   text-decoration: none;
 }
 
 .fc-link-botao:hover {
-  color: var(--fc-gol-hover);
+  color: var(--fc-acento-hover);
   text-decoration: underline;
 }
 
@@ -2729,7 +2952,7 @@ a.fc-botao--perigo:hover {
 .fc-midia-tile {
   position: relative;
   aspect-ratio: 1;
-  background: var(--fc-papel-3);
+  background: var(--fc-cal-3);
   border: none;
   padding: 0;
   cursor: pointer;
@@ -2785,7 +3008,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-lightbox::backdrop {
-  background: rgb(11 13 14 / 0.86);
+  background: rgb(16 53 95 / 0.9);
 }
 
 .fc-lightbox__conteudo {
@@ -2803,7 +3026,7 @@ a.fc-botao--perigo:hover {
   aspect-ratio: 4 / 3;
   max-height: 78vh;
   border-radius: var(--fc-raio);
-  background: var(--fc-ink);
+  background: var(--fc-quadra);
   overflow: hidden;
 }
 
@@ -2828,19 +3051,19 @@ a.fc-botao--perigo:hover {
   height: 2.25rem;
   border-radius: 999px;
   border: none;
-  background: rgb(244 240 232 / 0.14);
-  color: var(--fc-osso);
+  background: rgb(255 255 255 / 0.14);
+  color: var(--fc-giz);
   font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .fc-lightbox__fechar:hover {
-  background: rgb(244 240 232 / 0.24);
+  background: rgb(255 255 255 / 0.24);
 }
 
 .fc-lightbox__legenda {
-  color: var(--fc-osso-70);
+  color: var(--fc-giz-2);
   font-size: 0.9375rem;
   text-align: center;
   max-width: 28rem;
@@ -2879,14 +3102,14 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-radar__area {
-  fill: var(--fc-gol-suave);
-  stroke: var(--fc-gol);
+  fill: var(--fc-acento-suave);
+  stroke: var(--fc-acento);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
 .fc-radar__ponto {
-  fill: var(--fc-gol);
+  fill: var(--fc-acento);
 }
 
 .fc-radar__rotulo {
@@ -2894,13 +3117,17 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  fill: var(--fc-tinta-60);
+  fill: var(--fc-tinta-3);
 }
 
 /* Cada vértice/rótulo do radar leva a cor do próprio eixo (ver tokens
    `--fc-eixo-*` no topo do arquivo) — a área preenchida continua num tom só
    (o "gol" da marca), porque um polígono não lê bem com quatro cores, mas
    os pontos e os rótulos ao redor dele sim. */
+.fc-radar__ponto[data-eixo="tecnico"] {
+  fill: var(--fc-eixo-tecnico);
+}
+
 .fc-radar__ponto[data-eixo="fisico"] {
   fill: var(--fc-eixo-fisico);
 }
@@ -2958,7 +3185,7 @@ a.fc-botao--perigo:hover {
 .fc-laudo-item__barra-preenchido {
   height: 100%;
   border-radius: 999px;
-  background: var(--fc-gol);
+  background: var(--fc-acento);
   transition: width 0.4s ease;
 }
 
@@ -2966,7 +3193,7 @@ a.fc-botao--perigo:hover {
   margin-top: 0.35rem;
   font-size: 0.8125rem;
   line-height: 1.4;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-evolucao-bloco {
@@ -2985,7 +3212,7 @@ a.fc-botao--perigo:hover {
 
 .fc-evolucao__linha {
   fill: none;
-  stroke: var(--fc-gol);
+  stroke: var(--fc-acento);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -2993,7 +3220,7 @@ a.fc-botao--perigo:hover {
 
 .fc-evolucao__ponto {
   fill: var(--fc-branco);
-  stroke: var(--fc-gol);
+  stroke: var(--fc-acento);
   stroke-width: 2;
 }
 
@@ -3023,7 +3250,7 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-evolucao-item__meta {
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   flex: 1;
   min-width: 10rem;
 }
@@ -3078,13 +3305,11 @@ a.fc-botao--perigo:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(120% 140% at 100% 0%, rgb(255 59 20 / 0.28), transparent 60%),
-    repeating-linear-gradient(-35deg, rgb(244 240 232 / 0.05) 0 2px, transparent 2px 14px);
+  background: radial-gradient(120% 140% at 100% 0%, rgb(255 210 63 / 0.16), transparent 60%);
   pointer-events: none;
 }
 
-.fc-perfil-header--capa > * {
+.fc-perfil-header--capa > :not(.fc-quadra) {
   position: relative;
 }
 
@@ -3114,7 +3339,7 @@ a.fc-botao--perigo:hover {
   font-weight: 800;
   line-height: 0.95;
   font-size: clamp(1.65rem, 6vw, 2.15rem);
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 @media (min-width: 64rem) {
@@ -3128,7 +3353,7 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-conquista__rotulo {
@@ -3142,7 +3367,7 @@ a.fc-botao--perigo:hover {
   margin-top: 0.3rem;
   font-size: 0.8125rem;
   line-height: 1.45;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 @media (min-width: 34rem) {
@@ -3156,17 +3381,19 @@ a.fc-botao--perigo:hover {
 .fc-citacao {
   position: relative;
   border-radius: var(--fc-raio);
-  background: var(--fc-ink);
-  color: var(--fc-osso);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
   padding: clamp(1.25rem, 5vw, 1.75rem) clamp(1.25rem, 5vw, 2rem);
-  border-left: 4px solid var(--fc-gol-forte);
+  border-left: 4px solid var(--fc-acento-forte);
 }
 
 .fc-citacao__texto {
-  font-family: var(--font-fc-serif), ui-serif, Georgia, serif;
-  font-style: italic;
-  font-size: clamp(1.15rem, 4vw, 1.5rem);
-  line-height: 1.35;
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  line-height: 1.05;
 }
 
 .fc-citacao__fonte {
@@ -3175,7 +3402,7 @@ a.fc-botao--perigo:hover {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fc-osso-45);
+  color: var(--fc-giz-3);
 }
 
 /* ---------- trajetória (linha do tempo de marcos) ---------- */
@@ -3190,7 +3417,7 @@ a.fc-botao--perigo:hover {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--fc-gol);
+  color: var(--fc-acento);
 }
 
 .fc-trajetoria__fase:first-child {
@@ -3217,12 +3444,12 @@ a.fc-botao--perigo:hover {
   width: 9px;
   height: 9px;
   border-radius: 999px;
-  background: var(--fc-gol);
+  background: var(--fc-acento);
 }
 
 .fc-trajetoria__marco[data-destaque="true"]::before {
-  background: var(--fc-gol-forte);
-  box-shadow: 0 0 0 4px var(--fc-gol-suave);
+  background: var(--fc-acento-forte);
+  box-shadow: 0 0 0 4px var(--fc-acento-suave);
 }
 
 .fc-trajetoria__cabeca {
@@ -3235,7 +3462,7 @@ a.fc-botao--perigo:hover {
 .fc-trajetoria__ano {
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
   font-size: clamp(1.4rem, 5vw, 1.85rem);
   color: var(--fc-tinta);
 }
@@ -3245,7 +3472,7 @@ a.fc-botao--perigo:hover {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-trajetoria__chips {
@@ -3261,13 +3488,13 @@ a.fc-botao--perigo:hover {
   padding: 0.2rem 0.55rem;
   border-radius: var(--fc-raio-pill);
   border: 1px solid var(--fc-linha);
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
 }
 
 .fc-trajetoria__chip--forte {
-  background: var(--fc-gol-suave);
-  border-color: var(--fc-gol);
-  color: var(--fc-gol);
+  background: var(--fc-acento-suave);
+  border-color: var(--fc-acento);
+  color: var(--fc-acento);
 }
 
 .fc-trajetoria__titulo {
@@ -3281,14 +3508,14 @@ a.fc-botao--perigo:hover {
   margin-top: 0.35rem;
   font-size: 0.9375rem;
   line-height: 1.6;
-  color: var(--fc-tinta-60);
+  color: var(--fc-tinta-3);
   max-width: 42rem;
 }
 
 .fc-trajetoria__nao-datado {
   margin-top: 0.4rem;
   font-size: 0.75rem;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 /* ---------- elenco (grade de atletas de uma escolinha) ---------- */
@@ -3318,7 +3545,7 @@ a.fc-botao--perigo:hover {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
 }
 
 .fc-progresso__bolha {
@@ -3329,7 +3556,7 @@ a.fc-botao--perigo:hover {
   border-radius: 999px;
   border: 1.5px solid var(--fc-linha-forte);
   font-size: 0.6875rem;
-  color: var(--fc-tinta-40);
+  color: var(--fc-tinta-4);
   flex: none;
 }
 
@@ -3338,8 +3565,8 @@ a.fc-botao--perigo:hover {
 }
 
 .fc-progresso__passo[data-atual="true"] .fc-progresso__bolha {
-  border-color: var(--fc-gol);
-  background: var(--fc-gol);
+  border-color: var(--fc-acento);
+  background: var(--fc-acento);
   color: var(--fc-branco);
 }
 

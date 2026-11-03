@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
-import { Barlow, Big_Shoulders, Instrument_Serif } from "next/font/google";
+import { fontesFc } from "@/ui/fontes";
 
 import { CabecalhoPublicoAuto, Cartao, CartaoEscolinha } from "@/ui";
 import "@/ui/estilos.css";
@@ -9,33 +9,10 @@ import { urlPublicaMidia } from "@/lib/midias";
 
 export const revalidate = 60;
 
-// Mesmo padrão de fontes por rota pública já usado em /, /atletas,
-// /atleta/[id] e /profissional/[slug].
-const display = Big_Shoulders({
-  variable: "--font-fc-display",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-fc-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const corpo = Barlow({
-  variable: "--font-fc-corpo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   title: "Escolinhas — Revela 10",
   description:
-    "Escolinhas e CTs de futsal parceiros do Revela 10, em Fortaleza, região metropolitana e interior do Ceará.",
+    "Escolinhas e CTs de futsal e fut7 parceiros do Revela 10, em todo o Brasil.",
 };
 
 function clienteAnonimo() {
@@ -118,18 +95,16 @@ export default async function Escolinhas() {
   }
 
   return (
-    <div className={`fc fc-pagina ${display.variable} ${serif.variable} ${corpo.variable}`}>
+    <div className={`fc fc-pagina ${fontesFc}`}>
       <CabecalhoPublicoAuto />
 
       <main className="fc-corpo">
         <div className="fc-container">
           <div className="fc-cabecalho-pagina">
-            <p className="fc-rotulo-secao fc-etiqueta-rotulo">Navegação pública</p>
             <h1 className="fc-titulo">Escolinhas</h1>
             <p className="fc-subtitulo">
-              Escolinhas e CTs de futsal parceiros, em Fortaleza, região metropolitana e interior
-              do Ceará. O selo de credenciada indica escolinha auditada pelo método do Futsal
-              College — não é ranking entre elas.
+              Escolinhas e CTs de futsal e fut7 parceiros, em todo o Brasil. O selo de credenciada
+              indica escolinha verificada pelo Revela 10 — não é ranking entre elas.
             </p>
           </div>
 
