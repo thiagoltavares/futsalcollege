@@ -14,13 +14,19 @@ import { Vitrine, metadataVitrine } from "./vitrine/Vitrine";
 const metadataPreLancamento: Metadata = {
   title: "Revela 10 — a base vai entrar em quadra",
   description:
-    "A vitrine em vídeo do futsal e do fut7 de base, da Sub-7 à Sub-20, em todo o Brasil. Em construção: responda a pesquisa e ajude a decidir o que vem primeiro.",
+    "Um lugar para mostrar o futsal e o fut7 de base em vídeo, em todo o Brasil. Em construção: responda a pesquisa, leva 2 minutos.",
   openGraph: {
     title: "Revela 10 — a base vai entrar em quadra",
-    description:
-      "A vitrine em vídeo do futsal e do fut7 de base. Em construção: três minutos de pesquisa para quem vive a base.",
+    description: "Futsal e fut7 de base, em vídeo. Responda a pesquisa: leva 2 minutos, é só tocar.",
+    url: "/",
+    siteName: "Revela 10",
     locale: "pt_BR",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Revela 10 — a base vai entrar em quadra",
+    description: "Futsal e fut7 de base, em vídeo. Responda a pesquisa: leva 2 minutos, é só tocar.",
   },
 };
 

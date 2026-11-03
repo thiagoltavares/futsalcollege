@@ -287,11 +287,11 @@ function passosOrganizacao(): Passo[] {
   ];
 }
 
-function Obrigado({ origem }: { origem: string | null }) {
+function Obrigado() {
   // Só renderiza no navegador, depois do envio (no servidor o estado é
-  // sempre `null`), então `window` existe aqui.
-  const link =
-    typeof window === "undefined" ? "" : `${window.location.origin}/${origem ? `?de=${origem}` : ""}`;
+  // sempre `null`), então `window` existe aqui. Link limpo, sem `?de=`: a
+  // origem de quem respondeu não deve passar para quem recebe.
+  const link = typeof window === "undefined" ? "" : `${window.location.origin}/`;
   const texto = `Estão montando o Revela 10, um lugar para mostrar o futsal e o fut7 de base em vídeo, e querem ouvir as famílias antes de abrir. Leva 2 minutos, é só tocar nas respostas: ${link}`;
 
   return (
@@ -394,7 +394,7 @@ export function Pesquisa({
       ?.focus({ preventScroll: true });
   }, [atual, ativa]);
 
-  if (estado && "ok" in estado) return <Obrigado origem={origem} />;
+  if (estado && "ok" in estado) return <Obrigado />;
 
   function avancar() {
     const form = formRef.current;

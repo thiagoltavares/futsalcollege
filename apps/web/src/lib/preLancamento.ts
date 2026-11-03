@@ -20,8 +20,12 @@ const ROTAS_PUBLICAS: RegExp[] = [
   /^\/auth\//,
   /^\/robots\.txt$/,
   /^\/sitemap\.xml$/,
+  // Arte de compartilhamento e ícones: o preview do WhatsApp busca sem
+  // sessão nenhuma, e sem isto a trava devolvia a home no lugar da imagem.
   /^\/opengraph-image/,
-  /^\/icon\.svg$/,
+  /^\/twitter-image/,
+  /^\/apple-icon/,
+  /^\/icon/,
 ];
 
 export function rotaPublicaNoPreLancamento(caminho: string): boolean {
