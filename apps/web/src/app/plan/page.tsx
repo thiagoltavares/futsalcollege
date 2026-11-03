@@ -2,7 +2,9 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible_Next, Saira_Extra_Condensed, Source_Serif_4 } from "next/font/google";
+import { Saira_Extra_Condensed, Source_Serif_4 } from "next/font/google";
+
+import { fonteCorpo } from "@/ui/fontes";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -23,12 +25,10 @@ const texto = Source_Serif_4({
   display: "swap",
 });
 
-const ui = Atkinson_Hyperlegible_Next({
-  variable: "--font-ui",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
+/* UI: a mesma Atkinson Hyperlegible Next do design system, servida local
+   (ver `ui/fontes.ts`); `plan.css` e as classes utilitárias consomem a
+   variável dela, `--font-fc-corpo`. */
+const ui = fonteCorpo;
 
 export const metadata: Metadata = {
   title: "Pre-PRD — Plataforma de reconhecimento",
@@ -98,7 +98,7 @@ export default async function PlanPage() {
               <br />
               <span className="text-[var(--tinta-40)]">Reconhecimento da base</span>
             </h1>
-            <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-[var(--regua)] pt-6 font-[family-name:var(--font-ui)]">
+            <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-t border-[var(--regua)] pt-6 font-[family-name:var(--font-fc-corpo)]">
               {[
                 ["Para", "Flávio Barbosa"],
                 ["De", "Thiago"],
