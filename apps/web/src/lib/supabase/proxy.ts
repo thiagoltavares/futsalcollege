@@ -12,9 +12,14 @@ import { NextResponse, type NextRequest } from "next/server";
  *
  * Escopo mínimo, de propósito: só renovação de sessão. Proteção de rota,
  * autorização e redirecionamento por permissão continuam responsabilidade de
- * cada página, que já chama `getUser()` e redireciona quando necessário.
+ * cada página, que já chama `getUser()` e redireciona quando necessário. A
+ * exceção é a trava de pré-lançamento (`src/proxy.ts`), que precisa saber
+ * QUEM está logado — por isso esta função devolve o e-mail das claims junto
+ * com a resposta, em vez de consultar a sessão uma segunda vez.
  */
-export async function atualizarSessao(requisicao: NextRequest) {
+export async function atualizarSessao(
+  requisicao: NextRequest,
+): Promise<{ resposta: NextResponse; email: string | null }> {
   let resposta = NextResponse.next({ request: requisicao });
 
   const supabase = createServerClient<Database>(
@@ -36,7 +41,8 @@ export async function atualizarSessao(requisicao: NextRequest) {
   // Não rode código entre createServerClient e getClaims(): um refresh que
   // termine depois da resposta já montada se perde, e a próxima requisição
   // tenta renovar de novo.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const email = typeof data?.claims?.email === "string" ? data.claims.email : null;
 
-  return resposta;
+  return { resposta, email };
 }

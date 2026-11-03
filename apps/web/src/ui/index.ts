@@ -4,6 +4,8 @@ export { Campo } from "./Campo";
 export type { CampoProps, CampoRenderProps } from "./Campo";
 export { Selecao } from "./Selecao";
 export type { SelecaoProps } from "./Selecao";
+export { Seletor } from "./Seletor";
+export type { OpcaoSeletor, SeletorProps } from "./Seletor";
 export { EnvioArquivo } from "./EnvioArquivo";
 export type { EnvioArquivoProps } from "./EnvioArquivo";
 export { Cartao } from "./Cartao";

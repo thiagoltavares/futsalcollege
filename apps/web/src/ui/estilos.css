@@ -715,6 +715,216 @@ select.fc-input.fc-select {
   pointer-events: none;
 }
 
+/* ---------- seletor (Seletor.tsx) ----------
+   No lugar do `<select>` nativo: o campo parece um input e abre uma folha
+   que sobe de baixo, com as opções em grade de botões grandes. É um
+   `<dialog>` com `showModal()`, então vai para a camada de cima do
+   navegador e escapa de `overflow` cortado e `transform` dos ancestrais. */
+
+.fc-seletor__campo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-right: 2.5rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fc-tinta);
+}
+
+.fc-seletor__campo[data-vazio] {
+  color: var(--fc-tinta-3);
+}
+
+.fc-seletor__campo::after {
+  content: "";
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-right: 2px solid var(--fc-tinta-3);
+  border-bottom: 2px solid var(--fc-tinta-3);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.fc-seletor__campo span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* A folha: presa embaixo no celular, largura toda, alcance do polegar. */
+.fc-seletor__folha {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  max-height: 82svh;
+  padding: 0;
+  border: none;
+  border-radius: 14px 14px 0 0;
+  background: var(--fc-branco);
+  color: var(--fc-tinta);
+  box-shadow: 0 -20px 50px -20px rgb(0 0 0 / 0.45);
+  overflow: hidden;
+}
+
+.fc-seletor__folha::backdrop {
+  background: rgb(15 27 43 / 0.6);
+}
+
+.fc-seletor__folha[open] {
+  display: flex;
+  animation: fc-seletor-sobe 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fc-seletor-sobe {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.fc-seletor__conteudo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.fc-seletor__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  padding: 1rem var(--fc-margem) 0.75rem;
+  border-bottom: 1px solid var(--fc-linha);
+}
+
+/* Alça visual de folha, como nos apps do celular. */
+.fc-seletor__topo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.45rem;
+  width: 2.5rem;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--fc-linha-forte);
+  translate: -50% 0;
+}
+
+.fc-seletor__titulo {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+}
+
+.fc-seletor__fechar {
+  min-height: var(--fc-alvo);
+  padding-inline: 0.5rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--fc-acento);
+  cursor: pointer;
+}
+
+.fc-seletor__grade {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem var(--fc-margem) 0.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fc-seletor__grade[data-colunas="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fc-seletor__grade[data-colunas="4"] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.fc-seletor__grade[data-colunas="5"] {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.fc-seletor__opcao {
+  min-height: 3.25rem;
+  padding: 0.5rem 0.4rem;
+  border: 1.5px solid var(--fc-linha-forte);
+  border-radius: var(--fc-raio-sm);
+  background: var(--fc-branco);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fc-tinta);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+/* A opção vazia ("Prefiro não dizer") ocupa a linha inteira. */
+.fc-seletor__opcao[data-vazio] {
+  grid-column: 1 / -1;
+  font-weight: 600;
+  color: var(--fc-tinta-2);
+}
+
+.fc-seletor__opcao:hover {
+  border-color: var(--fc-quadra);
+}
+
+.fc-seletor__opcao[aria-pressed="true"] {
+  border-color: var(--fc-quadra);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
+}
+
+.fc-seletor__opcao:focus-visible,
+.fc-seletor__fechar:focus-visible {
+  outline: 2px solid var(--fc-acento);
+  outline-offset: 2px;
+}
+
+/* Tela larga: janela no meio, não folha. */
+@media (min-width: 48rem) {
+  .fc-seletor__folha {
+    inset: 0;
+    margin: auto;
+    width: min(32rem, calc(100% - 2rem));
+    height: fit-content;
+    max-height: 80vh;
+    border-radius: var(--fc-raio);
+    box-shadow: 0 30px 70px -30px rgb(0 0 0 / 0.55);
+  }
+
+  .fc-seletor__folha[open] {
+    animation-name: fc-seletor-surge;
+  }
+
+  @keyframes fc-seletor-surge {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-seletor__folha[open] {
+    animation: none;
+  }
+}
+
 /* ---------- checkbox ---------- */
 
 .fc-checkbox-linha {

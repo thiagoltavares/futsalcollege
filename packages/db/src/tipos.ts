@@ -408,6 +408,72 @@ export type Database = {
           },
         ]
       }
+      pesquisa_responsaveis: {
+        Row: {
+          aceita_contato: boolean
+          beneficio: string | null
+          categoria_filho: string | null
+          como_hoje: string | null
+          contato: string | null
+          criado_em: string
+          enviou_video: string[]
+          estado_uf: string | null
+          gasto_mensal: string | null
+          id: string
+          organizacao: string | null
+          origem: string | null
+          pedido: string | null
+          perfil: string
+          preocupacao: string | null
+          publica_video: string | null
+          quem_ve_video: string | null
+          resultado_envio: string | null
+          tem_video: string | null
+        }
+        Insert: {
+          aceita_contato?: boolean
+          beneficio?: string | null
+          categoria_filho?: string | null
+          como_hoje?: string | null
+          contato?: string | null
+          criado_em?: string
+          enviou_video?: string[]
+          estado_uf?: string | null
+          gasto_mensal?: string | null
+          id?: string
+          organizacao?: string | null
+          origem?: string | null
+          pedido?: string | null
+          perfil: string
+          preocupacao?: string | null
+          publica_video?: string | null
+          quem_ve_video?: string | null
+          resultado_envio?: string | null
+          tem_video?: string | null
+        }
+        Update: {
+          aceita_contato?: boolean
+          beneficio?: string | null
+          categoria_filho?: string | null
+          como_hoje?: string | null
+          contato?: string | null
+          criado_em?: string
+          enviou_video?: string[]
+          estado_uf?: string | null
+          gasto_mensal?: string | null
+          id?: string
+          organizacao?: string | null
+          origem?: string | null
+          pedido?: string | null
+          perfil?: string
+          preocupacao?: string | null
+          publica_video?: string | null
+          quem_ve_video?: string | null
+          resultado_envio?: string | null
+          tem_video?: string | null
+        }
+        Relationships: []
+      }
       profissionais: {
         Row: {
           ativo: boolean

@@ -1,0 +1,716 @@
+/* ------------------------------------------------------------------
+   Home de pré-lançamento (`PreLancamento.tsx`, `Palco.tsx`,
+   `Pesquisa.tsx`). Usa os tokens de `ui/estilos.css` (escopo `.fc`) e só
+   acrescenta o que é desta página.
+
+   MOBILE FIRST: as regras de base são as do celular (o pai que recebeu o
+   link no WhatsApp); telas maiores entram por `min-width`.
+
+   Uma tela só, que anda de lado sobre a quadra. Duas telas lado a lado
+   num trilho com o dobro da largura da janela, uma quadra só por trás:
+
+     inicio   — a marcação amarela se desenha sobre o azul, o "10" da
+                camisa é pintado em traço, e o título chama para a pesquisa.
+     pesquisa — o trilho anda meia largura: o hero inteiro sai pela
+                esquerda e a pesquisa ocupa a tela, do outro lado da mesma
+                quadra. Sem cartão: pergunta grande, branca, sobre o azul.
+
+   Tudo que se mexe para com `prefers-reduced-motion`: a troca de tela
+   continua, só que instantânea.
+------------------------------------------------------------------- */
+
+.fc-pre {
+  --fc-pre-curva: cubic-bezier(0.7, 0, 0.2, 1);
+  --fc-pre-tempo: 0.85s;
+  min-height: 100svh;
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
+}
+
+/* Foco visível sobre o azul: o contorno padrão é a própria quadra, que
+   some no fundo azul. */
+.fc-pre a:focus-visible,
+.fc-pre button:focus-visible,
+.fc-pre [tabindex]:focus-visible {
+  outline-color: var(--fc-amarelo);
+}
+
+/* ---------- topo ---------- */
+
+.fc-pre-topo {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 3;
+  padding-block: 0.85rem;
+}
+
+.fc-pre-topo__conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fc-esp-4);
+}
+
+.fc a.fc-pre-topo__entrar {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--fc-alvo);
+  padding-inline: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-giz-2);
+  text-decoration: none;
+}
+
+.fc a.fc-pre-topo__entrar:hover {
+  color: var(--fc-giz);
+  text-decoration: underline;
+}
+
+/* ---------- palco e trilho ---------- */
+
+.fc-pre-palco {
+  position: relative;
+  height: 100svh;
+  min-height: 34rem;
+  /* `clip`, não só `hidden`: um contêiner `hidden` ainda rola por código
+     (foco, âncora, roteador), e a troca de tela chegava a rolar o palco e
+     esconder o título atrás da marca. `clip` corta sem virar área de
+     rolagem. */
+  overflow: hidden;
+  overflow: clip;
+  isolation: isolate;
+  background: var(--fc-quadra);
+  border-bottom: 3px solid var(--fc-amarelo);
+}
+
+.fc-pre-trilho {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 200%;
+  display: flex;
+  transition: transform var(--fc-pre-tempo) var(--fc-pre-curva);
+}
+
+.fc-pre-palco[data-fase="pesquisa"] .fc-pre-trilho {
+  transform: translateX(-50%);
+}
+
+/* Uma quadra só atrás das duas telas: o hero mostra um lado, a pesquisa o
+   outro, e a troca de tela é a câmera andando pela quadra. */
+.fc-pre-trilho > .fc-quadra {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  color: var(--fc-amarelo-risco);
+  transition: opacity var(--fc-pre-tempo) var(--fc-pre-curva);
+}
+
+/* Na pesquisa a quadra recua: o círculo central cai embaixo das opções no
+   celular, e marcação amarela atravessando uma resposta atrapalha a
+   leitura. Apaga junto com o deslize, então a continuidade fica. */
+.fc-pre-palco[data-fase="pesquisa"] .fc-pre-trilho > .fc-quadra {
+  opacity: 0.32;
+}
+
+.fc-pre-tela {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 50%;
+  height: 100%;
+}
+
+.fc-pre-tela__conteudo {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+/* ---------- tela 1: o hero ---------- */
+
+.fc-pre-tela--inicio {
+  overflow: hidden;
+  overflow: clip;
+}
+
+.fc-pre-tela--inicio .fc-pre-tela__conteudo {
+  display: flex;
+  align-items: center;
+  padding-top: 4rem;
+  padding-bottom: 1.5rem;
+}
+
+/* O "10" das costas da camisa, em traço amarelo. No celular fica no canto
+   de baixo, apagado, longe da coluna de leitura — traço cruzando o
+   parágrafo atrapalha quem lê ao sol. */
+.fc-pre-dez {
+  position: absolute;
+  z-index: 0;
+  right: -34%;
+  bottom: 1%;
+  height: 44%;
+  width: auto;
+  opacity: 0.26;
+  pointer-events: none;
+}
+
+.fc-pre-dez text {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 530px;
+  fill: none;
+  stroke: var(--fc-amarelo);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.fc-pre-hero__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-amarelo);
+}
+
+.fc-pre-hero__ponto {
+  flex: none;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--fc-amarelo);
+  box-shadow: 0 0 0 4px rgb(255 210 63 / 0.22);
+}
+
+.fc-pre-h1 {
+  margin-top: var(--fc-esp-4);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 0.86;
+  font-size: clamp(3.6rem, 16vw, 9rem);
+  max-width: 9.5ch;
+  color: var(--fc-giz);
+  text-wrap: balance;
+}
+
+.fc-pre-lead {
+  margin-top: var(--fc-esp-5);
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--fc-giz-2);
+}
+
+.fc-pre-hero__acoes {
+  margin-top: var(--fc-esp-6);
+  display: grid;
+  gap: var(--fc-esp-3);
+}
+
+/* No celular o botão ocupa a largura: é o único gesto da tela. */
+.fc-pre-hero__acoes .fc-botao--primario {
+  width: 100%;
+  min-height: 3.5rem;
+  padding-inline: 1.8rem;
+  font-size: 1.0625rem;
+  background: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+  color: var(--fc-quadra);
+}
+
+.fc-pre-hero__acoes .fc-botao--primario:hover {
+  background: #ffdc66;
+  border-color: #ffdc66;
+}
+
+.fc-pre-hero__nota {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--fc-giz-2);
+}
+
+/* ---------- tela 2: a pesquisa ---------- */
+
+/* A tela rola sozinha quando a pergunta é longa; o palco nunca rola. */
+.fc-pre-tela--pesquisa {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.fc-pre-tela--pesquisa .fc-pre-tela__conteudo {
+  height: auto;
+  min-height: 100%;
+  display: flex;
+}
+
+.fc-pre-form {
+  width: 100%;
+  max-width: 44rem;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4.4rem;
+}
+
+.fc-pre-form__topo {
+  padding-top: 0.25rem;
+}
+
+/* Progresso: a linha da quadra sendo pintada de amarelo. */
+.fc-pre-progresso {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.16);
+  overflow: hidden;
+}
+
+.fc-pre-progresso span {
+  display: block;
+  height: 100%;
+  background: var(--fc-amarelo);
+  transform-origin: left center;
+  transition: transform 0.5s var(--fc-pre-curva);
+}
+
+.fc-pre-form__contagem {
+  margin-top: 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fc-giz-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.fc-pre-form__corpo {
+  flex: 1 0 auto;
+  padding-block: var(--fc-esp-5) var(--fc-esp-6);
+}
+
+/* Voltar e Continuar presos embaixo, ao alcance do polegar. O degradê
+   deixa a opção de baixo legível quando rola por trás. */
+.fc-pre-form__base {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--fc-esp-3);
+  margin-inline: calc(var(--fc-margem) * -1);
+  padding: 1.25rem var(--fc-margem) max(1rem, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--fc-quadra) 72%, rgb(16 53 95 / 0));
+}
+
+.fc-pre-form__base .fc-botao {
+  min-height: 3.25rem;
+}
+
+.fc-pre-form__base .fc-botao--primario {
+  flex: 1;
+  max-width: 16rem;
+  background: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+  color: var(--fc-quadra);
+}
+
+.fc-pre-form__base .fc-botao--primario:hover {
+  background: #ffdc66;
+  border-color: #ffdc66;
+}
+
+.fc-pre-form__base .fc-botao--secundario {
+  color: var(--fc-giz);
+  border-color: rgb(255 255 255 / 0.4);
+  background: transparent;
+}
+
+.fc-pre-form__base .fc-botao--secundario:hover {
+  border-color: var(--fc-giz);
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* ---------- um passo ---------- */
+
+/* Cada passo entra deslizando do lado para onde a pesquisa anda. `hidden`
+   → visível reinicia a animação, sem JavaScript. */
+.fc-pre-passo:not([hidden]) {
+  display: grid;
+  gap: var(--fc-esp-3);
+  animation: fc-pre-passo-entra 0.42s var(--fc-pre-curva);
+}
+
+.fc-pre-form[data-direcao="voltar"] .fc-pre-passo:not([hidden]) {
+  animation-name: fc-pre-passo-volta;
+}
+
+@keyframes fc-pre-passo-entra {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+}
+
+@keyframes fc-pre-passo-volta {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}
+
+/* O número do passo é o selo do "10" da marca: a pesquisa é uma
+   sequência de verdade, e cada pergunta veste o seu número. */
+.fc-pre-passo__numero {
+  justify-self: start;
+  display: inline-grid;
+  place-items: center;
+  min-width: 3.1rem;
+  height: 3rem;
+  padding: 0.2rem 0.5rem 0;
+  border-radius: 4px;
+  background: var(--fc-amarelo);
+  color: var(--fc-quadra);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.fc-pre-passo__titulo {
+  font-size: clamp(1.45rem, 6vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.22;
+  color: var(--fc-giz);
+  max-width: 32ch;
+  text-wrap: pretty;
+}
+
+.fc-pre-passo__titulo:focus {
+  outline: none;
+}
+
+.fc-pre-passo__titulo:focus-visible {
+  outline: 2px solid var(--fc-amarelo);
+  outline-offset: 4px;
+}
+
+.fc-pre-passo__ajuda {
+  margin-top: -0.25rem;
+  font-size: 0.9375rem;
+  color: var(--fc-giz-2);
+}
+
+.fc-pre-passo__corpo {
+  margin-top: var(--fc-esp-3);
+  display: grid;
+  gap: var(--fc-esp-4);
+}
+
+.fc-pre-passo__sub {
+  margin-top: var(--fc-esp-2);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fc-giz);
+}
+
+/* Erro do passo: amarelo sobre azul (vermelho escuro não lê no azul). */
+.fc-pre-passo__erro {
+  margin-top: var(--fc-esp-4);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--fc-amarelo);
+}
+
+.fc-pre-passo__erro::before {
+  content: "!";
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  background: var(--fc-amarelo);
+  color: var(--fc-quadra);
+  font-size: 0.8rem;
+}
+
+/* Campos de texto: rótulos claros sobre o azul; o campo em si continua
+   branco, com o anel de foco amarelo. */
+.fc-pre-form .fc-campo__rotulo {
+  color: var(--fc-giz);
+}
+
+.fc-pre-form .fc-campo__opcional,
+.fc-pre-form .fc-campo__ajuda {
+  color: var(--fc-giz-2);
+}
+
+.fc-pre-form .fc-input {
+  border-color: transparent;
+  font-size: 1rem;
+}
+
+.fc-pre-form .fc-input:focus {
+  border-color: var(--fc-amarelo);
+  box-shadow: 0 0 0 3px rgb(255 210 63 / 0.4);
+}
+
+/* O e-mail das novidades só aparece depois do "Sim". Por CSS, para não
+   piscar e para a escolha valer mesmo antes da hidratação. */
+.fc-pre-novidades__email {
+  display: none;
+}
+
+.fc-pre-form:has(input[name="aceita_contato"][value="on"]:checked) .fc-pre-novidades__email {
+  display: block;
+  animation: fc-pre-passo-entra 0.35s var(--fc-pre-curva);
+}
+
+/* ---------- opções ---------- */
+
+.fc-pre-opcoes {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.fc-pre-opcoes[data-colunas="3"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fc-pre-opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.8rem 0.95rem;
+  border: 1.5px solid rgb(255 255 255 / 0.3);
+  border-radius: var(--fc-raio-sm);
+  /* Fundo sólido: nenhuma linha da quadra passa por dentro da resposta. */
+  background: var(--fc-quadra-2);
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--fc-giz);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.fc-pre-opcao:hover {
+  border-color: rgb(255 255 255 / 0.7);
+}
+
+.fc-pre-opcao:has(input:checked) {
+  border-color: var(--fc-amarelo);
+  background:
+    linear-gradient(rgb(255 210 63 / 0.16), rgb(255 210 63 / 0.16)),
+    var(--fc-quadra-2);
+  font-weight: 700;
+}
+
+.fc-pre-opcao:has(input:focus-visible) {
+  outline: 2px solid var(--fc-amarelo);
+  outline-offset: 2px;
+}
+
+.fc-pre-opcao input {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--fc-amarelo);
+}
+
+.fc-pre-duplo {
+  display: grid;
+  gap: var(--fc-esp-4);
+}
+
+.fc-pre-isca {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- depois do envio ---------- */
+
+.fc-pre-obrigado {
+  width: 100%;
+  max-width: 44rem;
+  align-self: center;
+  display: grid;
+  gap: var(--fc-esp-4);
+  justify-items: start;
+  padding-block: 5rem 2rem;
+}
+
+.fc-pre-obrigado__titulo {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: clamp(3rem, 15vw, 6.5rem);
+  line-height: 0.86;
+  text-transform: uppercase;
+  color: var(--fc-giz);
+}
+
+.fc-pre-obrigado__texto {
+  max-width: 30rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--fc-giz-2);
+}
+
+.fc-pre-obrigado .fc-botao--primario,
+.fc-pre-obrigado a.fc-botao--primario {
+  min-height: 3.25rem;
+  background: var(--fc-amarelo);
+  border-color: var(--fc-amarelo);
+  color: var(--fc-quadra);
+}
+
+/* ================= telas maiores ================= */
+
+@media (min-width: 30rem) {
+  .fc-pre-opcoes[data-colunas="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fc-pre-duplo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 40rem) {
+  .fc-pre-dez {
+    right: -14%;
+    bottom: 2%;
+    height: 58%;
+    opacity: 0.4;
+  }
+
+  .fc-pre-hero__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fc-esp-3) var(--fc-esp-5);
+  }
+
+  .fc-pre-hero__acoes .fc-botao--primario {
+    width: auto;
+  }
+
+  .fc-pre-hero__nota {
+    max-width: 17rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .fc-pre-lead {
+    font-size: 1.1875rem;
+  }
+
+  .fc-pre-tela--pesquisa .fc-pre-tela__conteudo {
+    align-items: center;
+  }
+
+  .fc-pre-form {
+    min-height: 0;
+    padding-top: 6rem;
+  }
+
+  .fc-pre-form__corpo {
+    flex: 0 0 auto;
+  }
+
+  /* Tela larga: os botões vêm logo depois da pergunta, alinhados com ela,
+     sem barra presa. */
+  .fc-pre-form__base {
+    position: static;
+    margin-inline: 0;
+    padding: 0 0 2.5rem;
+    background: none;
+    justify-content: flex-start;
+  }
+
+  .fc-pre-form__base .fc-botao--primario {
+    flex: none;
+    min-width: 11rem;
+  }
+}
+
+/* Desktop: o "10" ocupa a altura toda, com a borda esquerda presa depois
+   da coluna do título; o que sobra é cortado pela tela, como número de
+   camisa cortado na foto. */
+@media (min-width: 64rem) {
+  .fc-pre-dez {
+    left: clamp(38rem, 50%, 60rem);
+    right: auto;
+    top: 4%;
+    bottom: auto;
+    height: 92%;
+    opacity: 1;
+  }
+
+  .fc-pre-tela--inicio .fc-pre-tela__conteudo {
+    padding-top: 4.5rem;
+    padding-bottom: 2rem;
+  }
+}
+
+/* ---------- movimento ----------
+   Sem clique: cada traço da quadra tem `pathLength=1` (ver
+   `ui/Quadra.tsx`), então "desenhar" é levar o deslocamento do tracejado
+   de 1 a 0. O "10" vem logo depois, pelo mesmo truque com um tracejado
+   longo o bastante para cobrir o contorno dos dois algarismos. */
+@media (prefers-reduced-motion: no-preference) {
+  .fc-pre-trilho .fc-quadra [pathLength] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: fc-pre-riscar 1.5s cubic-bezier(0.65, 0, 0.25, 1) 0.1s forwards;
+  }
+
+  .fc-pre-trilho .fc-quadra circle:not([pathLength]) {
+    opacity: 0;
+    animation: fc-pre-surgir 0.4s ease 1.2s forwards;
+  }
+
+  .fc-pre-dez text {
+    stroke-dasharray: 3200;
+    stroke-dashoffset: 3200;
+    animation: fc-pre-riscar 2.4s cubic-bezier(0.65, 0, 0.25, 1) 0.55s forwards;
+  }
+}
+
+@keyframes fc-pre-riscar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fc-pre-surgir {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Menos movimento: a troca de tela e de passo continua, sem deslizar. */
+@media (prefers-reduced-motion: reduce) {
+  .fc-pre-trilho,
+  .fc-pre-trilho > .fc-quadra,
+  .fc-pre-progresso span {
+    transition: none;
+  }
+
+  .fc-pre-passo:not([hidden]),
+  .fc-pre-novidades__email {
+    animation: none;
+  }
+}

@@ -14,8 +14,8 @@ const NAV_VISITANTE_ATLETAS = { href: "/atletas", rotulo: "Atletas" } as const;
 const NAV_VISITANTE_MENU = [
   { href: "/escolinhas", rotulo: "Escolinhas" },
   { href: "/profissionais", rotulo: "Profissionais" },
-  { href: "/#como-funciona", rotulo: "Como funciona" },
-  { href: "/#clubes", rotulo: "Clubes" },
+  { href: "/vitrine#como-funciona", rotulo: "Como funciona" },
+  { href: "/vitrine#clubes", rotulo: "Clubes" },
 ] as const;
 
 // Nav da área logada: bem mais curta que a pública (sem os links de âncora
