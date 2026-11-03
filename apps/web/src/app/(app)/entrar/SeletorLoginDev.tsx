@@ -1,24 +1,24 @@
 import { entrarComoDev } from "./loginDev.acoes";
-import type { UsuarioLoginDev } from "./loginDev.servidor";
+import { ORDEM_PERSONAS, ROTULO_PERSONA, type UsuarioLoginDev } from "./loginDev.servidor";
 import { Aviso, Botao, Campo, Cartao, Selecao } from "@/ui";
 
 /**
- * Bloco do atalho de login de desenvolvimento. Renderizado só quando
+ * Bloco do atalho de login de demonstração. Renderizado só quando
  * `/entrar/page.tsx` já checou `loginDevHabilitado()` — mas continua sem
  * nenhum estado próprio de propósito (nem `"use client"`): é um `<form>`
  * comum, enviado pelo navegador direto para a Server Action
- * `entrarComoDev`, que checa as duas travas de novo antes de criar sessão.
+ * `entrarComoDev`, que checa a trava de novo antes de criar sessão.
  *
- * A lista já chega ordenada (mais atletas primeiro) de `listarUsuariosLoginDev`
- * — aqui só separamos em dois `<optgroup>`, com atleta e sem atleta, para
- * que quem tem interesse em ver o painel cheio nunca escolha por engano uma
- * conta sem nenhum. O rótulo de cada opção (não o cabeçalho do grupo) é
- * quem diz, com dado real de `profissionais`, se a conta sem atleta é de um
- * profissional — ver `rotuloUsuarioLoginDev` em `loginDev.servidor.ts`.
+ * Um `<optgroup>` por persona, na ordem de `ORDEM_PERSONAS`, com no máximo
+ * duas contas em cada — o corte é feito em `listarUsuariosLoginDev`, e aqui
+ * só agrupamos o que chegou. Grupos vazios não são desenhados: num seed
+ * recém-aplicado, "Sem persona" não existe.
  */
 export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
-  const comAtleta = usuarios.filter((u) => u.quantidadeAtletas > 0);
-  const semAtleta = usuarios.filter((u) => u.quantidadeAtletas === 0);
+  const grupos = ORDEM_PERSONAS.map((persona) => ({
+    persona,
+    contas: usuarios.filter((u) => u.persona === persona),
+  })).filter((g) => g.contas.length > 0);
 
   return (
     <Cartao className="fc-cartao--dev">
@@ -39,31 +39,22 @@ export function SeletorLoginDev({ usuarios }: { usuarios: UsuarioLoginDev[] }) {
           <Campo
             id="usuario_id"
             rotulo="Entrar como"
-            ajuda="Responsáveis com mais atletas aparecem primeiro — são os mais úteis para testar o painel."
+            ajuda="Duas contas por persona — as duas que mais diferem entre si. O banco tem mais, mas abririam a mesma tela."
           >
             {(campo) => (
               <Selecao {...campo} name="usuario_id" required defaultValue="">
                 <option value="" disabled>
-                  Escolha um usuário do seed
+                  Escolha uma persona
                 </option>
-                {comAtleta.length > 0 && (
-                  <optgroup label="Responsáveis (com atleta)">
-                    {comAtleta.map((u) => (
+                {grupos.map(({ persona, contas }) => (
+                  <optgroup key={persona} label={ROTULO_PERSONA[persona]}>
+                    {contas.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.rotulo}
                       </option>
                     ))}
                   </optgroup>
-                )}
-                {semAtleta.length > 0 && (
-                  <optgroup label="Sem atleta">
-                    {semAtleta.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.rotulo}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
+                ))}
               </Selecao>
             )}
           </Campo>

@@ -54,3 +54,4 @@ next-env.d.ts
 # supabase (packages/db)
 packages/db/supabase/.branches
 packages/db/supabase/.temp
+.env*.local

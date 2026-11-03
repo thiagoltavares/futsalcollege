@@ -81,6 +81,16 @@ select setseed(0.4231);
 --   avaliador.everton@exemplo.test        — Prof. Everton Aragão Filho
 --   avaliadora.larissa@exemplo.test       — Profa. Larissa Monteiro Cid
 --
+-- OLHEIROS VERIFICADOS (2 — a terceira persona: carregam
+-- `app_metadata.papel = 'olheiro_verificado'` no JWT, o que a policy
+-- `identificacao_olheiro_verificado` (migration 0002) exige para ler
+-- `atleta_identificacao` de atleta ativo. Não têm atleta nem página
+-- pública; existem para que essa visão possa ser aberta no navegador, e
+-- não só nos testes de RLS):
+--
+--   olheiro.clube@exemplo.test            — olheiro de clube
+--   olheira.federacao@exemplo.test        — olheira de federação
+--
 -- PROFISSIONAIS (5 — migration 0010, tabela `profissionais`, página
 -- pública /profissionais e /profissional/[slug]): os 4 acima, mais Flávio
 -- Barbosa (slug `flavio`, sem conta de login, sem laudo no seed). Todos os
@@ -93,8 +103,9 @@ select setseed(0.4231);
 --
 -- RESPONSÁVEIS EM MASSA (14 — só para dar volume aos 60-80 atletas da
 -- vitrine; não valem a pena documentar um a um, e o seletor de login de dev
--- lista TODOS os usuários do banco, então não são o foco de nenhum roteiro
--- de teste manual). E-mails seguem o padrão
+-- não os lista: ele mostra no máximo duas contas por persona, e estas
+-- repetiriam uma visão que as contas nomeadas acima já cobrem). E-mails
+-- seguem o padrão
 -- `familia.bulkNN@exemplo.test` (NN de 01 a 14), mesma senha de teste dos
 -- demais, e entram pelos mesmos dois caminhos de login.
 --
@@ -608,6 +619,53 @@ from auth.users
 where id in (
   'e0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000002',
   'e0000000-0000-0000-0000-000000000003', 'e0000000-0000-0000-0000-000000000004'
+);
+
+-- --------------------------------------------------------------------------
+-- Olheiros verificados (2) — a terceira persona da app.
+--
+-- A policy `identificacao_olheiro_verificado` (migration 0002) libera
+-- `atleta_identificacao` de atleta ativo para quem tem
+-- `app_metadata.papel = 'olheiro_verificado'` no JWT. Até aqui essa visão
+-- só existia nos testes de RLS: nenhuma conta do seed carregava o papel,
+-- então não havia como abri-la no navegador e conferir o que o olheiro
+-- enxerga de verdade — justamente a visão em que um erro vaza dado de
+-- criança.
+--
+-- `raw_app_meta_data` é o que a GoTrue copia para o claim `app_metadata`
+-- do JWT. `provider`/`providers` repetem o que um signup por e-mail
+-- gravaria; `papel` é nosso. Não confundir com `raw_user_meta_data`, que o
+-- próprio usuário consegue editar e por isso não serve para autorização.
+--
+-- O trigger `on_auth_user_created` também cria linha em `responsaveis`
+-- para estas contas, com `nome` nulo e nenhum atleta — inofensivo, e é o
+-- que faz o seletor de login classificá-las como olheiro e não como
+-- responsável.
+-- --------------------------------------------------------------------------
+
+insert into auth.users (
+  id, instance_id, email, encrypted_password, email_confirmed_at, role, aud,
+  raw_app_meta_data,
+  confirmation_token, recovery_token, email_change_token_new, email_change,
+  email_change_token_current, reauthentication_token, created_at, updated_at
+)
+values
+  ('c0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000',
+   'olheiro.clube@exemplo.test',
+   extensions.crypt('senha-de-teste-123', extensions.gen_salt('bf')), now(), 'authenticated', 'authenticated',
+   '{"provider":"email","providers":["email"],"papel":"olheiro_verificado"}'::jsonb,
+   '', '', '', '', '', '', now(), now()),
+  ('c0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000',
+   'olheira.federacao@exemplo.test',
+   extensions.crypt('senha-de-teste-123', extensions.gen_salt('bf')), now(), 'authenticated', 'authenticated',
+   '{"provider":"email","providers":["email"],"papel":"olheiro_verificado"}'::jsonb,
+   '', '', '', '', '', '', now(), now());
+
+insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+select id::text, id, jsonb_build_object('sub', id::text, 'email', email), 'email', now(), now(), now()
+from auth.users
+where id in (
+  'c0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002'
 );
 
 -- --------------------------------------------------------------------------
