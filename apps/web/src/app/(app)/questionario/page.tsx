@@ -52,7 +52,6 @@ type Linha = {
   pedido: string | null;
   aceita_contato: boolean;
   contato: string | null;
-  visto_em: string | null;
 };
 
 const rotulo = (mapa: Record<string, string>, valor: string | null) =>
@@ -118,17 +117,24 @@ export default async function Questionario({
   const { ver } = await searchParams;
   const soNovas = ver !== "todas";
 
-  const { data, error } = await criarClienteAdmin()
-    .from("pesquisa_responsaveis")
-    .select(
-      "id, criado_em, perfil, origem, estado_uf, categoria_filho, enviou_video, resultado_envio, tem_video, gasto_mensal, publica_video, quem_ve_video, preocupacao, beneficio, organizacao, como_hoje, pedido, aceita_contato, contato, visto_em",
-    )
-    .order("criado_em", { ascending: false });
+  const admin = criarClienteAdmin();
+  const [{ data, error }, { data: lidas, error: erroLidas }] = await Promise.all([
+    admin
+      .from("pesquisa_responsaveis")
+      .select(
+        "id, criado_em, perfil, origem, estado_uf, categoria_filho, enviou_video, resultado_envio, tem_video, gasto_mensal, publica_video, quem_ve_video, preocupacao, beneficio, organizacao, como_hoje, pedido, aceita_contato, contato",
+      )
+      .order("criado_em", { ascending: false }),
+    // "Visto" é de cada um (migration 0019): só as leituras de quem está logado.
+    admin.from("pesquisa_leituras").select("resposta_id").eq("user_id", usuario.id),
+  ]);
 
   // Falha de leitura não pode virar "nenhuma resposta": avisa na tela.
-  if (error) console.error("questionario: leitura falhou", error.message);
+  const falha = error ?? erroLidas;
+  if (falha) console.error("questionario: leitura falhou", falha.message);
   const todas = (data ?? []) as Linha[];
-  const novas = todas.filter((r) => !r.visto_em);
+  const vistas = new Set((lidas ?? []).map((l) => l.resposta_id));
+  const novas = todas.filter((r) => !vistas.has(r.id));
   const lista = soNovas ? novas : todas;
   const contagem = {
     responsaveis: todas.filter((r) => r.perfil === "responsavel").length,
@@ -142,7 +148,8 @@ export default async function Questionario({
         <div>
           <h1 className="fc-titulo">Questionário</h1>
           <p className="fc-subtitulo">
-            As respostas da pesquisa da home, da mais nova para a mais antiga.
+            As respostas da pesquisa da home, da mais nova para a mais antiga. O que você marca
+            como visto vale só para você.
           </p>
         </div>
         <div className="fc-quest-cabecalho__acoes">
@@ -163,7 +170,7 @@ export default async function Questionario({
           <dd>{todas.length}</dd>
         </div>
         <div>
-          <dt>Não vistas</dt>
+          <dt>Não vistas por você</dt>
           <dd>{novas.length}</dd>
         </div>
         <div>
@@ -189,10 +196,10 @@ export default async function Questionario({
         </Link>
       </nav>
 
-      {error ? (
+      {falha ? (
         <Aviso tipo="erro">
           Não consegui carregar as respostas agora. Tente Atualizar; se continuar, o erro foi:{" "}
-          {error.message}
+          {falha.message}
         </Aviso>
       ) : lista.length === 0 ? (
         <Cartao>
@@ -207,7 +214,7 @@ export default async function Questionario({
       ) : (
         <ul className="fc-quest-lista">
           {lista.map((r) => {
-            const vista = Boolean(r.visto_em);
+            const vista = vistas.has(r.id);
             return (
               <li key={r.id}>
                 <Cartao className="fc-quest-resposta" data-vista={vista ? "" : undefined}>

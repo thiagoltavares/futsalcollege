@@ -408,6 +408,32 @@ export type Database = {
           },
         ]
       }
+      pesquisa_leituras: {
+        Row: {
+          resposta_id: string
+          user_id: string
+          visto_em: string
+        }
+        Insert: {
+          resposta_id: string
+          user_id: string
+          visto_em?: string
+        }
+        Update: {
+          resposta_id?: string
+          user_id?: string
+          visto_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisa_leituras_resposta_id_fkey"
+            columns: ["resposta_id"]
+            isOneToOne: false
+            referencedRelation: "pesquisa_responsaveis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pesquisa_responsaveis: {
         Row: {
           aceita_contato: boolean
@@ -429,8 +455,6 @@ export type Database = {
           quem_ve_video: string | null
           resultado_envio: string | null
           tem_video: string | null
-          visto_em: string | null
-          visto_por: string | null
         }
         Insert: {
           aceita_contato?: boolean
@@ -452,8 +476,6 @@ export type Database = {
           quem_ve_video?: string | null
           resultado_envio?: string | null
           tem_video?: string | null
-          visto_em?: string | null
-          visto_por?: string | null
         }
         Update: {
           aceita_contato?: boolean
@@ -475,8 +497,6 @@ export type Database = {
           quem_ve_video?: string | null
           resultado_envio?: string | null
           tem_video?: string | null
-          visto_em?: string | null
-          visto_por?: string | null
         }
         Relationships: []
       }

@@ -5,24 +5,25 @@ import { usuarioDaEquipe } from "@/lib/equipe";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
 /**
- * Marcação de "visto" nas respostas da pesquisa (migration 0018). A tabela
- * não tem política de escrita na RLS para isto, então a marcação usa a
- * chave de serviço — e só depois de conferir, aqui no servidor, que a
- * sessão é de alguém da equipe.
+ * "Visto" individual nas respostas da pesquisa (migration 0019): cada
+ * pessoa da equipe tem a sua leitura, uma linha em `pesquisa_leituras`.
+ * Marcar não muda nada para o outro. A tabela não tem política de escrita
+ * na RLS, então a marcação usa a chave de serviço — e só depois de
+ * conferir, aqui no servidor, que a sessão é de alguém da equipe.
  */
 
 export async function marcarVista(id: string, vista: boolean): Promise<void> {
   const usuario = await usuarioDaEquipe();
   if (!usuario) return;
+  const admin = criarClienteAdmin();
 
-  await criarClienteAdmin()
-    .from("pesquisa_responsaveis")
-    .update(
-      vista
-        ? { visto_em: new Date().toISOString(), visto_por: usuario.id }
-        : { visto_em: null, visto_por: null },
-    )
-    .eq("id", id);
+  if (vista) {
+    await admin
+      .from("pesquisa_leituras")
+      .upsert({ resposta_id: id, user_id: usuario.id }, { onConflict: "resposta_id,user_id" });
+  } else {
+    await admin.from("pesquisa_leituras").delete().eq("resposta_id", id).eq("user_id", usuario.id);
+  }
 
   revalidatePath("/questionario");
 }
@@ -30,11 +31,22 @@ export async function marcarVista(id: string, vista: boolean): Promise<void> {
 export async function marcarTodasVistas(): Promise<void> {
   const usuario = await usuarioDaEquipe();
   if (!usuario) return;
+  const admin = criarClienteAdmin();
 
-  await criarClienteAdmin()
-    .from("pesquisa_responsaveis")
-    .update({ visto_em: new Date().toISOString(), visto_por: usuario.id })
-    .is("visto_em", null);
+  const [{ data: respostas }, { data: lidas }] = await Promise.all([
+    admin.from("pesquisa_responsaveis").select("id"),
+    admin.from("pesquisa_leituras").select("resposta_id").eq("user_id", usuario.id),
+  ]);
+  const jaLidas = new Set((lidas ?? []).map((l) => l.resposta_id));
+  const novas = (respostas ?? []).filter((r) => !jaLidas.has(r.id));
+  if (novas.length === 0) return;
+
+  await admin
+    .from("pesquisa_leituras")
+    .upsert(
+      novas.map((r) => ({ resposta_id: r.id, user_id: usuario.id })),
+      { onConflict: "resposta_id,user_id" },
+    );
 
   revalidatePath("/questionario");
 }
