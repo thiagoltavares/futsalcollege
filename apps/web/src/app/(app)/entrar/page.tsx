@@ -1,4 +1,5 @@
 import { Aviso, Cartao } from "@/ui";
+import { siteAberto } from "@/lib/preLancamento";
 import { FormularioEntrar } from "./FormularioEntrar";
 import { SeletorLoginDev } from "./SeletorLoginDev";
 import { listarUsuariosLoginDev, loginDevHabilitado } from "./loginDev.servidor";
@@ -20,19 +21,25 @@ export default async function Entrar({ searchParams }: PageProps<"/entrar">) {
   // produção — ou com NEXT_PUBLIC_LOGIN_DEV desligado — `usuariosDev` fica
   // `null` e `SeletorLoginDev` nunca é desenhado.
   const usuariosDev = loginDevHabilitado() ? await listarUsuariosLoginDev() : null;
+  // Pré-lançamento: só a equipe entra, e só quem já tem conta recebe link.
+  const aberto = siteAberto();
 
   return (
     <div className="fc-container fc-container--estreito">
       <div className="fc-cabecalho-pagina">
-        <p className="fc-rotulo-secao fc-etiqueta-rotulo">Acesso do responsável</p>
+        <p className="fc-rotulo-secao fc-etiqueta-rotulo">
+          {aberto ? "Acesso do responsável" : "Acesso da equipe"}
+        </p>
         <h1 className="fc-titulo">Entrar</h1>
         <p className="fc-subtitulo">
-          Enviamos um link de acesso para o seu e-mail. Sem senha para lembrar.
+          {aberto
+            ? "Enviamos um link de acesso para o seu e-mail. Sem senha para lembrar."
+            : "O Revela 10 ainda não abriu. Por enquanto, só a equipe entra, com um link enviado para o e-mail."}
         </p>
       </div>
 
       <Cartao>
-        <FormularioEntrar />
+        <FormularioEntrar permitirCadastro={aberto} />
       </Cartao>
 
       {mensagemErro && (
