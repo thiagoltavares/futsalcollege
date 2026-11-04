@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contatoValido, esquemaPesquisa } from "./pesquisa";
+import { contatoValido, esquemaPesquisa, formatarContato, mascaraContato } from "./pesquisa";
 
 const responsavelCompleto = {
   perfil: "responsavel",
@@ -84,5 +84,36 @@ describe("esquemaPesquisa", () => {
       false,
     );
     expect(esquemaPesquisa.safeParse({ ...responsavelCompleto, origem: "sesc-ce" }).success).toBe(true);
+  });
+
+  it("formata telefone do jeito que for digitado no mesmo padrão", () => {
+    expect(formatarContato("85996595034")).toBe("(85) 99659-5034");
+    expect(formatarContato("(85) 99615-5722")).toBe("(85) 99615-5722");
+    expect(formatarContato("+55 85 9 9615-5722")).toBe("(85) 99615-5722");
+    expect(formatarContato("5585996595034")).toBe("(85) 99659-5034");
+    expect(formatarContato("85 3456.7890")).toBe("(85) 3456-7890");
+  });
+
+  it("deixa e-mail e texto que não é telefone como vieram", () => {
+    expect(formatarContato("  Pai@Exemplo.com ")).toBe("pai@exemplo.com");
+    expect(formatarContato("99999")).toBe("99999");
+  });
+
+  it("mascara o telefone aos poucos enquanto a pessoa digita", () => {
+    expect(mascaraContato("8")).toBe("(8");
+    expect(mascaraContato("85")).toBe("(85");
+    expect(mascaraContato("859")).toBe("(85) 9");
+    expect(mascaraContato("8599659")).toBe("(85) 99659");
+    expect(mascaraContato("85996595")).toBe("(85) 99659-5");
+    expect(mascaraContato("8534567890")).toBe("(85) 3456-7890");
+    expect(mascaraContato("85996595034")).toBe("(85) 99659-5034");
+    expect(mascaraContato("(85) 99659-50345")).toBe("(85) 99659-5034");
+    expect(mascaraContato("5585996595034")).toBe("(85) 99659-5034");
+    expect(mascaraContato("")).toBe("");
+  });
+
+  it("não mascara quando é e-mail", () => {
+    expect(mascaraContato("pai@")).toBe("pai@");
+    expect(mascaraContato("joao85")).toBe("joao85");
   });
 });

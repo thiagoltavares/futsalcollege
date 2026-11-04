@@ -2,7 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
-import { esquemaPesquisa } from "@revela10/core";
+import { esquemaPesquisa, formatarContato } from "@revela10/core";
 
 /**
  * Pesquisa de pré-lançamento (home, migration 0017). Formulário público,
@@ -56,7 +56,9 @@ export async function enviarPesquisa(
   // "Nunca mandei" junto com um canal é contradição; vale o canal.
   const enviou = d.enviou_video.length > 1 ? d.enviou_video.filter((v) => v !== "nunca") : d.enviou_video;
   const soNunca = enviou.length === 1 && enviou[0] === "nunca";
-  const contato = d.aceita_contato ? (d.contato?.trim() ?? null) : null;
+  // Contato gravado num formato só: `(85) 99659-5034` ou e-mail em
+  // minúsculas, do jeito que a pessoa tiver digitado.
+  const contato = d.aceita_contato && d.contato ? formatarContato(d.contato) : null;
 
   const { error } = await clienteAnonimo()
     .from("pesquisa_responsaveis")

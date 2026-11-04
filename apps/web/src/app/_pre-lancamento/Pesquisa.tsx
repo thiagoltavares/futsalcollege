@@ -12,6 +12,7 @@ import {
   PESQUISA_RESULTADO_ENVIO,
   PESQUISA_TEM_VIDEO,
   contatoValido,
+  mascaraContato,
 } from "@revela10/core";
 import {
   startTransition,
@@ -136,7 +137,20 @@ function passoNovidades(): Passo {
             ajuda="O seu, com DDD. Nada do seu filho entra aqui."
           >
             {(campo) => (
-              <input {...campo} name="contato" maxLength={120} autoComplete="tel" placeholder="(85) 9 9999-9999" />
+              <input
+                {...campo}
+                name="contato"
+                maxLength={120}
+                autoComplete="tel"
+                placeholder="(85) 99999-9999 ou seu e-mail"
+                // Máscara de telefone enquanto só há número; com letra ou @
+                // é e-mail e o texto passa livre (ver `mascaraContato`).
+                onInput={(evento) => {
+                  const campoTexto = evento.currentTarget;
+                  const mascarado = mascaraContato(campoTexto.value);
+                  if (mascarado !== campoTexto.value) campoTexto.value = mascarado;
+                }}
+              />
             )}
           </Campo>
         </div>

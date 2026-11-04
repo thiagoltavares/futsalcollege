@@ -88,6 +88,49 @@ export const PESQUISA_BENEFICIO = {
  * pontuação livre) ou e-mail. Exportado para a tela validar igual ao
  * servidor.
  */
+/**
+ * Telefone no formato de exibição brasileiro: `(85) 99659-5034` (celular,
+ * 11 dígitos) ou `(85) 3456-7890` (fixo, 10 dígitos). Aceita o que a pessoa
+ * digitou — com ou sem DDI 55, espaços, parênteses, pontos e traços. E-mail
+ * e o que não tiver cara de telefone voltam como vieram, aparados.
+ */
+export function formatarContato(valor: string): string {
+  const v = valor.trim();
+  if (v.includes("@")) return v.toLowerCase();
+  let digitos = v.replace(/\D/g, "");
+  if ((digitos.length === 12 || digitos.length === 13) && digitos.startsWith("55")) {
+    digitos = digitos.slice(2);
+  }
+  if (digitos.length === 11) {
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`;
+  }
+  if (digitos.length === 10) {
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`;
+  }
+  return v;
+}
+
+/**
+ * Máscara do campo de contato enquanto a pessoa digita: se só há número
+ * (e pontuação de telefone), monta `(85) 99659-5034` aos poucos; se aparece
+ * letra ou `@`, é e-mail e o texto passa como está. DDI 55 digitado na
+ * frente é descartado, porque o número é sempre brasileiro.
+ */
+export function mascaraContato(valor: string): string {
+  if (/[a-z@]/i.test(valor)) return valor;
+  let digitos = valor.replace(/\D/g, "");
+  if (digitos.length > 11 && digitos.startsWith("55")) digitos = digitos.slice(2);
+  digitos = digitos.slice(0, 11);
+  if (digitos.length === 0) return "";
+  if (digitos.length <= 2) return `(${digitos}`;
+  const ddd = digitos.slice(0, 2);
+  const resto = digitos.slice(2);
+  // Celular começa com 9 e divide 5-4; fixo (2 a 5) divide 4-4.
+  const corte = resto.startsWith("9") ? 5 : 4;
+  if (resto.length <= corte) return `(${ddd}) ${resto}`;
+  return `(${ddd}) ${resto.slice(0, corte)}-${resto.slice(corte)}`;
+}
+
 export function contatoValido(valor: string): boolean {
   const v = valor.trim();
   if (v.includes("@")) return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);

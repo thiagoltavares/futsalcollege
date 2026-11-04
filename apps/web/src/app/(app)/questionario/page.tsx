@@ -11,6 +11,7 @@ import {
   PESQUISA_QUEM_VE_VIDEO,
   PESQUISA_RESULTADO_ENVIO,
   PESQUISA_TEM_VIDEO,
+  formatarContato,
 } from "@revela10/core";
 import { usuarioDaEquipe } from "@/lib/equipe";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -252,7 +253,8 @@ export default async function Questionario({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {r.contato.includes("@") ? "E-mail" : "WhatsApp"}: {r.contato}
+                        {r.contato.includes("@") ? "E-mail" : "WhatsApp"}:{" "}
+                        {formatarContato(r.contato)}
                       </a>
                     ) : (
                       <span className="fc-quest-resposta__meta">Não quis receber novidades</span>
