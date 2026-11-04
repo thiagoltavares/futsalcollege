@@ -1,5 +1,6 @@
 "use server";
 
+import { destinoAposLogin } from "@/lib/preLancamento";
 import { redirect } from "next/navigation";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
@@ -60,5 +61,6 @@ export async function entrarComoDev(formulario: FormData) {
     redirect("/entrar?erro=login-dev-falhou");
   }
 
-  redirect("/painel");
+  // Mesmo destino do link mágico (ver `auth/confirmar`).
+  redirect(destinoAposLogin(email));
 }

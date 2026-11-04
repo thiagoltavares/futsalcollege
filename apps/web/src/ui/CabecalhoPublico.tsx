@@ -29,6 +29,9 @@ const NAV_AUTENTICADO = [
   { href: "/painel", rotulo: "Painel" },
 ] as const;
 
+/** Só para quem é da equipe (`EQUIPE_EMAILS`): as respostas da pesquisa. */
+const NAV_EQUIPE = { href: "/questionario", rotulo: "Questionário" } as const;
+
 export type CabecalhoPublicoProps = {
   className?: string;
   /**
@@ -54,6 +57,12 @@ export type CabecalhoPublicoProps = {
    * nav logada nunca mostra "Entrar" de qualquer forma).
    */
   ocultarEntrar?: boolean;
+  /**
+   * `true` acrescenta "Questionário" à nav logada. Decidido no servidor
+   * (`EQUIPE_EMAILS` não existe no navegador): o layout do grupo `(app)`
+   * passa direto, e `CabecalhoPublicoAuto` pergunta por uma Server Action.
+   */
+  equipe?: boolean;
 };
 
 /**
@@ -71,6 +80,7 @@ export function CabecalhoPublico({
   className,
   autenticado = false,
   ocultarEntrar = false,
+  equipe = false,
 }: CabecalhoPublicoProps) {
   return (
     <header className={cn("fc-cabecalho", className)}>
@@ -82,11 +92,18 @@ export function CabecalhoPublico({
         </Link>
         <nav className="fc-cabecalho-nav">
           {autenticado ? (
-            NAV_AUTENTICADO.map((item) => (
-              <Link key={item.href} href={item.href} className="fc-cabecalho-nav__logado">
-                {item.rotulo}
-              </Link>
-            ))
+            <>
+              {NAV_AUTENTICADO.map((item) => (
+                <Link key={item.href} href={item.href} className="fc-cabecalho-nav__logado">
+                  {item.rotulo}
+                </Link>
+              ))}
+              {equipe && (
+                <Link href={NAV_EQUIPE.href} className="fc-cabecalho-nav__logado">
+                  {NAV_EQUIPE.rotulo}
+                </Link>
+              )}
+            </>
           ) : (
             <>
               <Link href={NAV_VISITANTE_ATLETAS.href} className="fc-cabecalho-nav__atletas">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { criarClienteNavegador } from "@/lib/supabase/cliente";
+import { souDaEquipe } from "@/lib/equipe.acoes";
 import { CabecalhoPublico, type CabecalhoPublicoProps } from "./CabecalhoPublico";
 
 /**
@@ -24,20 +25,31 @@ import { CabecalhoPublico, type CabecalhoPublicoProps } from "./CabecalhoPublico
  */
 export function CabecalhoPublicoAuto(props: Omit<CabecalhoPublicoProps, "autenticado">) {
   const [autenticado, setAutenticado] = useState(false);
+  const [equipe, setEquipe] = useState(false);
 
   useEffect(() => {
     let ativo = true;
     const supabase = criarClienteNavegador();
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (ativo) setAutenticado(Boolean(data.session));
-    });
+    // Com sessão, pergunta ao servidor se a conta é da equipe — a lista
+    // (`EQUIPE_EMAILS`) só existe lá.
+    const atualizar = (logado: boolean) => {
+      if (!ativo) return;
+      setAutenticado(logado);
+      if (!logado) {
+        setEquipe(false);
+        return;
+      }
+      souDaEquipe().then((sim) => {
+        if (ativo) setEquipe(sim);
+      });
+    };
+
+    supabase.auth.getSession().then(({ data }) => atualizar(Boolean(data.session)));
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_evento, sessao) => {
-      if (ativo) setAutenticado(Boolean(sessao));
-    });
+    } = supabase.auth.onAuthStateChange((_evento, sessao) => atualizar(Boolean(sessao)));
 
     return () => {
       ativo = false;
@@ -45,5 +57,5 @@ export function CabecalhoPublicoAuto(props: Omit<CabecalhoPublicoProps, "autenti
     };
   }, []);
 
-  return <CabecalhoPublico {...props} autenticado={autenticado} />;
+  return <CabecalhoPublico {...props} autenticado={autenticado} equipe={equipe} />;
 }

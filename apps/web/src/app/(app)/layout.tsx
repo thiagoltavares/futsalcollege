@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { fontesFc } from "@/ui/fontes";
 import "@/ui/estilos.css";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { ehEquipe } from "@/lib/preLancamento";
 import { CabecalhoGrupoApp } from "./CabecalhoGrupoApp";
 
 export default async function LayoutApp({ children }: { children: ReactNode }) {
@@ -16,7 +17,10 @@ export default async function LayoutApp({ children }: { children: ReactNode }) {
 
   return (
     <div className={`fc fc-pagina ${fontesFc}`}>
-      <CabecalhoGrupoApp autenticado={Boolean(sessao.user)} />
+      <CabecalhoGrupoApp
+        autenticado={Boolean(sessao.user)}
+        equipe={Boolean(sessao.user) && ehEquipe(sessao.user?.email)}
+      />
 
       <div className="fc-corpo">{children}</div>
     </div>

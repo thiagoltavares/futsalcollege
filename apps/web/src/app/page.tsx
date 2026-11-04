@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/ui/estilos.css";
-import { siteAberto } from "@/lib/preLancamento";
+import { destinoAposLogin, siteAberto } from "@/lib/preLancamento";
+import { criarClienteServidor } from "@/lib/supabase/servidor";
 import { PreLancamento } from "./_pre-lancamento/PreLancamento";
 import { Vitrine, metadataVitrine } from "./vitrine/Vitrine";
 
@@ -48,5 +49,10 @@ export default async function Inicio({
   if (siteAberto()) return <Vitrine />;
 
   const { de } = await searchParams;
-  return <PreLancamento origem={origemValida(de)} />;
+  // Logado, o topo troca "Entrar" por "Painel", que leva ao mesmo destino
+  // do login (a equipe cai no Questionário).
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.auth.getUser();
+  const painel = data.user ? destinoAposLogin(data.user.email) : null;
+  return <PreLancamento origem={origemValida(de)} painel={painel} />;
 }

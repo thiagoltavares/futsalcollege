@@ -4011,3 +4011,156 @@ a.fc-botao--perigo:hover {
   background: var(--fc-linha-forte);
   min-width: 1rem;
 }
+
+/* ---------- questionário da equipe (/questionario) ----------
+   As respostas da pesquisa de pré-lançamento, uma por cartão. Resposta
+   nova tem borda azul à esquerda; vista fica apagada, para o olho ir
+   direto ao que ainda não foi lido. */
+
+.fc-quest-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--fc-esp-4);
+}
+
+.fc-quest-cabecalho__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fc-esp-3);
+}
+
+.fc-quest-placar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--fc-esp-3);
+  margin: 0 0 var(--fc-esp-5);
+}
+
+.fc-quest-placar > div {
+  padding: var(--fc-esp-3) var(--fc-esp-4);
+  border-radius: var(--fc-raio);
+  background: var(--fc-branco);
+  border: 1px solid var(--fc-linha);
+}
+
+.fc-quest-placar dt {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fc-tinta-3);
+}
+
+.fc-quest-placar dd {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--fc-tinta);
+}
+
+.fc-quest-filtro {
+  display: flex;
+  gap: var(--fc-esp-2);
+  margin-bottom: var(--fc-esp-4);
+}
+
+.fc .fc-quest-filtro a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--fc-alvo);
+  padding: 0 var(--fc-esp-4);
+  border-radius: var(--fc-raio-pill);
+  border: 1.5px solid var(--fc-linha-forte);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--fc-tinta-2);
+  text-decoration: none;
+}
+
+.fc .fc-quest-filtro a[aria-current="page"] {
+  border-color: var(--fc-quadra);
+  background: var(--fc-quadra);
+  color: var(--fc-giz);
+}
+
+.fc-quest-lista {
+  display: grid;
+  gap: var(--fc-esp-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fc-quest-resposta {
+  display: grid;
+  gap: var(--fc-esp-4);
+  border-left: 4px solid var(--fc-quadra);
+}
+
+.fc-quest-resposta[data-vista] {
+  border-left-color: var(--fc-linha);
+  opacity: 0.78;
+}
+
+.fc-quest-resposta__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+}
+
+.fc-quest-resposta__quem {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.fc-quest-resposta__perfil {
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--fc-tinta);
+}
+
+.fc-quest-resposta__meta {
+  font-size: 0.875rem;
+  color: var(--fc-tinta-3);
+}
+
+.fc-quest-respostas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--fc-esp-3) var(--fc-esp-5);
+  margin: 0;
+}
+
+.fc-quest-respostas dt {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fc-tinta-3);
+}
+
+.fc-quest-respostas dd {
+  margin: 0.15rem 0 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--fc-tinta);
+}
+
+.fc-quest-resposta__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fc-esp-3);
+  padding-top: var(--fc-esp-3);
+  border-top: 1px solid var(--fc-linha);
+}
+
+.fc a.fc-quest-resposta__contato {
+  font-weight: 700;
+  color: var(--fc-acento);
+}

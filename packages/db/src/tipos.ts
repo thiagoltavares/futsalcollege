@@ -429,6 +429,8 @@ export type Database = {
           quem_ve_video: string | null
           resultado_envio: string | null
           tem_video: string | null
+          visto_em: string | null
+          visto_por: string | null
         }
         Insert: {
           aceita_contato?: boolean
@@ -450,6 +452,8 @@ export type Database = {
           quem_ve_video?: string | null
           resultado_envio?: string | null
           tem_video?: string | null
+          visto_em?: string | null
+          visto_por?: string | null
         }
         Update: {
           aceita_contato?: boolean
@@ -471,6 +475,8 @@ export type Database = {
           quem_ve_video?: string | null
           resultado_envio?: string | null
           tem_video?: string | null
+          visto_em?: string | null
+          visto_por?: string | null
         }
         Relationships: []
       }

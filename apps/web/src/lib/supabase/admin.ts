@@ -7,10 +7,13 @@ import { createClient } from "@supabase/supabase-js";
  * servidor: nunca importe este módulo de um componente "use client", nem
  * repasse a chave para o navegador.
  *
- * Hoje o único chamador é o login de desenvolvimento (`entrar/loginDev.*`),
- * sempre atrás das duas travas de ambiente (`NODE_ENV` e
- * `NEXT_PUBLIC_LOGIN_DEV`) checadas no servidor antes de qualquer uso desta
- * função — ver `loginDevHabilitado()`.
+ * Chamadores, cada um atrás da sua trava checada no servidor antes de usar
+ * esta função:
+ * - o login de desenvolvimento (`entrar/loginDev.*`), atrás de
+ *   `loginDevHabilitado()`;
+ * - o Questionário da equipe (`/questionario`), atrás de `usuarioDaEquipe()`
+ *   (`lib/equipe.ts`) — as respostas da pesquisa não têm política de leitura
+ *   na RLS, de propósito.
  */
 export function criarClienteAdmin() {
   const chaveSecreta = process.env.SUPABASE_SECRET_KEY;

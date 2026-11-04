@@ -11,7 +11,19 @@ import { CabecalhoPublico } from "@/ui";
  * já chama `cookies()` para todo o grupo); só o pathname precisa do
  * navegador, daqui vem o `"use client"`.
  */
-export function CabecalhoGrupoApp({ autenticado }: { autenticado: boolean }) {
+export function CabecalhoGrupoApp({
+  autenticado,
+  equipe,
+}: {
+  autenticado: boolean;
+  equipe: boolean;
+}) {
   const pathname = usePathname();
-  return <CabecalhoPublico autenticado={autenticado} ocultarEntrar={pathname === "/entrar"} />;
+  return (
+    <CabecalhoPublico
+      autenticado={autenticado}
+      equipe={equipe}
+      ocultarEntrar={pathname === "/entrar"}
+    />
+  );
 }

@@ -49,3 +49,12 @@ export function ehEquipe(email: string | null | undefined): boolean {
   if (lista.length === 0) return process.env.NODE_ENV === "development";
   return lista.includes(email.toLowerCase());
 }
+
+/**
+ * Para onde o login leva: a equipe cai no Questionário (`/questionario`,
+ * as respostas da pesquisa de pré-lançamento); qualquer outra conta, no
+ * painel do responsável.
+ */
+export function destinoAposLogin(email: string | null | undefined): string {
+  return ehEquipe(email) ? "/questionario" : "/painel";
+}

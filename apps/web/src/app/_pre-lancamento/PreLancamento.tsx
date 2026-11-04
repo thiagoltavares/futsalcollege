@@ -14,7 +14,14 @@ import "./pre-lancamento.css";
  * movimento é a resposta ao clique: o hero vai para a esquerda e a
  * pesquisa entra. Os dois somem com `prefers-reduced-motion`.
  */
-export function PreLancamento({ origem }: { origem: string | null }) {
+export function PreLancamento({
+  origem,
+  painel,
+}: {
+  origem: string | null;
+  /** Destino do link do topo para quem está logado; `null` mostra "Entrar". */
+  painel: string | null;
+}) {
   return (
     <div className={`fc fc-pre ${fontesFc}`}>
       <header className="fc-pre-topo">
@@ -24,8 +31,8 @@ export function PreLancamento({ origem }: { origem: string | null }) {
               Revela <em>10</em>
             </span>
           </span>
-          <Link href="/entrar" className="fc-pre-topo__entrar">
-            Entrar
+          <Link href={painel ?? "/entrar"} className="fc-pre-topo__entrar">
+            {painel ? "Painel" : "Entrar"}
           </Link>
         </div>
       </header>
