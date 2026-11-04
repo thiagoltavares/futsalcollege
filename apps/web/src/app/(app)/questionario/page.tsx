@@ -14,7 +14,7 @@ import {
 } from "@revela10/core";
 import { usuarioDaEquipe } from "@/lib/equipe";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
-import { Botao, Cartao } from "@/ui";
+import { Aviso, Botao, Cartao } from "@/ui";
 import { marcarTodasVistas, marcarVista } from "./acoes";
 import { BotaoAtualizar } from "./BotaoAtualizar";
 
@@ -113,16 +113,20 @@ export default async function Questionario({
   const usuario = await usuarioDaEquipe();
   if (!usuario) redirect("/painel");
 
+  // Padrão é "Não vistas": é o que a equipe vem ver. "Todas" serve para
+  // rever uma resposta que já foi marcada.
   const { ver } = await searchParams;
-  const soNovas = ver === "novas";
+  const soNovas = ver !== "todas";
 
-  const { data } = await criarClienteAdmin()
+  const { data, error } = await criarClienteAdmin()
     .from("pesquisa_responsaveis")
     .select(
       "id, criado_em, perfil, origem, estado_uf, categoria_filho, enviou_video, resultado_envio, tem_video, gasto_mensal, publica_video, quem_ve_video, preocupacao, beneficio, organizacao, como_hoje, pedido, aceita_contato, contato, visto_em",
     )
     .order("criado_em", { ascending: false });
 
+  // Falha de leitura não pode virar "nenhuma resposta": avisa na tela.
+  if (error) console.error("questionario: leitura falhou", error.message);
   const todas = (data ?? []) as Linha[];
   const novas = todas.filter((r) => !r.visto_em);
   const lista = soNovas ? novas : todas;
@@ -177,18 +181,27 @@ export default async function Questionario({
       </dl>
 
       <nav className="fc-quest-filtro" aria-label="Filtrar respostas">
-        <Link href="/questionario" aria-current={soNovas ? undefined : "page"}>
-          Todas ({todas.length})
-        </Link>
-        <Link href="/questionario?ver=novas" aria-current={soNovas ? "page" : undefined}>
+        <Link href="/questionario" aria-current={soNovas ? "page" : undefined}>
           Não vistas ({novas.length})
+        </Link>
+        <Link href="/questionario?ver=todas" aria-current={soNovas ? undefined : "page"}>
+          Todas ({todas.length})
         </Link>
       </nav>
 
-      {lista.length === 0 ? (
+      {error ? (
+        <Aviso tipo="erro">
+          Não consegui carregar as respostas agora. Tente Atualizar; se continuar, o erro foi:{" "}
+          {error.message}
+        </Aviso>
+      ) : lista.length === 0 ? (
         <Cartao>
           <p className="fc-estado-vazio">
-            {soNovas ? "Nenhuma resposta nova. Tudo visto." : "Ainda não chegou nenhuma resposta."}
+            {soNovas
+              ? todas.length > 0
+                ? "Nenhuma resposta nova. Tudo visto; as anteriores estão em Todas."
+                : "Ainda não chegou nenhuma resposta."
+              : "Ainda não chegou nenhuma resposta."}
           </p>
         </Cartao>
       ) : (
