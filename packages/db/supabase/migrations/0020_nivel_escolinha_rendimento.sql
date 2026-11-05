@@ -70,14 +70,3 @@ alter table pesquisa_responsaveis
       and nivel_filho is null
     )
   );
-
--- Obrigatório para responsável, mas `not valid`: as respostas que já
--- chegaram (85 em 05/11) não têm como responder uma pergunta que não
--- existia, e apagá-las ou inventar um valor para elas seria pior. `not
--- valid` deixa as antigas em paz e cobra de toda linha nova — é por isso
--- que a pergunta NÃO entrou em `pesquisa_responsavel_completo`, que é
--- validada.
-alter table pesquisa_responsaveis
-  add constraint pesquisa_nivel_filho_obrigatorio check (
-    perfil <> 'responsavel' or nivel_filho is not null
-  ) not valid;
