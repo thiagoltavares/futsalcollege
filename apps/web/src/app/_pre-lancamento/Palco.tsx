@@ -74,18 +74,30 @@ export function Palco({ origem }: { origem: string | null }) {
                 Em construção. Abre em breve, para todo o Brasil.
               </p>
               <h1 id="pre-titulo" className="fc-pre-h1">
-                A base vai ser vista.
+                Todo talento tem uma história. Toda história merece ser vista.
               </h1>
-              <p className="fc-pre-lead">
-                Um lugar para mostrar o futsal e o fut7 de base em vídeo. Cada atleta com o seu
-                perfil, visto por clubes e olheiros, sem expor a criança.
-              </p>
+
+              <div className="fc-pre-manifesto">
+                <p>
+                  O <b>Revela 10</b> é um espaço para o futsal e o futebol 7 de base: cada atleta
+                  reúne seus vídeos, registra conquistas e mostra a trajetória dele, nas quadras e
+                  nos campos. Num lugar só, para atletas, famílias, escolinhas e clubes.
+                </p>
+                <p className="fc-pre-manifesto__destaque">
+                  Mais do que uma vitrine de atletas, um espaço para o esporte de base crescer.
+                </p>
+                <p>
+                  <b>Estamos apenas começando.</b> Antes de decidir o que a plataforma vai ter,
+                  queremos ouvir quem vive essa realidade.
+                </p>
+              </div>
+
               <div className="fc-pre-hero__acoes">
                 <button type="button" className="fc-botao fc-botao--primario" onClick={comecar}>
-                  Responder a pesquisa
+                  Participe da pesquisa
                 </button>
                 <p className="fc-pre-hero__nota">
-                  Leva 2 minutos. É só tocar nas respostas, sem cadastro.
+                  Leva apenas 2 minutos. É só tocar nas respostas, sem cadastro.
                 </p>
               </div>
             </div>

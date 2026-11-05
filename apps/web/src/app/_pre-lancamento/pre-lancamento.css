@@ -37,12 +37,21 @@
 
 /* ---------- topo ---------- */
 
+/* Fundo próprio: o hero virou texto que rola por baixo do topo, e sem isto
+   a marca ficava em cima de um parágrafo. Degradê e não cor chapada para
+   não desenhar uma barra sobre a quadra. */
 .fc-pre-topo {
   position: absolute;
   inset-inline: 0;
   top: 0;
   z-index: 3;
   padding-block: 0.85rem;
+  background: linear-gradient(
+    to bottom,
+    var(--fc-quadra) 0%,
+    var(--fc-quadra) 58%,
+    transparent 100%
+  );
 }
 
 .fc-pre-topo__conteudo {
@@ -109,9 +118,15 @@
   transition: opacity var(--fc-pre-tempo) var(--fc-pre-curva);
 }
 
-/* Na pesquisa a quadra recua: o círculo central cai embaixo das opções no
-   celular, e marcação amarela atravessando uma resposta atrapalha a
-   leitura. Apaga junto com o deslize, então a continuidade fica. */
+/* A quadra recua atrás de texto: marcação amarela atravessando uma frase
+   atrapalha a leitura, e o hero deixou de ser três linhas para virar a
+   apresentação inteira do projeto. Na pesquisa recua mais, porque lá o
+   círculo central cai bem embaixo das opções no celular. Apaga junto com o
+   deslize, então a continuidade fica. */
+.fc-pre-trilho > .fc-quadra {
+  opacity: 0.5;
+}
+
 .fc-pre-palco[data-fase="pesquisa"] .fc-pre-trilho > .fc-quadra {
   opacity: 0.32;
 }
@@ -132,16 +147,28 @@
 
 /* ---------- tela 1: o hero ---------- */
 
+/* Rola sozinha, como a tela da pesquisa: o texto de apresentação não cabe
+   numa tela de celular, e o palco continua sem rolar. */
 .fc-pre-tela--inicio {
-  overflow: hidden;
-  overflow: clip;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
+/* `margin-block: auto` no filho, e NÃO `align-items: center` no pai: num
+   contêiner que rola, centralizar por `align-items` corta o que passa da
+   altura — o fim do texto e o botão sumiam. Com `auto`, centraliza quando
+   sobra espaço e encosta no topo quando não sobra. */
 .fc-pre-tela--inicio .fc-pre-tela__conteudo {
+  height: auto;
+  min-height: 100%;
   display: flex;
-  align-items: center;
-  padding-top: 4rem;
-  padding-bottom: 1.5rem;
+  align-items: flex-start;
+  padding-top: 4.75rem;
+  padding-bottom: 2rem;
+}
+
+.fc-pre-tela--inicio .fc-pre-texto {
+  margin-block: auto;
 }
 
 /* O "10" das costas da camisa, em traço amarelo. No celular fica no canto
@@ -186,15 +213,18 @@
   box-shadow: 0 0 0 4px rgb(255 210 63 / 0.22);
 }
 
+/* Menor e mais largo do que era com "A base vai ser vista.": a frase de
+   apresentação tem 56 caracteres, e no tamanho antigo (16vw) ela ocupava a
+   tela inteira do celular antes do primeiro parágrafo. */
 .fc-pre-h1 {
   margin-top: var(--fc-esp-4);
   font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.005em;
-  line-height: 0.86;
-  font-size: clamp(3.6rem, 16vw, 9rem);
-  max-width: 9.5ch;
+  line-height: 0.92;
+  font-size: clamp(2rem, 7.5vw, 3.6rem);
+  max-width: 20ch;
   color: var(--fc-giz);
   text-wrap: balance;
 }
@@ -205,6 +235,44 @@
   font-size: 1.0625rem;
   line-height: 1.55;
   color: var(--fc-giz-2);
+}
+
+/* ---------- apresentação do projeto ---------- */
+
+.fc-pre-manifesto {
+  margin-top: var(--fc-esp-5);
+  display: grid;
+  gap: var(--fc-esp-4);
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--fc-giz-2);
+  text-wrap: pretty;
+}
+
+.fc-pre-manifesto b {
+  color: var(--fc-giz);
+  font-weight: 700;
+}
+
+/* A frase que resume o projeto, destacada pelo risco da quadra à esquerda
+   em vez de negrito solto no meio do texto. */
+.fc-pre-manifesto__destaque {
+  padding-left: var(--fc-esp-4);
+  border-left: 3px solid var(--fc-amarelo);
+  color: var(--fc-giz);
+  font-weight: 600;
+}
+
+.fc-pre-manifesto__titulo {
+  margin-top: var(--fc-esp-2);
+  font-family: var(--font-fc-display), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--fc-amarelo);
 }
 
 .fc-pre-hero__acoes {
