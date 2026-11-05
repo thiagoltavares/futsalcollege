@@ -55,3 +55,12 @@ next-env.d.ts
 packages/db/supabase/.branches
 packages/db/supabase/.temp
 .env*.local
+
+# Exportações locais com dados de produção (respostas da pesquisa). Nunca versionar.
+exports/
+
+# Rastro do CLI do Supabase quando ele roda da raiz em vez de packages/db.
+# Guarda segredo em texto (supabase/.temp/start-secrets/**/docker.env), então
+# precisa estar ignorado mesmo sendo lixo temporário.
+/supabase/.branches
+/supabase/.temp
