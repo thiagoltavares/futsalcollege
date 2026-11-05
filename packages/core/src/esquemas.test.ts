@@ -200,7 +200,9 @@ describe("esquema do atleta — enums opcionais", () => {
   });
 
   it("recusa posição fora da lista", () => {
-    expect(aceita({ ...BASE, posicao: "Zagueiro" })).toBe(false);
+    // "Lateral" é posição de futebol de campo que não existe nem no futsal
+    // nem no fut7 — "Zagueiro" servia aqui até o fut7 entrar em POSICOES.
+    expect(aceita({ ...BASE, posicao: "Lateral" })).toBe(false);
   });
 
   it.each(["Direito", "Esquerdo", "Ambos"])("aceita o pé dominante '%s'", (pe_dominante) => {
@@ -223,7 +225,7 @@ describe("esquema do atleta — enums opcionais", () => {
  * sendo recusado (a tolerância não pode virar "aceita qualquer coisa").
  */
 const CAMPOS_OPCIONAIS = [
-  { campo: "posicao", valorInvalido: "Zagueiro" },
+  { campo: "posicao", valorInvalido: "Lateral" },
   { campo: "pe_dominante", valorInvalido: "Canhoto" },
   { campo: "altura_cm", valorInvalido: 500 },
   { campo: "peso_kg", valorInvalido: 999 },
