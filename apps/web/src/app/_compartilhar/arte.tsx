@@ -152,9 +152,9 @@ export function CartaoCompartilhar() {
               color: COR.giz,
             }}
           >
-            <span>A BASE VAI</span>
-            <span>ENTRAR EM</span>
-            <span>QUADRA.</span>
+            <span>A BASE</span>
+            <span>VAI SER</span>
+            <span>VISTA.</span>
           </div>
           <span
             style={{

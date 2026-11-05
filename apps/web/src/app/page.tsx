@@ -13,11 +13,11 @@ import { Vitrine, metadataVitrine } from "./vitrine/Vitrine";
  */
 
 const metadataPreLancamento: Metadata = {
-  title: "Revela 10 — a base vai entrar em quadra",
+  title: "Revela 10 — a base vai ser vista",
   description:
     "Um lugar para mostrar o futsal e o fut7 de base em vídeo, em todo o Brasil. Em construção: responda a pesquisa, leva 2 minutos.",
   openGraph: {
-    title: "Revela 10 — a base vai entrar em quadra",
+    title: "Revela 10 — a base vai ser vista",
     description: "Futsal e fut7 de base, em vídeo. Responda a pesquisa: leva 2 minutos, é só tocar.",
     url: "/",
     siteName: "Revela 10",
@@ -26,7 +26,7 @@ const metadataPreLancamento: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Revela 10 — a base vai entrar em quadra",
+    title: "Revela 10 — a base vai ser vista",
     description: "Futsal e fut7 de base, em vídeo. Responda a pesquisa: leva 2 minutos, é só tocar.",
   },
 };

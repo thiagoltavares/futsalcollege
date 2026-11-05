@@ -11,7 +11,7 @@
 - **`/` é a página de pré-lançamento** (`app/_pre-lancamento/`), uma tela só,
   mobile first. Duas telas lado a lado num trilho sobre uma quadra contínua:
   o hero (a marcação se desenha, o "10" é pintado em traço, "A base vai
-  entrar em quadra.") e a pesquisa. Ao tocar em "Responder a pesquisa", o
+  ser vista.") e a pesquisa. Ao tocar em "Responder a pesquisa", o
   hero inteiro sai pela esquerda e a pesquisa ocupa a tela, do outro lado da
   mesma quadra. Sem cartão: pergunta grande em branco sobre o azul. A fase
   vive na URL (`#pesquisa`), então o voltar do celular devolve ao hero.

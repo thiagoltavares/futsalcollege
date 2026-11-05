@@ -74,7 +74,7 @@ export function Palco({ origem }: { origem: string | null }) {
                 Em construção. Abre em breve, para todo o Brasil.
               </p>
               <h1 id="pre-titulo" className="fc-pre-h1">
-                A base vai entrar em quadra.
+                A base vai ser vista.
               </h1>
               <p className="fc-pre-lead">
                 Um lugar para mostrar o futsal e o fut7 de base em vídeo. Cada atleta com o seu
