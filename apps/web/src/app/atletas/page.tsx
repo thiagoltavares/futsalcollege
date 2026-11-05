@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@revela10/db";
-import { CATEGORIAS, GENEROS, POSICOES } from "@revela10/core";
+import { CATEGORIAS, GENEROS, NIVEIS, NIVEL_DESCRICAO, POSICOES } from "@revela10/core";
 import Link from "next/link";
 import { fontesFc } from "@/ui/fontes";
 
@@ -15,7 +15,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Atletas — Revela 10",
   description:
-    "Navegue pelos atletas com perfil ativo no Revela 10. Filtre por categoria, posição e estado — sem ranking, sem comparação entre crianças.",
+    "Navegue pelos atletas com perfil ativo no Revela 10. Filtre por categoria, posição, escolinha ou rendimento e estado — sem ranking, sem comparação entre crianças.",
 };
 
 const UFS = [
@@ -57,7 +57,7 @@ const TAMANHO_PAGINA = 24;
 const MAX_CANDIDATOS = 480;
 
 function hrefComPagina(
-  filtros: { categoria: string; posicao: string; genero: string; uf: string; busca: string; ordenar: string },
+  filtros: { categoria: string; posicao: string; genero: string; nivel: string; uf: string; busca: string; ordenar: string },
   somenteComVideo: boolean,
   pagina: number,
 ): string {
@@ -66,6 +66,7 @@ function hrefComPagina(
   if (filtros.categoria) params.set("categoria", filtros.categoria);
   if (filtros.posicao) params.set("posicao", filtros.posicao);
   if (filtros.genero) params.set("genero", filtros.genero);
+  if (filtros.nivel) params.set("nivel", filtros.nivel);
   if (filtros.uf) params.set("uf", filtros.uf);
   if (filtros.ordenar === "apelido") params.set("ordenar", filtros.ordenar);
   if (somenteComVideo) params.set("video", "1");
@@ -83,18 +84,19 @@ function hrefComPagina(
  */
 async function buscarAtletas(
   supabase: SupabaseClient<Database>,
-  filtros: { categoria: string; posicao: string; genero: string; uf: string; busca: string; ordenar: string },
+  filtros: { categoria: string; posicao: string; genero: string; nivel: string; uf: string; busca: string; ordenar: string },
 ) {
   let consulta = supabase
     .from("atletas")
     .select(
-      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(nome, credenciada)",
+      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, nivel, criado_em, escolinha:escolinhas(nome, credenciada)",
     )
     .eq("estado", "ativo");
 
   if (filtros.categoria) consulta = consulta.eq("categoria", filtros.categoria);
   if (filtros.posicao) consulta = consulta.eq("posicao", filtros.posicao);
   if (filtros.genero) consulta = consulta.eq("genero", filtros.genero);
+  if (filtros.nivel) consulta = consulta.eq("nivel", filtros.nivel);
   if (filtros.uf) consulta = consulta.eq("estado_uf", filtros.uf);
   if (filtros.busca) consulta = consulta.ilike("apelido", `%${filtros.busca}%`);
 
@@ -117,6 +119,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
     categoria: primeiroValor(parametros.categoria),
     posicao: primeiroValor(parametros.posicao),
     genero: primeiroValor(parametros.genero),
+    nivel: primeiroValor(parametros.nivel),
     uf: primeiroValor(parametros.uf),
     busca: primeiroValor(parametros.busca).trim(),
     ordenar: primeiroValor(parametros.ordenar) === "apelido" ? "apelido" : "recentes",
@@ -126,6 +129,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
     filtros.categoria,
     filtros.posicao,
     filtros.genero,
+    filtros.nivel,
     filtros.uf,
     filtros.busca,
     somenteComVideo,
@@ -166,7 +170,7 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
             <h1 className="fc-titulo">Atletas</h1>
             <p className="fc-subtitulo">
               Perfis com autorização vigente, do jeito que qualquer visitante enxerga. Dá para
-              filtrar por categoria, posição, estado e quem tem vídeo — não existe ranking, nota
+              filtrar por categoria, posição, escolinha ou rendimento, estado e quem tem vídeo — não existe ranking, nota
               comparada nem posição em lista: essa comparação entre crianças o Revela 10 não faz.
             </p>
           </div>
@@ -226,6 +230,25 @@ export default async function Atletas({ searchParams }: PageProps<"/atletas">) {
                     {GENEROS.map((g) => (
                       <option key={g} value={g}>
                         {g}
+                      </option>
+                    ))}
+                  </Selecao>
+                )}
+              </Campo>
+
+              {/*
+                Escolinha x rendimento (migration 0020). O filtro que faz a
+                lista servir a quem procura: sem ele, um Sub-11 que treina
+                uma vez por semana aparece ao lado de um Sub-11 que joga o
+                Brasileiro. "Todos" inclui quem ainda não informou.
+              */}
+              <Campo id="nivel" rotulo="Escolinha ou rendimento" className="fc-atletas-filtro">
+                {(campo) => (
+                  <Selecao {...campo} name="nivel" defaultValue={filtros.nivel}>
+                    <option value="">Todos</option>
+                    {NIVEIS.map((n) => (
+                      <option key={n} value={n}>
+                        {n} — {NIVEL_DESCRICAO[n]}
                       </option>
                     ))}
                   </Selecao>

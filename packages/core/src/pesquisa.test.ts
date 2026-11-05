@@ -3,6 +3,7 @@ import { contatoValido, esquemaPesquisa, formatarContato, mascaraContato } from 
 
 const responsavelCompleto = {
   perfil: "responsavel",
+  nivel_filho: "rendimento",
   enviou_video: ["whatsapp"],
   publica_video: "conhecidos",
   quem_ve_video: "clubes_verificados",
@@ -22,6 +23,26 @@ describe("esquemaPesquisa", () => {
   it("exige de quem é responsável a escolha de quem vê o vídeo", () => {
     const r = esquemaPesquisa.safeParse({ ...responsavelCompleto, quem_ve_video: "" });
     expect(r.success).toBe(false);
+  });
+
+  it("exige de quem é responsável dizer escolinha ou rendimento", () => {
+    expect(esquemaPesquisa.safeParse({ ...responsavelCompleto, nivel_filho: "" }).success).toBe(
+      false,
+    );
+    const semCampo = { ...responsavelCompleto } as Record<string, unknown>;
+    delete semCampo.nivel_filho;
+    expect(esquemaPesquisa.safeParse(semCampo).success).toBe(false);
+  });
+
+  it("aceita os três valores de escolinha ou rendimento e recusa o resto", () => {
+    for (const nivel of ["escolinha", "rendimento", "nao_sei"]) {
+      expect(esquemaPesquisa.safeParse({ ...responsavelCompleto, nivel_filho: nivel }).success).toBe(
+        true,
+      );
+    }
+    expect(esquemaPesquisa.safeParse({ ...responsavelCompleto, nivel_filho: "academy" }).success).toBe(
+      false,
+    );
   });
 
   it("aceita WhatsApp com DDD e e-mail como contato de novidades", () => {

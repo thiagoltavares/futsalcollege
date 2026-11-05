@@ -41,7 +41,7 @@ function clienteAnonimo() {
 }
 
 const COLUNAS_ATLETA_PUBLICO =
-  "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(nome, credenciada)";
+  "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, nivel, criado_em, escolinha:escolinhas(nome, credenciada)";
 
 type AtletaCartao = {
   id: string;

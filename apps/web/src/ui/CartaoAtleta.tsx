@@ -13,6 +13,12 @@ export type AtletaResumoCartao = {
   peso_kg: number | string | null;
   clube_atual?: string | null;
   estado_uf: string | null;
+  /**
+   * "Escolinha" ou "Rendimento" (migration 0020) — onde o atleta está hoje.
+   * `null` para quem ainda não informou, e aí o selo não aparece: o cartão
+   * nunca chuta um dos dois lados.
+   */
+  nivel?: string | null;
   escolinha?: { nome: string; credenciada: boolean } | null;
   /**
    * URL pública já resolvida da foto de capa (`atleta_midias`, migration
@@ -82,8 +88,9 @@ export type CartaoAtletaProps = {
  *                     reservada mesmo sem dado.
  *   5. origem       — escolinha ou clube, e estado; uma linha, idem.
  *   6. selos        — linha própria, sempre presente, alinhada à esquerda:
- *                     escolinha credenciada e avaliação publicada vivem
- *                     aqui, nunca ao lado do apelido (faixa 2).
+ *                     escolinha ou rendimento, escolinha credenciada e
+ *                     avaliação publicada vivem aqui, nunca ao lado do
+ *                     apelido (faixa 2).
  *   7. metadado — quantos vídeos e fotos o atleta tem. Onde a avaliação é
  *                     o assunto da página (`/profissional/[slug]`), esta
  *                     faixa mostra o laudo no lugar: quantas, quando, quem
@@ -158,6 +165,10 @@ export function CartaoAtleta({ atleta, midia, avaliacao, ocultarClube }: CartaoA
           <span className="fc-cartao-atleta__origem">{origemLinha}</span>
 
           <div className="fc-cartao-atleta__selos">
+            {/* Neutro de propósito: escolinha e rendimento são dois lugares
+                diferentes, não dois degraus de mérito. Vem antes dos outros
+                selos porque é o que separa a lista. */}
+            {atleta.nivel && <span className="fc-etiqueta fc-etiqueta--neutro">{atleta.nivel}</span>}
             {atleta.escolinha?.credenciada && (
               <span
                 className="fc-etiqueta fc-etiqueta--sucesso"

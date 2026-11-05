@@ -73,6 +73,8 @@ export type PerfilFichaProps = {
     apelido: string;
     categoria: string;
     posicao: string | null;
+    /** "Escolinha" ou "Rendimento" (migration 0020); `null` quando não informado. */
+    nivel: string | null;
     peDominante: string | null;
     fisico: string | null;
     estadoUf: string | null;
@@ -269,6 +271,7 @@ function CabecalhoPerfil({
       <div className="fc-perfil-tags">
         <span className="fc-ficha-tag">{atleta.categoria}</span>
         {atleta.posicao && <span className="fc-ficha-tag">{atleta.posicao}</span>}
+        {atleta.nivel && <span className="fc-ficha-tag">{atleta.nivel}</span>}
         {atleta.estadoUf && <span className="fc-ficha-tag">{atleta.estadoUf}</span>}
         <span className="fc-ficha-tag">{atleta.escolinhaNome ?? "Independente"}</span>
         {atleta.escolinhaCredenciada && (
@@ -300,6 +303,7 @@ function VisaoGeral({
 }) {
   const sobre = [
     atleta.posicao && { rotulo: "Posição", valor: atleta.posicao },
+    atleta.nivel && { rotulo: "Escolinha ou rendimento", valor: atleta.nivel },
     atleta.peDominante && { rotulo: "Pé dominante", valor: atleta.peDominante },
     atleta.fisico && { rotulo: "Físico", valor: atleta.fisico },
     atleta.escolinhaNome && { rotulo: "Escolinha", valor: atleta.escolinhaNome },

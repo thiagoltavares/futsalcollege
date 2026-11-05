@@ -5,6 +5,7 @@ import {
   PESQUISA_BENEFICIO,
   PESQUISA_ENVIOU_VIDEO,
   PESQUISA_GASTO_MENSAL,
+  PESQUISA_NIVEL,
   PESQUISA_PERFIL,
   PESQUISA_PREOCUPACAO,
   PESQUISA_PUBLICA_VIDEO,
@@ -77,6 +78,48 @@ function Opcoes({
 
 function SelecaoUf({ nome }: { nome: string }) {
   return <Seletor nome={nome} rotulo="Estado" opcoes={UFS} colunas={5} opcional />;
+}
+
+/**
+ * Uma frase sobre o Revela 10 por passo, acima da pergunta.
+ *
+ * Existe porque a pesquisa pedia opinião sobre um produto que quem responde
+ * nunca viu: a única frase que explicava morava no hero, e quem caía direto
+ * em `#pesquisa` respondia no escuro.
+ *
+ * Um fato por passo, e não um bloco com tudo no começo: o bloco empurrava
+ * as opções de resposta para fora da dobra no celular, e ninguém lê quatro
+ * frases antes da primeira pergunta. Espalhado, cada frase chega perto da
+ * pergunta a que ela responde, e a pesquisa inteira vira a explicação.
+ *
+ * Só entra aqui o que já é verdade no código. O que NÃO está decidido —
+ * quem vê o vídeo e o que vai ser pago — não aparece como promessa em
+ * lugar nenhum; no passo do vídeo a frase diz justamente que a resposta é
+ * que vai decidir.
+ */
+const FATO_POR_PASSO: Record<string, string> = {
+  perfil: "O Revela 10 vai ser o perfil do atleta de base do futsal e do fut7, com vídeo e foto.",
+  nivel: "Na plataforma, quem treina na escolinha e quem já compete ficam em listas separadas.",
+  filho: "A ficha mostra categoria, posição e estado — nunca endereço, escola nem horário de treino.",
+  enviou: "No Revela 10 o vídeo fica junto do perfil, não perdido numa conversa de WhatsApp.",
+  resultado: "Clube, escolinha e olheiro procuram por categoria, posição e estado.",
+  "tem-video": "Cada atleta tem uma página só dele, para mandar para qualquer clube.",
+  gasto: "Esta pesquisa é anônima: nada aqui identifica o seu filho.",
+  publica: "Você decide o que fica visível, e pode tirar o perfil do ar quando quiser.",
+  "quem-ve-video": "No Revela 10, quem vê o vídeo é você que escolhe, em cada atleta seu.",
+  preocupacao: "Nada do seu filho aparece sem você assinar a autorização.",
+  beneficio: "Não existe nota, ranking nem comparação entre crianças. Isso o Revela 10 não faz.",
+  novidades: "Começa pelo Ceará, mas o Revela 10 é para a base do Brasil todo.",
+  // Trilha de escolinha, clube e olheiro.
+  organizacao: "O Revela 10 vai ser o perfil do atleta de base do futsal e do fut7, com vídeo e foto.",
+  "como-hoje": "A busca é por categoria, posição, estado e por quem já compete.",
+  precisaria: "Não existe ranking nem nota comparada entre crianças, de propósito.",
+};
+
+function Fato({ chave }: { chave: string }) {
+  const texto = FATO_POR_PASSO[chave];
+  if (!texto) return null;
+  return <p className="fc-pre-fato">{texto}</p>;
 }
 
 type Passo = {
@@ -178,6 +221,18 @@ function passosResponsavel(
   soNunca: boolean,
 ): Passo[] {
   return [
+    // Primeira pergunta da trilha, antes de qualquer outra: é ela que
+    // separa quem está começando de quem já compete (pedido do Flávio,
+    // 05/11). Vindo antes, a resposta chega mesmo de quem desistir no meio.
+    passoDeToque(
+      "nivel",
+      "Seu filho ou filha treina na escolinha ou já compete?",
+      "nivel_filho",
+      PESQUISA_NIVEL,
+      avancar,
+      true,
+      "Vale o que ele faz hoje, não o que você espera dele.",
+    ),
     {
       chave: "filho",
       titulo: "Sobre seu filho ou filha",
@@ -234,11 +289,17 @@ function passosResponsavel(
     ),
     passoDeToque(
       "quem-ve-video",
-      "Se seu filho tivesse um perfil com vídeo, quem você deixaria ver?",
+      "No perfil do seu filho, quem você deixaria ver o vídeo?",
       "quem_ve_video",
       PESQUISA_QUEM_VE_VIDEO,
       avancar,
       true,
+      // Decisão do Flávio em 05/11: a visibilidade do vídeo não é regra da
+      // plataforma, é configuração de cada perfil — o responsável escolhe.
+      // Então a pergunta deixou de ser "ajude a decidir a regra" e passou a
+      // ser o próprio ajuste que a pessoa vai encontrar no perfil. O que a
+      // resposta ainda nos dá é a proporção, que decide qual é o padrão.
+      "Depois dá para mudar quando quiser.",
     ),
     passoDeToque(
       "preocupacao",
@@ -315,8 +376,9 @@ function Obrigado() {
       </span>
       <p className="fc-pre-obrigado__titulo">Resposta recebida.</p>
       <p className="fc-pre-obrigado__texto">
-        Obrigado. Sua resposta ajuda a decidir o que vem primeiro. Conhece mais alguém da base? Manda
-        o link.
+        Obrigado. O Revela 10 vai ser o perfil do atleta de base em vídeo, e a sua resposta ajuda a
+        decidir o que vem primeiro. Quanto mais gente da base responder, melhor. Conhece alguém?
+        Manda o link.
       </p>
       {link && (
         <a
@@ -375,7 +437,7 @@ export function Pesquisa({
   const passoPerfil: Passo = {
     chave: "perfil",
     titulo: "Quem está respondendo?",
-    ajuda: "Leva 2 minutos. É só tocar nas respostas.",
+    ajuda: "Leva 2 minutos.",
     corpo: (
       <Opcoes
         nome="perfil"
@@ -501,6 +563,9 @@ export function Pesquisa({
               <span className="fc-pre-passo__numero" aria-hidden="true">
                 {indice + 1}
               </span>
+              {/* Antes da pergunta, não depois das opções: embaixo ninguém
+                  lia — a pessoa responde e já avança. */}
+              <Fato chave={passo.chave} />
               <h2 id={tituloId} className="fc-pre-passo__titulo" tabIndex={-1}>
                 {passo.titulo}
               </h2>

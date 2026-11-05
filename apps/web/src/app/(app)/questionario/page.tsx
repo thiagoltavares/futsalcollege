@@ -5,6 +5,7 @@ import {
   PESQUISA_BENEFICIO,
   PESQUISA_ENVIOU_VIDEO,
   PESQUISA_GASTO_MENSAL,
+  PESQUISA_NIVEL,
   PESQUISA_PERFIL,
   PESQUISA_PREOCUPACAO,
   PESQUISA_PUBLICA_VIDEO,
@@ -40,6 +41,7 @@ type Linha = {
   origem: string | null;
   estado_uf: string | null;
   categoria_filho: string | null;
+  nivel_filho: string | null;
   enviou_video: string[];
   resultado_envio: string | null;
   tem_video: string | null;
@@ -80,6 +82,7 @@ function respostas(r: Linha): [string, string][] {
   const pares: [string, string | null][] =
     r.perfil === "responsavel"
       ? [
+          ["Escolinha ou rendimento", rotulo(PESQUISA_NIVEL, r.nivel_filho)],
           ["Categoria", r.categoria_filho],
           ["Estado", r.estado_uf],
           [
@@ -123,7 +126,7 @@ export default async function Questionario({
     admin
       .from("pesquisa_responsaveis")
       .select(
-        "id, criado_em, perfil, origem, estado_uf, categoria_filho, enviou_video, resultado_envio, tem_video, gasto_mensal, publica_video, quem_ve_video, preocupacao, beneficio, organizacao, como_hoje, pedido, aceita_contato, contato",
+        "id, criado_em, perfil, origem, estado_uf, categoria_filho, nivel_filho, enviou_video, resultado_envio, tem_video, gasto_mensal, publica_video, quem_ve_video, preocupacao, beneficio, organizacao, como_hoje, pedido, aceita_contato, contato",
       )
       .order("criado_em", { ascending: false }),
     // "Visto" é de cada um (migration 0019): só as leituras de quem está logado.

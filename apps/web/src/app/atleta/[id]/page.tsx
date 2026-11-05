@@ -58,7 +58,7 @@ const buscarFichaPublica = cache(async function buscarFichaPublica(
   const { data } = await supabase
     .from("atletas")
     .select(
-      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, criado_em, escolinha:escolinhas(id, nome, credenciada)",
+      "id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, clube_atual, estado_uf, nivel, criado_em, escolinha:escolinhas(id, nome, credenciada)",
     )
     .eq("id", id)
     .eq("estado", "ativo")
@@ -231,6 +231,7 @@ export default async function FichaPublica({ params }: PageProps<"/atleta/[id]">
               apelido: ficha.apelido,
               categoria: ficha.categoria,
               posicao: ficha.posicao,
+              nivel: ficha.nivel,
               peDominante: ficha.pe_dominante,
               fisico,
               estadoUf: ficha.estado_uf,

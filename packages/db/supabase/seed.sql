@@ -432,6 +432,26 @@ where id in (
   'b0000000-0000-0000-0000-000000000024', 'b0000000-0000-0000-0000-000000000025'
 );
 
+-- Escolinha x rendimento (migration 0020). Em `update` e não na lista de
+-- colunas dos nove `insert into atletas` acima: o que importa no seed é que
+-- o filtro de `/atletas` tenha os três casos para exercitar — escolinha,
+-- rendimento e "não informado".
+--
+-- A regra abaixo é só verossimilhança de seed, NÃO regra de produto: na
+-- plataforma quem diz o nível é o responsável, e categoria não decide nada.
+-- Aqui, quem está em escolinha credenciada ou é das categorias menores vai
+-- para 'Escolinha'; Sub-14 para cima, 'Rendimento'. Dois ficam nulos de
+-- propósito, para a ficha e o cartão serem vistos sem o selo.
+update atletas
+set nivel = case
+  when categoria in ('Sub-7', 'Sub-8', 'Sub-9', 'Sub-10', 'Sub-11', 'Sub-12', 'Sub-13')
+    then 'Escolinha'
+  else 'Rendimento'
+end
+where id not in (
+  'b0000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000018'
+);
+
 -- --------------------------------------------------------------------------
 -- Suspenso por revogação — Rafinha (Cícero) passa primeiro por 'ativo' com
 -- consentimento vigente e é revogado na sequência. O gatilho

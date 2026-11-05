@@ -194,6 +194,7 @@ export type Database = {
           estado_uf: string | null
           genero: string | null
           id: string
+          nivel: string | null
           pe_dominante: string | null
           peso_kg: number | null
           posicao: string | null
@@ -211,6 +212,7 @@ export type Database = {
           estado_uf?: string | null
           genero?: string | null
           id?: string
+          nivel?: string | null
           pe_dominante?: string | null
           peso_kg?: number | null
           posicao?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           estado_uf?: string | null
           genero?: string | null
           id?: string
+          nivel?: string | null
           pe_dominante?: string | null
           peso_kg?: number | null
           posicao?: string | null
@@ -446,6 +449,7 @@ export type Database = {
           estado_uf: string | null
           gasto_mensal: string | null
           id: string
+          nivel_filho: string | null
           organizacao: string | null
           origem: string | null
           pedido: string | null
@@ -467,6 +471,7 @@ export type Database = {
           estado_uf?: string | null
           gasto_mensal?: string | null
           id?: string
+          nivel_filho?: string | null
           organizacao?: string | null
           origem?: string | null
           pedido?: string | null
@@ -488,6 +493,7 @@ export type Database = {
           estado_uf?: string | null
           gasto_mensal?: string | null
           id?: string
+          nivel_filho?: string | null
           organizacao?: string | null
           origem?: string | null
           pedido?: string | null

@@ -67,6 +67,7 @@ export async function enviarPesquisa(
       origem: d.origem ?? null,
       estado_uf: d.estado_uf ?? null,
       categoria_filho: doFilho(d.categoria_filho ?? null),
+      nivel_filho: doFilho(d.nivel_filho ?? null),
       enviou_video: responsavel ? enviou : [],
       resultado_envio: doFilho(soNunca ? null : (d.resultado_envio ?? null)),
       tem_video: doFilho(d.tem_video ?? null),

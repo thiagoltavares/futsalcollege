@@ -42,7 +42,7 @@ const buscarEscolinha = cache(async function buscarEscolinha(
 async function buscarAtletasDaEscolinha(supabase: SupabaseClient<Database>, escolinhaId: string) {
   const { data } = await supabase
     .from("atletas")
-    .select("id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, estado_uf, criado_em")
+    .select("id, apelido, categoria, posicao, pe_dominante, altura_cm, peso_kg, estado_uf, nivel, criado_em")
     .eq("escolinha_id", escolinhaId)
     .eq("estado", "ativo")
     .order("criado_em", { ascending: false });

@@ -32,6 +32,28 @@ export const POSICOES = [
 export const GENEROS = ["Masculino", "Feminino"] as const;
 
 /**
+ * Onde o atleta está hoje (migration 0020, pedido do Flávio em 05/11):
+ * quem treina em escolinha e está começando, e quem já disputa campeonato
+ * pelo clube. A separação existe porque a lista sem ela não serve a
+ * ninguém — o olheiro não acha quem procura, e a família da criança que
+ * está começando entra numa comparação que o produto não quer fazer.
+ *
+ * Dois valores, não três: o Flávio agrupou "iniciação e academy" de um
+ * lado e "rendimento" do outro.
+ *
+ * Como `GENEROS`, ainda não faz parte de `esquemaAtleta` — não existe tela
+ * de cadastro de atleta. É o valor de referência do filtro de `/atletas` e
+ * do rótulo da ficha.
+ */
+export const NIVEIS = ["Escolinha", "Rendimento"] as const;
+
+/** O que cada nível quer dizer, em palavra de pai, não de técnico. */
+export const NIVEL_DESCRICAO: Record<(typeof NIVEIS)[number], string> = {
+  Escolinha: "Treina em escolinha ou iniciação",
+  Rendimento: "Já disputa campeonato pelo clube",
+};
+
+/**
  * Um `<select>` HTML nunca envia `undefined` — na opção padrão ("Não
  * informada", "Escolha depois" etc.) ele envia `value=""`. Todo `FormData`
  * de um formulário não controlado tem essa mesma característica para

@@ -540,6 +540,32 @@
   overflow: hidden;
 }
 
+/* ---------- um fato do Revela 10 por passo ----------
+   Acima da pergunta: no rodapé ninguém lia, porque a pessoa responde e já
+   avança. Risco da quadra à esquerda em vez de caixa — uma caixa aqui
+   competiria com as opções de resposta, que são o alvo de toque. */
+
+.fc-pre-fato {
+  margin-bottom: var(--fc-esp-3);
+  padding-left: 1.1rem;
+  position: relative;
+  max-width: 34rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fc-giz-2);
+  text-wrap: pretty;
+}
+
+.fc-pre-fato::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.6rem;
+  height: 2px;
+  background: var(--fc-amarelo);
+}
+
 /* ---------- depois do envio ---------- */
 
 .fc-pre-obrigado {

@@ -24,6 +24,21 @@ export const PESQUISA_PERFIL = {
   outro: "Outro",
 } as const;
 
+/**
+ * Onde o filho está hoje: escolinha ou rendimento (migration 0020, pedido
+ * do Flávio em 05/11). É a pergunta que decide a separação do produto, e a
+ * pesquisa é onde descobrimos a proporção antes de abrir o cadastro.
+ *
+ * `nao_sei` existe porque a fronteira é real para quem responde: tem
+ * família que não sabe dizer se o filho "compete". Empurrar essa pessoa
+ * para um dos dois lados estragaria justamente o número que queremos.
+ */
+export const PESQUISA_NIVEL = {
+  escolinha: "Treina na escolinha, está começando",
+  rendimento: "Já disputa campeonato pelo clube",
+  nao_sei: "Não sei dizer",
+} as const;
+
 export const PESQUISA_ENVIOU_VIDEO = {
   nunca: "Não, nunca mandei",
   whatsapp: "Sim, pelo WhatsApp",
@@ -60,6 +75,13 @@ export const PESQUISA_PUBLICA_VIDEO = {
   nao_publica: "Não posto",
 } as const;
 
+/**
+ * Quem vê o vídeo. Até 05/11 esta era a decisão em aberto do produto; o
+ * Flávio resolveu no dia: não é regra da plataforma, é ajuste de cada
+ * perfil — quem escolhe é o responsável, atleta por atleta. A pergunta
+ * continua valendo, mas agora por outro motivo: a proporção aqui é o que
+ * decide qual das opções vem marcada por padrão no cadastro.
+ */
 export const PESQUISA_QUEM_VE_VIDEO = {
   qualquer_pessoa: "Qualquer pessoa",
   clubes_verificados: "Só clubes e olheiros conferidos pelo Revela 10",
@@ -185,6 +207,7 @@ export const esquemaPesquisa = z
     .optional(),
 
   // responsável
+  nivel_filho: escolhaOpcional(PESQUISA_NIVEL),
   enviou_video: z.array(z.enum(chaves(PESQUISA_ENVIOU_VIDEO))),
   resultado_envio: escolhaOpcional(PESQUISA_RESULTADO_ENVIO),
   tem_video: escolhaOpcional(PESQUISA_TEM_VIDEO),
@@ -208,6 +231,7 @@ export const esquemaPesquisa = z
     // `pesquisa_responsavel_completo` da migration).
     if (d.perfil === "responsavel") {
       const falta = (mensagem: string) => ctx.addIssue({ code: "custom", message: mensagem });
+      if (!d.nivel_filho) falta("Diga se ele treina na escolinha ou já compete.");
       if (d.enviou_video.length === 0) falta("Diga se já mandou vídeo dele.");
       if (!d.publica_video) falta("Diga se posta vídeo dele.");
       if (!d.quem_ve_video) falta("Diga quem você deixaria ver o vídeo.");
